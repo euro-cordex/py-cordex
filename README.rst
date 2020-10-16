@@ -13,7 +13,6 @@ Cordex Python Package
         :target: https://cordex.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-
 .. image:: https://pyup.io/repos/github/euro-cordex/cordex/shield.svg
      :target: https://pyup.io/repos/github/euro-cordex/cordex/
      :alt: Updates

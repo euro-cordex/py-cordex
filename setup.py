@@ -34,7 +34,7 @@ setup(
     description="Python tools for the Cordex Community.",
     entry_points={
         'console_scripts': [
-            'cordex=cordex.cli:main',
+            'crx-tools=cordex.cli:main',
         ],
     },
     install_requires=requirements,
@@ -42,7 +42,7 @@ setup(
     long_description=readme + '\n\n' + history,
     include_package_data=True,
     keywords='cordex',
-    name='cordex',
+    name='py-cordex',
     packages=find_packages(include=['cordex', 'cordex.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
