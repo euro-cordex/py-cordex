@@ -42,7 +42,7 @@ You can install the package directly from github using pip:
 
 .. code-block:: console
 
-    pip install git+https://github.com/euro-cordex/cordex
+    pip install git+https://github.com/euro-cordex/py-cordex
 
 
 If you want to contribute, I recommend cloning the repository and installing the package in development mode, e.g.
@@ -50,7 +50,7 @@ If you want to contribute, I recommend cloning the repository and installing the
 
 .. code-block:: console
 
-    git clone https://github.com/euro-cordex/cordex
+    git clone https://github.com/euro-cordex/py-cordex
     cd cordex
     pip install -e .
 
