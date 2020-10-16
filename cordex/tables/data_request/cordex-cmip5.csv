@@ -1,0 +1,80 @@
+variable_id,unit,time_cell_method,long_name,standard_name,frequency,comments
+tas,K,i,Near-Surface Air Temperature,air_temperature,"mon, day, 3hr",3hr >  1hr
+tasmax,K,,Daily Maximum Near-Surface Air Temperature,air_temperature,"mon, day",
+tasmin,K,,Daily Minimum Near-Surface Air Temperature,air_temperature,"mon, day",
+ts,K,i,Surface Temperature,surface_temperature,"mon, day, 6hr",6hr > 1hr
+pr,kg m-2 s-1,a,Precipitation,precipitation_flux,"mon, day, 3hr",3hr > 1hr
+prc,kg m-2 s-1,a,Convective Precipitation,convective_precipitation_flux,"day, 3hr",3hr > 1hr
+prhmax,kg m-2 s-1,,Daily Maximum Hourly Precipitation Rate,precipitation_flux,day,
+prsn,kg m-2 s-1,a,Snowfall Flux,snowfall_flux,"mon, day, 3hr",3hr > 1hr
+evspsbl,kg m-2 s-1,a,Evaporation,water_evaporation_flux,"mon, day, 6hr",
+evspsblpot,kg m-2 s-1,a,Potential Evapotranspiration,water_potential_evaporation_flux,"mon, day, 6hr"," many formulas to calculate, delete?"
+mrros,kg m-2 s-1,a,Surface Runoff,surface_runoff_flux,"mon, day, 6hr",
+mrro,kg m-2 s-1,a,Total Runoff,runoff_flux,"mon, day, 6hr",
+snm,kg m-2 s-1,a,Surface Snow Melt,surface_snow_melt_flux,"mon, day, 6hr",
+huss,1,i,Near-Surface Specific Humidity,specific_humidity,"mon, day, 3hr",3hr > 1hr
+hurs,%,i,Near-Surface Relative Humidity,relative_humidity,"mon, day, 3hr",3hr > 1hr
+ps,Pa,i,Surface Air Pressure,surface_air_pressure,"day, 3hr",3hr > 1hr
+psl,Pa,i,Sea Level Pressure,air_pressure_at_sea_level,"mon, day, 3hr",do we need 1hr psl ?
+tauu,Pa,a,Surface Downward Eastward Wind Stress,surface_downward_eastward_stress,"day, 6hr",
+tauv,Pa,a,Surface Downward Northward Wind Stress,surface_downward_northward_stress,"day, 6hr",
+sfcWind,m s-1,i,Near-Surface Wind Speed,wind_speed,"mon, day, 3hr",3hr > 1hr
+sfcWindmax,m s-1,,Daily Maximum Near-Surface Wind Speed,wind_speed,"mon, day",
+uas,m s-1,i,Eastward Near-Surface Wind,eastward_wind,"mon, day, 6hr",6hr > 3hr
+vas,m s-1,i,Northward Near-Surface Wind,northward_wind,"mon, day, 6hr",6hr > 3hr
+wsgsmax,m s-1,,Daily Maximum Near-Surface Wind Speed of Gust,wind_speed_of_gust,day,
+clt,%,a,Total Cloud Fraction,cloud_area_fraction,"mon, day, 3hr",3hr > 1hr
+clh,%,a,High Level Cloud Fraction,cloud_area_fraction_in_atmosphere_layer,"day, 6hr",
+clm,%,a,Mid Level Cloud Fraction,cloud_area_fraction_in_atmosphere_layer,"day, 6hr",
+cll,%,a,Low Level Cloud Fraction,cloud_area_fraction_in_atmosphere_layer,"day, 6hr",
+sund,s,c,Duration of Sunshine,duration_of_sunshine,"mon, day, 3hr","The WMO definition of sunshine is that the surface incident radiative flux from the solar beam (i.e. excluding diffuse skylight) exceeds 120 W m-2. ""Duration"" is the length of time for which a condition holds."
+rsds,W m-2,a,Surface Downwelling Shortwave Radiation,surface_downwelling_shortwave_flux_in_air,"mon, day, 3hr",3hr > 1hr
+rlds,W m-2,a,Surface Downwelling Longwave Radiation,surface_downwelling_longwave_flux_in_air,"mon, day, 3hr",3hr > 1hr
+rsus,W m-2,a,Surface Upwelling Shortwave Radiation,surface_upwelling_shortwave_flux_in_air,"mon, day, 3hr",3hr > 1hr
+rlus,W m-2,a,Surface Upwelling Longwave Radiation,surface_upwelling_longwave_flux_in_air,"mon, day, 3hr",3hr > 1hr
+rlut,W m-2,a,TOA Outgoing Longwave Radiation,toa_outgoing_longwave_flux,"mon, day, 3hr",3hr > 1hr
+rsdt,W m-2,a,TOA Incident Shortwave Radiation,toa_incoming_shortwave_flux,"mon, day, 3hr",3hr > 1hr
+rsut,W m-2,a,TOA Outgoing Shortwave Radiation,toa_outgoing_shortwave_flux,"mon, day, 3hr",3hr > 1hr
+hfls,W m-2,a,Surface Upward Latent Heat Flux,surface_upward_latent_heat_flux,"mon, day, 3hr",3hr > 1hr
+hfss,W m-2,a,Surface Upward Sensible Heat Flux,surface_upward_sensible_heat_flux,"mon, day, 3hr",3hr > 1hr
+mrfso,kg m-2,i,Soil Frozen Water Content,soil_frozen_water_content,"mon, day, 6hr",
+mrso,kg m-2,i,Total Soil Moisture Content,soil_moisture_content,"mon, day, 6hr",
+snw,kg m-2,i,Surface Snow Amount,surface_snow_amount,"mon, day, 6hr",
+snc,%,i,Snow Area Fraction,surface_snow_area_fraction,"mon, day, 6hr",
+snd,m,i,Snow Depth,surface_snow_thickness,"mon, day, 6hr",
+sic,%,,Sea Ice Area Fraction,sea_ice_area_fraction,"mon, day, 6hr",
+zmla,m,i,Height of Boundary Layer,atmosphere_boundary_layer_thickness,"day, 6hr",higher frequency than 6hr ?
+prw,kg m-2,i,Water Vapor Path,atmosphere_water_vapor_content,"day, 6hr",
+clwvi,kg m-2,i,Condensed Water Path,atmosphere_cloud_condensed_water_content,"day, 6hr",
+clivi,kg m-2,i,Ice Water Path,atmosphere_cloud_ice_content,"day, 6hr",
+ua850,m s-1,i,Eastward Wind,eastward_wind,"mon, day, 6hr",
+va850,m s-1,i,Northward Wind,northward_wind,"mon, day, 6hr",
+ta850,K,i,Air Temperature,air_temperature,"mon, day, 6hr",
+hus850,1,i,Specific Humidity,specific_humidity,"mon, day, 6hr",
+ua500,m s-1,i,Eastward Wind,eastward_wind,"mon, day, 6hr",
+va500,m s-1,i,Northward Wind,northward_wind,"mon, day, 6hr",
+zg500,m,i,Geopotential Height,geopotential_height,"mon, day, 6hr",
+ta500,K,i,Air Temperature,air_temperature,"mon, day, 6hr",
+ua200,m s-1,i,Eastward Wind,eastward_wind,"mon, day, 6hr",
+va200,m s-1,i,Northward Wind,northward_wind,"mon, day, 6hr",
+ta200,K,i,Air Temperature,air_temperature,"mon, day, 6hr",
+zg200,m,i,Geopotential Height,geopotential_height,"mon, day, 6hr",
+ua,m s-1,i,Eastward Wind,eastward_wind,,"1) 11 lowest pressure levels  (Amon, CMIP6, plev17): 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100 ? 2) All plevs in one file (ua, va etc.) or one per file (ua500, etc.), seems that more people prefer ""one per file"" (also more flexible across the CORDEX domains) ? 3) if one plev per file more domain-dependent pressure levesl can be added e.g. 50, 10, 1 hPa  4) Incuding wap ?"
+va,m s-1,i,Northward Wind,northward_wind,,
+ta,K,i,Air Temperature,air_temperature,,
+zg,m,i,Geopotential Height,geopotential_height,,
+hus,1,i,Specific Humidity,specific_humidity,,
+wap,Pa s-1,i,Omega (=dp/dt),lagrangian_tendency_of_air_pressure,,
+wa,m s-1,i,Upward Air Velocity,upward_air_velocity,,
+ua100m,m s-1,i,Eastward Wind at 100m,eastward_wind,,"more levels: 50, 150, 200m ?"
+va100m,m s-1,i,Northward Wind at 100m,northward_wind,,
+CAPE,J kg-1,i,2-D Maximum convective available potential energy,atmosphere_convective_available_potential_energy_wrt_surface,, 
+z0,m s-1,i,Surface Roughness Length,,,
+areacella,m2,,Atmosphere Grid-Cell Area,cell_area,fx,
+orog,m,,Surface Altitude,surface_altitude,fx,
+sftlf,%,,Land Area Fraction,land_area_fraction,fx,
+sftlaf ??,%,,Lake Area Fraction,lake_area_fraction,,not in CMIP6 or in CF 
+sfturf ??,%,,Urban Area Fraction,urban_area_fraction,,not in CMIP6 or in CF 
+sftgif,%,,Fraction of Grid Cell Covered with Glacier,land_ice_area_fraction,fx,
+mrsofc,kg m-2,,Capacity of Soil to Store Water,soil_moisture_content_at_field_capacity,fx,
+rootd,m,,Maximum Root Depth,root_depth,fx,

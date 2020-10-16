@@ -1,0 +1,2 @@
+region,short_name,long_name,nlon,nlat,ll_lon,ur_lon,ll_lat,ur_lat,dlon,dlat,pollon,pollat
+4,GAR-0275,Greater Alpine Region,476,444,-13.51125,-0.44875,-10.93125,1.25125,0.0275,0.0275,-162,39.25
