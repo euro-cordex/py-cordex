@@ -3,8 +3,8 @@ Cordex Python Package
 =====================
 
 
-.. image:: https://img.shields.io/pypi/v/cordex.svg
-        :target: https://pypi.python.org/pypi/cordex
+.. image:: https://img.shields.io/pypi/v/py-cordex.svg
+        :target: https://pypi.python.org/pypi/py-cordex
 
 .. image:: https://img.shields.io/travis/euro-cordex/cordex.svg
         :target: https://travis-ci.com/euro-cordex/cordex
