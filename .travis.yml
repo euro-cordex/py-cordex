@@ -25,5 +25,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: euro-cordex/cordex
+    repo: euro-cordex/py-cordex
     python: 3.8
