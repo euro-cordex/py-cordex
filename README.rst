@@ -23,7 +23,7 @@ Python tools for the Cordex Community.
 
 
 * Free software: MIT license
-* Documentation: https://cordex.readthedocs.io.
+* Documentation: https://py-cordex.readthedocs.io.
 
 
 Features
