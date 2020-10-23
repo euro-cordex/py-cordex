@@ -17,7 +17,8 @@ def getxml(url):
     return data
 
 
-#def download_cf_table(version='70'):
-#    url = 'http://cfconventions.org/Data/cf-standard-names/{}/src/cf-standard-name-table.xml'.format(version)
-#    table = requests.get(url, allow_redirects=True)
+def download_cf_table(version='70'):
+    url = 'http://cfconventions.org/Data/cf-standard-names/{}/src/cf-standard-name-table.xml'.format(version)
+    return getxml(url)
+    #table = requests.get(url, allow_redirects=True)
 

@@ -1,6 +1,9 @@
 #! /usr/bin/python
 # coding: utf-8
 
+import tempfile
+
+
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
@@ -24,3 +27,9 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total:
         print()
 
+
+
+def get_tempfile():
+    """Creates a temporay filename.
+    """
+    return tempfile.mkstemp()[1]

@@ -34,6 +34,8 @@ from netCDF4 import Dataset
 
 from . import grid as gd
 from . import cf
+from . import utils
+
 
 #from .tables import domain_tables_external as CSV, read_tables
 from .tables import domains as TABLES
@@ -262,8 +264,8 @@ class Domain():
 
     def _get_xarray_rotated(self, attrs=True):
         rlon, rlat   = self.grid_rotated.coordinates
-        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dimnames[0])
-        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dimnames[1])
+        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dim_names[0])
+        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dim_names[1])
         if attrs:
             da_rlon.attrs = cf.coords['rlon']
             da_rlat.attrs = cf.coords['rlat']
@@ -272,7 +274,8 @@ class Domain():
 
     def _get_xarray_mapping(self, mapping_key):
         da_mapping = xr.DataArray(np.empty((), dtype=np.int32))
-        attrs = cf.mapping[mapping_key].copy()
+        #attrs = cf.mapping[mapping_key].copy()
+        attrs = cf.mapping.copy()
         attrs['grid_north_pole_longitude'] = self.grid_rotated.pole[0]
         attrs['grid_north_pole_latitude']  = self.grid_rotated.pole[1]
         da_mapping.attrs = attrs
@@ -283,8 +286,8 @@ class Domain():
         lon, lat   = self.grid_lonlat.coordinates
         print(lon.shape)
         print(lat.shape)
-        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dimnames)))
-        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dimnames)))
+        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dim_names)))
+        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dim_names)))
         if attrs:
             da_lon.attrs = cf.coords['lon']
             da_lat.attrs = cf.coords['lat']
@@ -298,14 +301,14 @@ class Domain():
         mapping_key  = list(cf.mapping.keys())[0]
         print(mapping_key)
         if not grid:
-            coords['rlon'], coords['rlat'] = self.get_xarray_rotated(attrs)
-            coords['lon'],  coords['lat']  = self.get_xarray_lonlat(attrs)
-            data[mapping_key]              = self.get_xarray_mapping(mapping_key)
+            coords['rlon'], coords['rlat'] = self._get_xarray_rotated(attrs)
+            coords['lon'],  coords['lat']  = self._get_xarray_lonlat(attrs)
+            data[mapping_key]              = self._get_xarray_mapping(mapping_key)
         elif grid == 'rotated':
-            coords['rlon'], coords['rlat'] = self.get_xarray_rotated(attrs)
-            data[mapping_key]              = self.get_xarray_mapping(mapping_key)
+            coords['rlon'], coords['rlat'] = self._get_xarray_rotated(attrs)
+            data[mapping_key]              = self._get_xarray_mapping(mapping_key)
         elif grid == 'lonlat':
-            coords['lon'],  coords['lat']  = self.get_xarray_lonlat(attrs)
+            coords['lon'],  coords['lat']  = self._get_xarray_lonlat(attrs)
         else:
             raise Exception('unknown grid description, should be \"rotated\" or \"latlon\".')
         ds = xr.Dataset(data, coords=coords)
@@ -334,10 +337,12 @@ class Domain():
         kwargs['dummy'] = dummy
         return self.get_dataset(filename, **kwargs).close()
 
-    def get_dataset(self, filename, **kwargs):
+    def get_dataset(self, filename=None, **kwargs):
         """creates a netcdf dataset containg the domain grid.
         """
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
+        if filename is None:
+            filename = utils.get_tempfile()
         return _get_dataset(self, filename, **kwargs)
 
     def to_pandas(self):
@@ -455,8 +460,8 @@ class _XrDataset(_CFDataset):
 
     def get_xarray_rotated(self, attrs=True):
         rlon, rlat   = self.grid_rotated.coordinates
-        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dimnames[0])
-        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dimnames[1])
+        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dim_names[0])
+        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dim_names[1])
         if attrs:
             da_rlon.attrs = cf.coords['rlon']
             da_rlat.attrs = cf.coords['rlat']
@@ -474,8 +479,8 @@ class _XrDataset(_CFDataset):
         lon, lat   = self.grid_lonlat.coordinates
         print(lon.shape)
         print(lat.shape)
-        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dimnames)))
-        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dimnames)))
+        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dim_names)))
+        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dim_names)))
         if attrs:
             da_lon.attrs = cf.coords['lon']
             da_lat.attrs = cf.coords['lat']
