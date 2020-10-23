@@ -22,4 +22,5 @@ cdo
 urllib3
 xmltodict
 cdo
+sphinx-rtd-theme
 #
