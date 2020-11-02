@@ -21,14 +21,14 @@ conda install -c conda-forge cartopy
 pip install ipython
 ```
 
-###ERA5-Files
+### ERA5-Files
 
 The access for the ERA5-Datafiles is described in the GitLab Project.
 	https://git.gerics.de/gerics-hiwis/clim-vis/-/tree/master/CDS
 Here only one ERA5 file is used to create an animation.
 
 
-###PyRemo
+### PyRemo
 
 (This information is taken from the original PyRemo Package. For this project only the Datafiles in OoPlot/examples/data/... are needed. There is no need to proceed with the whole installation to run PyRemo itself.)
 
@@ -63,7 +63,7 @@ follwo the instructions here: https://github.com/NCAR/pyngl
 I would recommend to first create a conda environment for pyngl and install PyREMO
 afterwards in this environment.
 
-##How it works:
+## How it works:
 
 The current directory contains following plotting subroutines:
 
@@ -75,7 +75,7 @@ animation.py
 ```
 Also a subroutine to read the NetCDF provided (read_nc.py) and one to define the plotting characteristics (level_color_label.py).
 
-###Results
+### Results
 The execution routines and outcome of this subroutines in in the following directory:
 
 	examples/plots/
