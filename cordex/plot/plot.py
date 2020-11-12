@@ -9,7 +9,7 @@ from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
 #try:
 import cartopy.crs as ccrs
-from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter, LatitudeLocator)
+#from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter, LatitudeLocator)
 import cartopy.feature as cfeature
 #except:
 #    print('cartopy not installed, plotting capabilities reduced...')
@@ -37,7 +37,6 @@ def read_nc(infile, varname):
     ds1 = xr.open_dataset(infile)
     var = ds1.__getitem__(varname).squeeze()
     grid_mapping = gd.get_grid_mapping(ds1, varname)
-    print(grid_mapping)
     if grid_mapping is not None:
         rot_pole = [grid_mapping.grid_north_pole_latitude, grid_mapping.grid_north_pole_longitude]
     else:
@@ -49,7 +48,7 @@ def read_nc(infile, varname):
 #var,rot_pole = read_nc(infile1,'var129')
 
 
-def level_color_label(varname):
+def level_color_label(var):
     """*Function*
     Sets the colormapping, leveling and labeling of the variable chosen.
     **Arguments:**
@@ -66,6 +65,7 @@ def level_color_label(varname):
     """
     
     #Orographie
+    varname = var.name
     if varname == 'var129':
         # define custom levels and colormap in [m]
         clevs = [[1, 25, 50, 100, 150, 200, 300, 500, 750,
@@ -125,12 +125,11 @@ def contour2(infile, varname,title):
     #read netcdf and select variable
     var,rot_pole = read_nc(infile, varname)
     #levels, colors, label 
-    clevs,col,label= level_color_label(varname)
+    clevs,col,label= level_color_label(var)
     
     fig = plt.figure(figsize=(10,8))
     
     #Rotated pole projection with Cartopy
-    print(rot_pole)
     rotated_pole = ccrs.RotatedPole(pole_latitude=rot_pole[0], 
                                 pole_longitude=rot_pole[1])
     ax = plt.axes(projection=rotated_pole)

@@ -32,7 +32,7 @@ mapping = tx.get_grid_mapping(orog_ds, 'var129')
 print(mapping)
 print(mapping.grid_north_pole_latitude)
 
-cxplt.contour2(infile, 'var129', 'Orographie_EU')
+cxplt.contour2(infile1, 'orog', 'Orographie_EU')
 
 #print(mapping)
 
