@@ -25,6 +25,12 @@ Python tools for the Cordex Community.
 * Free software: MIT license
 * Documentation: https://py-cordex.readthedocs.io.
 
+Why
+===
+
+The goal of this software package is to have a unified common code base for typical and reacurring tasks in the `CORDEX <https://cordex.org/>`_ community.
+More precisely, there are several tasks related to regional climate model data processing that are model independent and could become unified. This should
+enable better reproducability and exchange of scientific analyses in the community.
 
 Features
 --------
