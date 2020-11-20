@@ -32,6 +32,17 @@ The goal of this software package is to have a unified common code base for typi
 More precisely, there are several tasks related to regional climate model data processing that are model independent and could become unified. This should
 enable better reproducability and exchange of scientific analyses in the community.
 
+Data Access
+^^^^^^^^^^^
+The future of climate modelling has to deal with huge datasets and efficient use of storage and computing resources. This software package should help managing
+these tasks by giving easy access to remote datasets (e.g., ESGF or observational datasets from OPenDAP or cloud resources) using external 
+catalogs to guarantee maximum reproducibility and compatibility between data centers and data users.
+
+Meta Data
+^^^^^^^^^
+Access to meta data should be automatic and machine readable to avoid humans to do boring, repitive tasks that are error-prone. For that purpose, easy access to
+meta information should be guaranteed by tables collected here: https://github.com/euro-cordex/tables 
+
 Features
 --------
 
