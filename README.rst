@@ -39,7 +39,7 @@ Features
 * Tools to manage Cordex Domain Data
 * Easy Cordex ESGF Access
 
-For planned featurese, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one an contribute!
+For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one an contribute!
 
 Installation
 ------------
