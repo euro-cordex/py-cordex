@@ -26,7 +26,7 @@ Python tools for the Cordex Community.
 * Documentation: https://py-cordex.readthedocs.io.
 
 Why
-===
+---
 
 The goal of this software package is to have a unified common code base for typical and reacurring tasks in the `CORDEX <https://cordex.org/>`_ community.
 More precisely, there are several tasks related to regional climate model data processing that are model independent and could become unified. This should
@@ -37,7 +37,9 @@ Features
 
 * Manage Cordex Meta Data
 * Tools to manage Cordex Domain Data
-* ...
+* Easy Cordex ESGF Access
+
+For planned featurese, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one an contribute!
 
 Installation
 ------------
