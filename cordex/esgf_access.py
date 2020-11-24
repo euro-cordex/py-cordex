@@ -94,9 +94,20 @@ def _split_dataset_id(dataset_id):
     return (dataset_id.split('|')[0].split('.') + [(dataset_id.split('|')[1])])
 
 
-def to_pandas(results):
+def _get_columns(columns=None):
+    if columns == 'CORDEX':
+        return CORDEX_COLUMNS
+    elif columns == 'CMIP5':
+        return CMIP5_COLUMNS
+    elif columns == 'CMIP6':
+        return CMIP6_COLUMNS
+    else:
+        return columns
+
+
+def to_pandas(results, columns=None):
     """convert a search result to dataframe"""
     data = [_split_dataset_id(res.dataset_id) for res in tqdm(results)]
-    return pd.DataFrame(data, columns=CORDEX_COLUMNS)
+    return pd.DataFrame(data, columns=_get_columns(columns))
 
 
