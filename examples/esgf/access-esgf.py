@@ -1,8 +1,5 @@
-
-
-from cordex import esgf_access
-
 import pandas as pd
+from cordex import esgf_access
 
 # Euro-Cordex search attributes
 attrs = {'project':'CORDEX', 'domain':'EUR-11'}
@@ -20,5 +17,3 @@ cordex_list = df.groupby(['institute', 'model_id', 'driving_model_id', 'experime
 print(cordex_list)
 
 cordex_list.to_excel('cordex.xlsx')
-
-

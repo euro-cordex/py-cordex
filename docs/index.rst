@@ -8,6 +8,7 @@ Welcome to Cordex Python Package's documentation!
    readme
    installation
    usage
+   examples
    modules
    contributing
    authors

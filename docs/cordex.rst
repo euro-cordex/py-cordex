@@ -84,6 +84,14 @@ cordex.domain module
    :undoc-members:
    :show-inheritance:
 
+cordex.esgf\_access module
+--------------------------
+
+.. automodule:: cordex.esgf_access
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 cordex.grid module
 ------------------
 

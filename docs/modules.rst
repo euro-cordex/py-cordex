@@ -1,5 +1,5 @@
-Modules
-=======
+cordex
+======
 
 .. toctree::
    :maxdepth: 4
