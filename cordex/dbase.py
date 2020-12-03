@@ -2,10 +2,8 @@
 # flake8: noqa
 import traceback
 
-try:
-    import urllib3
-    import xmltodict
-
+import urllib3
+import xmltodict
 
 
 def getxml(url):
