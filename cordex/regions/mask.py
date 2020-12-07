@@ -25,14 +25,15 @@ def get_regionmask(geodata, **kwargs):
     return regionmask.from_geopandas(geodata, **kwargs)
 
 
+# tas_mask = laender.mask(tas, lon_name='lon', lat_name='lat')
+# mask_2D = regionmask.mask_geopandas(shp, tas.lon, tas.lat)
 
-
-class GERMANY():
-
-    @staticmethod
-    def VG2500(domain='lan'):
-        url = addr.VG2500(domain)
-        geodata = get_geodata(url)
-        geodata['mask_name'] = geodata["ARS"] + '_' + geodata['GEN']
-        return get_regionmask(geodata, names="mask_name", abbrevs='_from_name')
-
+def gridded_mask(rmask, da=None, lon=None, lat=None):
+    if da is not None:
+        if lon is None: lon='lon'
+        if lat is None: lat='lat'
+        return rmask.mask(da, lon_name=lon, lat_name=lat)
+    else:
+        if lon is None or lat is None:
+            raise Exception('Missing lon or lat attribute for regionmask.mask_geopandas')
+        return regionmask.mask_geopandas(rmask, lon, lat)

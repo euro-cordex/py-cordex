@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
    cordex.plot
+   cordex.regions
    cordex.tables
 
 Submodules

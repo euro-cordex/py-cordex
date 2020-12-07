@@ -73,23 +73,24 @@ class Domain():
 
     The :class:`Domain` holds a :class:`grid.Grid` instance.
 
-    **Attributes:**
-        *nlon:*
-            longitudal number of grid boxes
-        *nlat:*
-            latitudal number of grid boxes
-        *dlon:*
-            longitudal resolution (degrees)
-        *dlat:*
-            latitudal resolution (degrees)
-        *pollon:*
-            pol longitude (degrees)
-        *pollat:*
-            pol latitude (degrees)
-        *ll_lon:*
-            lower left rotated longitude (degrees)
-        *ll_lat:*
-            lower left rotated latitude (degrees)
+    Parameters
+    ----------
+    nlon : int
+       longitudal number of grid boxes
+    nlat : int
+       latitudal number of grid boxes
+    dlon : float
+       longitudal resolution (degrees)
+    dlat : float
+       latitudal resolution (degrees)
+    pollon : float
+       pol longitude (degrees)
+    pollat : float
+       pol latitude (degrees)
+    ll_lon : float
+       lower left rotated longitude (degrees)
+    ll_lat : float
+       lower left rotated latitude (degrees)
     """
     def __init__(self, nlon, nlat, dlon, dlat,
                  pollon, pollat, ll_lon, ll_lat, short_name=None,
@@ -197,13 +198,18 @@ class Domain():
         The resolution factor determines multiplication factor for the
         number of grid boxes (nlon, nlat), not the resolution (dlon, dlat).
 
-        Args:
-          factor (real): resolution factor.
+        Parameters
+        ----------
+        factor : int
+            resolution factor.
 
-        Returns:
-          Domain: Domain instance with refined resolution.
+        Returns
+        -------
+        Domain : :class:`Domain`
+            Domain with refined resolution.
 
-        Example:
+        Example
+        -------
 
                 refinement examples::
 
@@ -357,6 +363,22 @@ class Domain():
                 'pollon': self.pollon, 'pollat': self.pollat}
         return pd.DataFrame(content, index=[0])
 
+    def gridded_mask(self, gdf):
+        """Create a gridded mask.
+
+        Parameters
+        ----------
+        gdf : `geopandas.GeoDataFrame`
+            Geopandas GeoDataFrame describing the shapefile. 
+        """
+        from .regions import mask
+        print(geodata)
+        lon, lat = self.grid_lonlat.coordinates
+        mask = mask.gridded_mask(geodata, lon=lon, lat=lat)
+        mask.rename("mask_{}".format(self.short_name))
+        return mask
+
+
 
 class _CFDataset():
 
@@ -485,6 +507,7 @@ class _XrDataset(_CFDataset):
             da_lon.attrs = cf.coords['lon']
             da_lat.attrs = cf.coords['lat']
         return da_lon, da_lat
+
 
 
 def _get_dataset(domain, filename='', dummy=None, mapping_name=None, attrs=True, **kwargs):
@@ -630,6 +653,7 @@ class _DomainFactory(object):
 
 
 
+
 def domain(name):
     """Top level Domain function to get a :class:`Domain` instance.
 
@@ -666,11 +690,15 @@ def names(table=None):
 def table(name):
     """Top level function that returns a CORDEX table.
 
-    Args:
-      name (str): name of the CORDEX table.
+    Parameters
+    ----------
+    name : str
+        name of the CORDEX table.
 
-    Returns:
-      table (DataFrame): Cordex table.
+    Returns
+    -------
+    table : pandas.DataFrame
+        Cordex table.
 
     """
     return TABLES[name]
