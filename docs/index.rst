@@ -9,10 +9,10 @@ Welcome to Cordex Python Package's documentation!
    installation
    usage
    examples
-   modules
    contributing
    authors
    history
+   modules
 
 Indices and tables
 ==================
