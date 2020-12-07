@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 
+import numpy as np
+
+LAT_NAME = 'lat'
+LON_NAME = 'lon'
+RLAT_NAME = 'rlat'
+RLON_NAME = 'rlon'
 
 
-coords = \
+attrs = \
         {
    'rlon'         : {'axis': 'X',
                      'standard_name': 'grid_longitude',
@@ -22,6 +28,7 @@ coords = \
                      'long_name'    : 'latitude',
                      'units'        : 'degrees_north'},
    }
+
 
 mapping = \
      { 'grid_mapping_name' : 'rotated_latitude_longitude',

@@ -262,100 +262,53 @@ class Domain():
         return text
 
 
-    def get_global_attrs(self):
+    def _get_global_attrs(self):
         attrs = self.global_attrs.copy()
         attrs.update({'CORDEX_domain': self.short_name})
         return attrs
 
 
-    def _get_xarray_rotated(self, attrs=True):
-        rlon, rlat   = self.grid_rotated.coordinates
-        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dim_names[0])
-        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dim_names[1])
-        if attrs:
-            da_rlon.attrs = cf.coords['rlon']
-            da_rlat.attrs = cf.coords['rlat']
-        return da_rlon, da_rlat
-
-
-    def _get_xarray_mapping(self, mapping_key):
-        da_mapping = xr.DataArray(np.empty((), dtype=np.int32))
-        #attrs = cf.mapping[mapping_key].copy()
-        attrs = cf.mapping.copy()
-        attrs['grid_north_pole_longitude'] = self.grid_rotated.pole[0]
-        attrs['grid_north_pole_latitude']  = self.grid_rotated.pole[1]
-        da_mapping.attrs = attrs
-        return da_mapping
-
-
-    def _get_xarray_lonlat(self, attrs=True):
-        lon, lat   = self.grid_lonlat.coordinates
-        print(lon.shape)
-        print(lat.shape)
-        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dim_names)))
-        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dim_names)))
-        if attrs:
-            da_lon.attrs = cf.coords['lon']
-            da_lat.attrs = cf.coords['lat']
-        return da_lon, da_lat
-
-
-    def _get_xarray_dataset(self, grid='', attrs=True, **kwargs):
-        coords       = {}
-        global_attrs = {}
-        data         = {}
-        mapping_key  = list(cf.mapping.keys())[0]
-        print(mapping_key)
-        if not grid:
-            coords['rlon'], coords['rlat'] = self._get_xarray_rotated(attrs)
-            coords['lon'],  coords['lat']  = self._get_xarray_lonlat(attrs)
-            data[mapping_key]              = self._get_xarray_mapping(mapping_key)
-        elif grid == 'rotated':
-            coords['rlon'], coords['rlat'] = self._get_xarray_rotated(attrs)
-            data[mapping_key]              = self._get_xarray_mapping(mapping_key)
-        elif grid == 'lonlat':
-            coords['lon'],  coords['lat']  = self._get_xarray_lonlat(attrs)
-        else:
-            raise Exception('unknown grid description, should be \"rotated\" or \"latlon\".')
-        ds = xr.Dataset(data, coords=coords)
-        ds.update({'test': xr.DataArray(np.array((424, 412)), coords=coords)})
-        # remove FillValue attribute
-        for key, coord  in ds.coords.items():
-            coord.encoding['_FillValue'] = False
-        # add global attributes
-        if attrs:
-            ds.attrs = self.get_global_attrs()
-        return ds
-
-
-    def to_netcdf(self, filename, dummy=False, **kwargs):
+    def to_netcdf(self, filename, dummy=False, engine='netcdf4', **kwargs):
         """write domain to netcdf file.
 
-        Args:
-          filename (str): filename to write netcdf.
-          dummy (str or logical): name of dummy field, if dummy=topo, the
-            cdo topo operator will be used to create some dummy topography data.
-            dummy data is useful for looking at the domain with ncview.
-
+        Parameters
+        ----------
+        filename : str 
+          Filename to write netcdf.
+        dummy : str or logical
+          Name of dummy field, if dummy=topo, the cdo topo operator will be 
+          used to create some dummy topography data. dummy data is useful for 
+          looking at the domain with ncview.
 
         """
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
         kwargs['dummy'] = dummy
-        return self.get_dataset(filename, **kwargs).close()
+        return self.get_dataset(filename, engine=engine, **kwargs).close()
 
-    def get_dataset(self, filename=None, **kwargs):
-        """creates a netcdf dataset containg the domain grid.
+    def get_dataset(self, filename=None, engine='netcdf4', **kwargs):
+        """Creates a netcdf dataset containg the domain grid definitions.
+
+        Parameters
+        ----------
+        filename : str
+            Filename for use with netcdf4 engine.
+        engine : str ('netcdf4', 'xarray')
+            Engine for creating the dataset.
+            
         """
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
-        if filename is None:
+        if filename is None and engine=='netcdf4':
             filename = utils.get_tempfile()
-        return _get_dataset(self, filename, **kwargs)
+        return _get_dataset(self, filename, engine=engine, **kwargs)
 
     def to_pandas(self):
-        """create a pandas DataFrame row.
+        """Creates a pandas DataFrame row.
 
-        Returns:
-          DataFrame: a pandas dataframe according to the cordex package table resource.
+        Returns
+        -------
+        DataFrame : pandas.DataFrame
+            A pandas dataframe according to the cordex package table resource.
+
         """
         content = {'region': self.region, 'short_name': self.short_name, 'long_name': self.long_name,
                 'nlon': self.nlon, 'nlat': self.nlat, 'll_lon': self.ll_lon, 'ur_lon': self.ur_lon,
@@ -372,7 +325,6 @@ class Domain():
             Geopandas GeoDataFrame describing the shapefile. 
         """
         from .regions import mask
-        print(geodata)
         lon, lat = self.grid_lonlat.coordinates
         mask = mask.gridded_mask(geodata, lon=lon, lat=lat)
         mask.rename("mask_{}".format(self.short_name))
@@ -380,28 +332,30 @@ class Domain():
 
 
 
-class _CFDataset():
 
+#class _CFDataset():
+#
+#
+#    def __init__(self):
+#        pass
+#
+#
+#    def add_dimension(self):
+#        pass
+#
+#    def add_coorindate(self):
+#        pass
+#
+#    def get_dataset(self, grid='', attrs=True, **kwargs):
+#        return ds.squeeze(drop=True)
+
+
+
+#class _NC4Dataset(_CFDataset):
+class _NC4Dataset():
 
     def __init__(self):
-        pass
-
-
-    def add_dimension(self):
-        pass
-
-    def add_coorindate(self):
-        pass
-
-    def get_dataset(self, grid='', attrs=True, **kwargs):
-        return ds.squeeze(drop=True)
-
-
-
-class _NC4Dataset(_CFDataset):
-
-    def __init__(self):
-        _CFDataset.__init__(self)
+        #_CFDataset.__init__(self)
         self.ds = None
 
     def create(self, filename, mode=None, **kwargs):
@@ -449,69 +403,73 @@ class _NC4Dataset(_CFDataset):
         return self.ds
 
 
-class _XrDataset(_CFDataset):
+#class _XrDataset(_CFDataset):
+#
+#    def __init__(self):
+#        CFDataset.__init__(self)
+#        self.ds = None
+#
+#    def create(self, filename, mode=None, **kwargs):
+#        if mode is None:
+#            mode = 'w'
+#        self.ds = Dataset(filename, mode=mode, **kwargs)
+#        return self.ds
+#
+#    def close(self):
+#        self.ds.close()
+#
+#    def add_dimension(self, name, length):
+#        dim = self.ds.createDimension(name, length)
+#        return dim
+#
+#    def add_data(self, name, data, **kwargs):
+#        var = self.ds.createVariable(name, **kwargs)
+#        var[:] = data
+#        return var
+#
+#    def add_pole(self, domain, mapping_name, mapping_attrs):
+#        self.add_data(mapping_name, data=np.empty(()), datatype=np.int32)
+#        mapping_attrs['grid_north_pole_longitude'] = domain.grid_rotated.pole[0]
+#        mapping_attrs['grid_north_pole_latitude']  = domain.grid_rotated.pole[1]
+#        self.ds.variables[mapping_name].setncatts(mapping_attrs)
+#        return self.ds
+#
+#    def get_xarray_rotated(self, attrs=True):
+#        rlon, rlat   = self.grid_rotated.coordinates
+#        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dim_names[0])
+#        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dim_names[1])
+#        if attrs:
+#            da_rlon.attrs = cf.coords['rlon']
+#            da_rlat.attrs = cf.coords['rlat']
+#        return da_rlon, da_rlat
+#
+#    def get_xarray_mapping(self, mapping_key):
+#        da_mapping = xr.DataArray(np.empty((), dtype=np.int32))
+#        attrs = cf.mapping[mapping_key].copy()
+#        attrs['grid_north_pole_longitude'] = self.grid_rotated.pole[0]
+#        attrs['grid_north_pole_latitude']  = self.grid_rotated.pole[1]
+#        da_mapping.attrs = attrs
+#        return da_mapping
+#
+#    def get_xarray_lonlat(self, attrs=True):
+#        lon, lat   = self.grid_lonlat.coordinates
+#        print(lon.shape)
+#        print(lat.shape)
+#        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dim_names)))
+#        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dim_names)))
+#        if attrs:
+#            da_lon.attrs = cf.coords['lon']
+#            da_lat.attrs = cf.coords['lat']
+#        return da_lon, da_lat
 
-    def __init__(self):
-        CFDataset.__init__(self)
-        self.ds = None
-
-    def create(self, filename, mode=None, **kwargs):
-        if mode is None:
-            mode = 'w'
-        self.ds = Dataset(filename, mode=mode, **kwargs)
-        return self.ds
-
-    def close(self):
-        self.ds.close()
-
-    def add_dimension(self, name, length):
-        dim = self.ds.createDimension(name, length)
-        return dim
-
-    def add_data(self, name, data, **kwargs):
-        var = self.ds.createVariable(name, **kwargs)
-        var[:] = data
-        return var
-
-    def add_pole(self, domain, mapping_name, mapping_attrs):
-        self.add_data(mapping_name, data=np.empty(()), datatype=np.int32)
-        mapping_attrs['grid_north_pole_longitude'] = domain.grid_rotated.pole[0]
-        mapping_attrs['grid_north_pole_latitude']  = domain.grid_rotated.pole[1]
-        self.ds.variables[mapping_name].setncatts(mapping_attrs)
-        return self.ds
-
-    def get_xarray_rotated(self, attrs=True):
-        rlon, rlat   = self.grid_rotated.coordinates
-        da_rlon = xr.DataArray(data=rlon[0],   dims=self.dim_names[0])
-        da_rlat = xr.DataArray(data=rlat[:,0], dims=self.dim_names[1])
-        if attrs:
-            da_rlon.attrs = cf.coords['rlon']
-            da_rlat.attrs = cf.coords['rlat']
-        return da_rlon, da_rlat
-
-    def get_xarray_mapping(self, mapping_key):
-        da_mapping = xr.DataArray(np.empty((), dtype=np.int32))
-        attrs = cf.mapping[mapping_key].copy()
-        attrs['grid_north_pole_longitude'] = self.grid_rotated.pole[0]
-        attrs['grid_north_pole_latitude']  = self.grid_rotated.pole[1]
-        da_mapping.attrs = attrs
-        return da_mapping
-
-    def get_xarray_lonlat(self, attrs=True):
-        lon, lat   = self.grid_lonlat.coordinates
-        print(lon.shape)
-        print(lat.shape)
-        da_lon = xr.DataArray(data=lon, dims=tuple(reversed(self.dim_names)))
-        da_lat = xr.DataArray(data=lat, dims=tuple(reversed(self.dim_names)))
-        if attrs:
-            da_lon.attrs = cf.coords['lon']
-            da_lat.attrs = cf.coords['lat']
-        return da_lon, da_lat
 
 
-
-def _get_dataset(domain, filename='', dummy=None, mapping_name=None, attrs=True, **kwargs):
-    return _get_dataset_nc4(domain, filename, dummy, mapping_name, attrs, **kwargs)
+def _get_dataset(domain, filename='', dummy=None, mapping_name=None, attrs=True, 
+        engine='netcdf4', **kwargs):
+    if engine=='netcdf4':
+        return _get_dataset_nc4(domain, filename, dummy, mapping_name, attrs, **kwargs)
+    elif engine=='xarray':
+        return _get_dataset_xr(domain, filename, dummy, mapping_name, attrs, **kwargs)
 
 
 def _get_dataset_nc4(domain, filename='', dummy=None, mapping_name=None, attrs=True, **kwargs):
@@ -547,27 +505,43 @@ def _get_dataset_nc4(domain, filename='', dummy=None, mapping_name=None, attrs=T
     return ds.ds
 
 
+def _rotated_pole(domain, mapping_name=None):
+    if mapping_name is None:
+        mapping_name = cf.DEFAULT_MAPPING_NCVAR
+    da = xr.DataArray(np.zeros((), dtype=np.int32))
+    #da = xr.DataArray(np.array((), dtype=np.int32))
+    attrs = cf.mapping.copy()
+    attrs['grid_north_pole_longitude'] = domain.grid_rotated.pole[0]
+    attrs['grid_north_pole_latitude']  = domain.grid_rotated.pole[1]
+    da.attrs = attrs
+    return da
+
 
 def _get_dataset_xr(domain, filename='', dummy=None, mapping_name=None, attrs=True):
     if mapping_name is None:
         mapping_name = cf.DEFAULT_MAPPING_NCVAR
-    coords       = {}
-    global_attrs = {}
-    data         = {}
-    coords['rlon'], coords['rlat'] = self.get_xarray_rotated(attrs)
-    coords['lon'],  coords['lat']  = self.get_xarray_lonlat(attrs)
-    data[mapping_key]              = self.get_xarray_mapping(mapping_key)
-    ds = xr.Dataset(data, coords=coords)
-    ds.update({'test': xr.DataArray(np.array((424, 412)), coords=coords)})
-    # remove FillValue attribute
+    lon, lat = domain.grid_lonlat.coordinates
+    rlon, rlat = domain.grid_rotated.coordinates
+    rlon = rlon[0]
+    rlat = rlat[:,0]
+    pole = _rotated_pole(domain, mapping_name)
+
+    ds = xr.Dataset(
+        data_vars={mapping_name: pole}, 
+        coords=dict(
+            rlon=(["rlon"], rlon),
+            rlat=(["rlat"], rlat),
+            lon=(["rlat", "rlon"], lon),
+            lat=(["rlat", "rlon"], lat),
+        ),
+        attrs=domain._get_global_attrs()
+    )
+
     for key, coord  in ds.coords.items():
-        coord.encoding['_FillValue'] = False
-    # add global attributes
-    if attrs:
-        ds.attrs = self.get_global_attrs()
+        coord.encoding['_FillValue'] = None 
+        coord.attrs = cf.coords[key]
+
     return ds
-
-
 
 
 class _DomainFactory(object):
@@ -693,7 +667,7 @@ def table(name):
     Parameters
     ----------
     name : str
-        name of the CORDEX table.
+        Name of the CORDEX table.
 
     Returns
     -------

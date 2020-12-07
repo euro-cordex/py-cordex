@@ -25,4 +25,6 @@ cdo
 tqdm
 sphinx-rtd-theme
 numpydoc
+matplotlib
+geopandas
 #
