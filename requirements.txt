@@ -24,4 +24,5 @@ xmltodict
 cdo
 tqdm
 sphinx-rtd-theme
+numpydoc
 #
