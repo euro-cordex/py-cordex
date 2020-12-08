@@ -9,7 +9,7 @@ RLAT_NAME = 'rlat'
 RLON_NAME = 'rlon'
 
 
-attrs = \
+coords = \
         {
    'rlon'         : {'axis': 'X',
                      'standard_name': 'grid_longitude',

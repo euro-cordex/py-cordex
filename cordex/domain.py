@@ -274,26 +274,35 @@ class Domain():
         Parameters
         ----------
         filename : str 
-          Filename to write netcdf.
+            Filename to write netcdf.
         dummy : str or logical
-          Name of dummy field, if dummy=topo, the cdo topo operator will be 
-          used to create some dummy topography data. dummy data is useful for 
-          looking at the domain with ncview.
+            Name of dummy field, if dummy=topo, the cdo topo operator will be 
+            used to create some dummy topography data. dummy data is useful for 
+            looking at the domain with ncview.
 
         """
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
         kwargs['dummy'] = dummy
         return self.get_dataset(filename, engine=engine, **kwargs).close()
 
-    def get_dataset(self, filename=None, engine='netcdf4', **kwargs):
+    def get_dataset(self, filename=None, dummy=False, engine='netcdf4', **kwargs):
         """Creates a netcdf dataset containg the domain grid definitions.
 
         Parameters
         ----------
         filename : str
             Filename for use with netcdf4 engine.
+        dummy : str or logical
+            Name of dummy field, if dummy=topo, the cdo topo operator will be 
+            used to create some dummy topography data. dummy data is useful for 
+            looking at the domain with ncview.
         engine : str ('netcdf4', 'xarray')
             Engine for creating the dataset.
+
+        Returns
+        -------
+        Dataset : xarray.core.Dataset
+            Dataset containing the coordinates.
             
         """
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
@@ -525,9 +534,10 @@ def _get_dataset_xr(domain, filename='', dummy=None, mapping_name=None, attrs=Tr
     rlon = rlon[0]
     rlat = rlat[:,0]
     pole = _rotated_pole(domain, mapping_name)
+    data_vars={mapping_name: pole}
 
     ds = xr.Dataset(
-        data_vars={mapping_name: pole}, 
+        data_vars=data_vars,
         coords=dict(
             rlon=(["rlon"], rlon),
             rlat=(["rlat"], rlat),
@@ -540,6 +550,31 @@ def _get_dataset_xr(domain, filename='', dummy=None, mapping_name=None, attrs=Tr
     for key, coord  in ds.coords.items():
         coord.encoding['_FillValue'] = None 
         coord.attrs = cf.coords[key]
+
+    if dummy:
+        if dummy is True:
+            dummy_name = 'dummy'
+        else:
+            dummy_name = dummy
+        dummy = xr.DataArray(
+            data=np.zeros((len(rlat), len(rlon))),
+            dims=["rlat", "rlon"],
+            coords=dict(
+                rlon=(["rlon"], rlon),
+                rlat=(["rlat"], rlat),
+                lon=(["rlat", "rlon"], lon),
+                lat=(["rlat", "rlon"], lat),
+            ),
+        )
+        dummy.attrs = { 'grid_mapping' : mapping_name,
+                        'coordinates'  :  'lon lat' }
+        ds[dummy_name] = dummy
+        if dummy_name == 'topo':
+            from cdo import Cdo
+            tmp = utils.get_tempfile()
+            ds.to_netcdf(tmp)
+            topo = Cdo().topo(tmp, returnXDataset=True)['topo'][:]
+            ds[dummy_name] = topo
 
     return ds
 
