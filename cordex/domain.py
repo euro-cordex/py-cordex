@@ -308,7 +308,7 @@ class Domain():
         #self.get_xarray_dataset(grid).to_netcdf(filename, **kwargs)
         if filename is None and engine=='netcdf4':
             filename = utils.get_tempfile()
-        return _get_dataset(self, filename, engine=engine, **kwargs)
+        return _get_dataset(self, filename, dummy=dummy, engine=engine, **kwargs)
 
     def to_pandas(self):
         """Creates a pandas DataFrame row.
