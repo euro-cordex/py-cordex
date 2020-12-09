@@ -7,14 +7,16 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-try:
-    import cartopy.crs as ccrs
-    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,LatitudeLocator)
-    import cartopy.feature as cfeature
-except:
-    print('cartopy not installed, plotting capabilities reduced...')
+#try:
+import cartopy.crs as ccrs
+#from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter, LatitudeLocator)
+import cartopy.feature as cfeature
+#except:
+#    print('cartopy not installed, plotting capabilities reduced...')
 
 
+
+from . import grid as gd
 
 #Read NetCDF
 def read_nc(infile, varname):
@@ -34,19 +36,19 @@ def read_nc(infile, varname):
     """
     ds1 = xr.open_dataset(infile)
     var = ds1.__getitem__(varname).squeeze()
-    try: 
-        rot_pole = [rot_latitude,rot_longitude] = [ds1.rotated_pole.grid_north_pole_latitude, ds1.rotated_pole.grid_north_pole_longitude]
-        return var, rot_pole
-    except:
-        pass
-        return var, None
+    grid_mapping = gd.get_grid_mapping(ds1, varname)
+    if grid_mapping is not None:
+        rot_pole = [grid_mapping.grid_north_pole_latitude, grid_mapping.grid_north_pole_longitude]
+    else:
+        rot_pole = None
+    return var, rot_pole
 #Example Africa without rotated pole -> Returns only var
 #var,rot_pole = read_nc(my_wind,'var165')
 #Example Europe with rotated pole -> Returns var and rot_pole
 #var,rot_pole = read_nc(infile1,'var129')
 
 
-def level_color_label(varname):
+def level_color_label(var):
     """*Function*
     Sets the colormapping, leveling and labeling of the variable chosen.
     **Arguments:**
@@ -63,6 +65,7 @@ def level_color_label(varname):
     """
     
     #Orographie
+    varname = var.name
     if varname == 'var129':
         # define custom levels and colormap in [m]
         clevs = [[1, 25, 50, 100, 150, 200, 300, 500, 750,
@@ -122,7 +125,7 @@ def contour2(infile, varname,title):
     #read netcdf and select variable
     var,rot_pole = read_nc(infile, varname)
     #levels, colors, label 
-    clevs,col,label= level_color_label(varname)
+    clevs,col,label= level_color_label(var)
     
     fig = plt.figure(figsize=(10,8))
     
