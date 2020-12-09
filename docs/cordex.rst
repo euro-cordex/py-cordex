@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
    cordex.plot
+   cordex.regions
    cordex.tables
 
 Submodules
@@ -80,6 +81,14 @@ cordex.domain module
 --------------------
 
 .. automodule:: cordex.domain
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cordex.esgf\_access module
+--------------------------
+
+.. automodule:: cordex.esgf_access
    :members:
    :undoc-members:
    :show-inheritance:

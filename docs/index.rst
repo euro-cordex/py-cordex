@@ -8,10 +8,11 @@ Welcome to Cordex Python Package's documentation!
    readme
    installation
    usage
-   modules
+   examples
    contributing
    authors
    history
+   modules
 
 Indices and tables
 ==================

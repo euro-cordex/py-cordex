@@ -12,8 +12,7 @@
 # pip install -r requirements.txt
 # Remember to also add them in setup.cfg but unpinned.
 # Example:
-#scipy==1.0
-parse==1.14.0
+parse
 numpy
 pandas
 xarray
@@ -22,5 +21,9 @@ cdo
 urllib3
 xmltodict
 cdo
+tqdm
 sphinx-rtd-theme
+numpydoc
+matplotlib
+geopandas
 #
