@@ -44,6 +44,7 @@ setup(
     keywords='cordex',
     name='py-cordex',
     packages=find_packages(include=['cordex', 'cordex.*', 'cordex.tables.*']),
+    package_data={'cordex': ['tables/domains/*.csv', 'tables/data_request/*.csv']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
