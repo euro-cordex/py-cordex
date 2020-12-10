@@ -6,8 +6,8 @@ Cordex Python Package
 .. image:: https://img.shields.io/pypi/v/py-cordex.svg
         :target: https://pypi.python.org/pypi/py-cordex
         
-.. image:: https://travis-ci.org/euro-cordex/py-cordex.svg?branch=master
-    :target: https://travis-ci.org/euro-cordex/py-cordex
+.. image:: https://travis-ci.com/euro-cordex/py-cordex.svg?branch=master
+    :target: https://travis-ci.com/euro-cordex/py-cordex
 
 .. image:: https://readthedocs.org/projects/py-cordex/badge/?version=latest
         :target: https://py-cordex.readthedocs.io/en/latest/?badge=latest
