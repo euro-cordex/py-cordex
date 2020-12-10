@@ -6,7 +6,7 @@ RotGrid is outdated because of Code duplication.
 """
 import logging
 import numpy as np
-import math
+import numpy as math
 
 from cordex import __version__
 
@@ -565,8 +565,10 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat,
                    math.cos(theta) * z)
 
     # Convert cartesian back to spherical coordinates
-    lon_new = math.atan2(y_new, x_new)
-    lat_new = math.asin(z_new)
+    #lon_new = math.atan2(y_new, x_new)
+    #lat_new =rc math.asin(z_new)
+    lon_new = math.arctan2(y_new, x_new)
+    lat_new = math.arcsin(z_new)
 
     # Convert radians back to degrees
     lon_new = (lon_new * 180.) / math.pi
