@@ -4,18 +4,21 @@ Cordex Python Package
 
 
 .. image:: https://img.shields.io/pypi/v/py-cordex.svg
-        :target: https://pypi.python.org/pypi/py-cordex
+    :target: https://pypi.python.org/pypi/py-cordex
         
 .. image:: https://travis-ci.com/euro-cordex/py-cordex.svg?branch=master
     :target: https://travis-ci.com/euro-cordex/py-cordex
 
 .. image:: https://readthedocs.org/projects/py-cordex/badge/?version=latest
-        :target: https://py-cordex.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+    :target: https://py-cordex.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://coveralls.io/repos/github/euro-cordex/py-cordex/badge.svg?branch=master
+    :target: https://coveralls.io/github/euro-cordex/py-cordex?branch=master
 
 .. image:: https://pyup.io/repos/github/euro-cordex/py-cordex/shield.svg
-     :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
-     :alt: Updates
+    :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
+    :alt: Updates
 
 
 
