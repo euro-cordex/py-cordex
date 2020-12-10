@@ -43,7 +43,7 @@ setup(
     include_package_data=True,
     keywords='cordex',
     name='py-cordex',
-    packages=find_packages(include=['cordex', 'cordex.*']),
+    packages=find_packages(include=['cordex', 'cordex.*', 'cordex.tables.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
