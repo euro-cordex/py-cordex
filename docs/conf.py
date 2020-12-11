@@ -38,8 +38,11 @@ extensions = [
         "sphinx.ext.extlinks",
         "sphinx.ext.mathjax",
         "sphinx.ext.napoleon",
+        "sphinxcontrib.mockautodoc",
         "numpydoc"
 ]
+
+autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
 
 autosummary_generate = True
 

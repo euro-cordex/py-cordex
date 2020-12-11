@@ -85,6 +85,14 @@ cordex.domain module
    :undoc-members:
    :show-inheritance:
 
+cordex.elevation module
+-----------------------
+
+.. automodule:: cordex.elevation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 cordex.esgf\_access module
 --------------------------
 
@@ -97,6 +105,14 @@ cordex.grid module
 ------------------
 
 .. automodule:: cordex.grid
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cordex.remap module
+-------------------
+
+.. automodule:: cordex.remap
    :members:
    :undoc-members:
    :show-inheritance:

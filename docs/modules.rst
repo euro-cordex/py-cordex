@@ -1,5 +1,5 @@
-API   
-===
+cordex
+======
 
 .. toctree::
    :maxdepth: 4
