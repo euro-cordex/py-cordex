@@ -27,3 +27,6 @@ deploy:
     tags: true
     repo: euro-cordex/py-cordex
     python: 3.8
+
+after_success:
+  - coveralls
