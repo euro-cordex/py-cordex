@@ -46,7 +46,7 @@ autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionma
 
 autosummary_generate = True
 
-apoleon_use_param = True
+napoleon_use_param = True
 napoleon_use_rtype = False
 
 numpydoc_class_members_toctree = True

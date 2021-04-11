@@ -4,32 +4,45 @@
 import tempfile
 
 
-# Print iterations progress
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
-    """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    #clear_output(wait=True)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
-    # Print New Line on Complete
-    if iteration == total:
-        print()
-
-
-
 def get_tempfile():
     """Creates a temporay filename.
     """
     return tempfile.mkstemp()[1]
+
+
+def copy_dataset(src, varname=None, timestep=None, destination=None):
+    """copy an existing NetCDF dataset on disk"""
+    if varname is None:
+        variables = src.variables
+    else:
+        variables = {varname:src.variables[varname]}
+    if destination is None:
+        destination = 'copy.nc'
+    dst = Dataset(destination,'w')
+    # copy attributes
+    for name in src.ncattrs():
+        dst.setncattr(name, getattr(src, name))
+    # copy dimensions
+    for name, dimension in src.dimensions.items():
+        if timestep and name=='time':
+            length = 1
+        else:
+            length = (len(dimension) if not dimension.isunlimited() else None)
+        #dst.createDimension( name, (len(dimension) if not dimension.isunlimited() else None))
+        dst.createDimension( name, length)
+        # copy all file data except for the excluded
+    for name, variable in variables.items():
+        if hasattr(variable, '_FillValue'):
+            fill_value = getattr(variable, '_FillValue')
+        else:
+            fill_value = None
+        var = dst.createVariable(name, variable.dtype, variable.dimensions, fill_value=fill_value)
+        for attr in variable.ncattrs():
+            if attr != '_FillValue':
+                dst.variables[name].setncattr(attr, getattr(variable, attr))
+        if variable.shape:
+            if timestep is None or 'time' not in variable.dimensions:
+                dst.variables[name][:] = src.variables[name][:]
+            else:
+                dst.variables[name][0] = src.variables[name][timestep]
+    return dst
