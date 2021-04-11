@@ -25,7 +25,4 @@ tqdm
 sphinx-rtd-theme
 sphinxcontrib-mockautodoc
 numpydoc
-matplotlib
-regionmask
-geopandas
 #
