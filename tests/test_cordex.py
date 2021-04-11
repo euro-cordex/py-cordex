@@ -4,7 +4,7 @@
 
 import pytest
 
-from cordex import cordex
+#from cordex import cordex
 
 
 @pytest.fixture

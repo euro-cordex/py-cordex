@@ -39,7 +39,7 @@ def domain_from_table(short_name, table):
     return Domain(short_name=short_name, **dict(table.loc[short_name]))
 
 
-def domain(short_name, dummy=False, **kwargs):
+def cordex_domain(short_name, dummy=False, **kwargs):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -58,7 +58,6 @@ def domain(short_name, dummy=False, **kwargs):
         
     """
     config = pd.concat(TABLES.values()).loc[short_name]
-    print(config)
     return create_dataset(**config, dummy=dummy)
 
 

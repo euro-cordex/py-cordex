@@ -9,3 +9,9 @@ except DistributionNotFound:
     __version__ = 'unknown'
 finally:
     del get_distribution, DistributionNotFound
+
+
+from .domain import (
+        cordex_domain, domain_from_table,
+        create_dataset, rotated_coord_transform 
+        )
