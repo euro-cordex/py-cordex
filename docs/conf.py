@@ -32,14 +32,15 @@ import cordex
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-        "sphinx.ext.autodoc", 
-        "sphinx.ext.autosummary", 
+        "sphinx.ext.autodoc",
+        "sphinx.ext.autosummary",
         "sphinx.ext.viewcode",
         "sphinx.ext.extlinks",
         "sphinx.ext.mathjax",
         "sphinx.ext.napoleon",
         "sphinxcontrib.mockautodoc",
-        "numpydoc"
+        "numpydoc",
+        "nbsphinx",
 ]
 
 autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
