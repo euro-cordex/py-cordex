@@ -27,4 +27,5 @@ sphinxcontrib-mockautodoc
 numpydoc
 nbsphinx
 nbsphinx-link
+ipython
 #
