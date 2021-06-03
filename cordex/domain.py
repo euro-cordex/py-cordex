@@ -27,12 +27,6 @@ from . import cf
 from . import utils
 
 
-def domain_from_table(short_name, table):
-    """creates domain instance from a pandas dataframe row.
-    """
-    return Domain(short_name=short_name, **dict(table.loc[short_name]))
-
-
 def cordex_domain(short_name, dummy=False, **kwargs):
     """Creates an xarray dataset containg the domain grid definitions.
 

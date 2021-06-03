@@ -12,6 +12,6 @@ finally:
 
 
 from .domain import (
-        cordex_domain, domain_from_table,
+        cordex_domain, 
         create_dataset, rotated_coord_transform 
         )
