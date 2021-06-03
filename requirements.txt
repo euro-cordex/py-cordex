@@ -25,4 +25,6 @@ tqdm
 sphinx-rtd-theme
 sphinxcontrib-mockautodoc
 numpydoc
+nbsphinx
+nbsphinx-link
 #

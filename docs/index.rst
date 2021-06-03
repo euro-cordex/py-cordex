@@ -8,7 +8,7 @@ Welcome to Cordex Python Package's documentation!
    readme
    installation
    usage
-   examples
+   domains
    contributing
    authors
    history

@@ -71,16 +71,6 @@ If you want to contribute, I recommend cloning the repository and installing the
 
 This will install the package but you can still edit it and you don't need the package in your :code:`PYTHONPATH`
 
-Highlights
-----------
-
-Use the domain module to create Cordex domains safe and easy:
-
-.. code-block:: python
-
-    from cordex import domain as dm
-    eur11 = domain('EUR-11')
-    
 
 Requirements
 ------------
