@@ -189,15 +189,15 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat,
     """
 
     # Convert degrees to radians
-    lon = lon * np.deg2rad
-    lat = lat * np.deg2rad
+    lon = np.deg2rad(lon)
+    lat = np.deg2rad(lat)
 
     theta = 90. - np_lat # Rotation around y-axis
     phi = np_lon + 180.  # Rotation around z-axis
 
     # Convert degrees to radians
-    phi = phi * np.deg2rad
-    theta = theta * np.deg2rad
+    phi = np.deg2rad(phi)
+    theta = np.deg2rad(theta)
 
     # Convert from spherical to cartesian coordinates
     x = np.cos(lon) * np.cos(lat)
@@ -236,8 +236,8 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat,
     lat_new = np.arcsin(z_new)
 
     # Convert radians back to degrees
-    lon_new = lon_new * np.rad2deg
-    lat_new = lat_new * np.rad2deg
+    lon_new = np.rad2deg(lon_new)
+    lat_new = np.rad2deg(lat_new)
 
     return lon_new, lat_new
 
