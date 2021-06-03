@@ -41,6 +41,7 @@ extensions = [
         "sphinxcontrib.mockautodoc",
         "numpydoc",
         "nbsphinx",
+        "nbsphinx_link",
 ]
 
 autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
