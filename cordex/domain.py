@@ -21,8 +21,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from .tables import domains as TABLES
-from . import tables
+from .tables import domains as tables
 from . import cf
 from . import utils
 
@@ -43,12 +42,12 @@ def domain_names(table_name=None):
 
     """
     if table_name:
-        return list(TABLES[table_name].index)
+        return list(tables[table_name].index)
     else:
-        return list(pd.concat(TABLES.values()).index)
+        return list(pd.concat(tables.values()).index)
 
 
-def cordex_domain(short_name, dummy=False, tables=list(TABLES.values())):
+def cordex_domain(short_name, dummy=False, tables=list(tables.values())):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -106,7 +105,7 @@ def create_dataset(nlon, nlat, dlon, dlat, ll_lon, ll_lat,
     return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy)
 
 
-def domain_info(short_name, tables=list(TABLES.values())):
+def domain_info(short_name, tables=list(tables.values())):
     """Returns a dictionary containg the domain grid definitions.
 
     Returns a dictionary with grid information according to the
