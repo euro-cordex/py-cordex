@@ -27,7 +27,28 @@ from . import cf
 from . import utils
 
 
-def cordex_domain(short_name, dummy=False, **kwargs):
+
+def domain_names(table_name=None):
+    """Returns a list of short names of all availabe Cordex domains
+
+    Parameters
+    ----------
+    table_name:
+        Only return domain names from this table.
+
+    Returns
+    -------
+    domain names : list
+        List of available cordex domains.
+
+    """
+    if table_name:
+        return list(TABLES[table_name].index)
+    else:
+        return list(pd.concat(TABLES.values()).index)
+
+
+def cordex_domain(short_name, dummy=False, tables=list(TABLES.values())):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -38,6 +59,10 @@ def cordex_domain(short_name, dummy=False, **kwargs):
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
+    tables: dataframe or list of dataframes
+        Tables from which to look up the grid information. Index in the table
+        should be the short name of the domain, e.g., `EUR-11`. If no table is
+        provided, all standard tables will be searched.
 
     Returns
     -------
@@ -45,11 +70,14 @@ def cordex_domain(short_name, dummy=False, **kwargs):
         Dataset containing the coordinates.
 
     """
-    config = pd.concat(TABLES.values()).loc[short_name]
+    if len(tables) > 1:
+        config = pd.concat(tables).loc[short_name]
+    else:
+        config = tables.loc[short_name]
     return create_dataset(**config, dummy=dummy)
 
 
-def create_dataset(nlon, nlat, dlon, dlat, ll_lon, ll_lat, 
+def create_dataset(nlon, nlat, dlon, dlat, ll_lon, ll_lat,
         pollon, pollat, dummy=False,  **kwargs):
     """Create domain dataset from grid information.
 
@@ -76,6 +104,32 @@ def create_dataset(nlon, nlat, dlon, dlat, ll_lon, ll_lat,
     lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
     pole = _grid_mapping(pollon, pollat)
     return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy)
+
+
+def domain_info(short_name, tables=list(TABLES.values())):
+    """Returns a dictionary containg the domain grid definitions.
+
+    Returns a dictionary with grid information according to the
+    Cordex archive specifications.
+
+    See https://is-enes-data.github.io/cordex_archive_specifications.pdf
+
+    Parameters
+    ----------
+    short_name:
+        Name of the Cordex Domain.
+
+    Returns
+    -------
+    domain info : dict
+        Dictionary containing the grid information.
+
+    """
+    if len(tables) > 1:
+        config = pd.concat(tables).loc[short_name]
+    else:
+        config = tables.loc[short_name]
+    return {**{'short_name':short_name}, **dict(**config)}
 
 
 def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attrs=None):
