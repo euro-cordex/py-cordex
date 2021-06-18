@@ -29,6 +29,14 @@ cordex.cli module
    :undoc-members:
    :show-inheritance:
 
+cordex.data module
+------------------
+
+.. automodule:: cordex.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 cordex.domain module
 --------------------
 
@@ -41,6 +49,14 @@ cordex.esgf\_access module
 --------------------------
 
 .. automodule:: cordex.esgf_access
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cordex.shapes module
+--------------------
+
+.. automodule:: cordex.shapes
    :members:
    :undoc-members:
    :show-inheritance:
