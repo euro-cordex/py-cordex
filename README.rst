@@ -2,6 +2,8 @@
 Cordex Python Package
 =====================
 
+.. image:: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml/badge.svg
+    :target: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml
 
 .. image:: https://img.shields.io/pypi/v/py-cordex.svg
     :target: https://pypi.python.org/pypi/py-cordex
