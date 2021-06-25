@@ -22,14 +22,13 @@ DKRZ_ESG_URL = 'https://{}/esg-search'.format(DKRZ_HOST)
 #cordex  output  EUR-11  GERICS  ECMWF-ERAINT  evaluation  r1i1p1  REMO2015  v1  day  tasmax  v20180813
 CORDEX_COLUMNS = ['project_id', 'product', 'domain', 'institute', 'driving_model_id', 'experiment_id', 'member', 'model_id', 'version', 'frequency', 'variable', 'date', 'host']
 CMIP5_COLUMNS = ['project_id', 'product', 'domain', 'institute', 'driving_model_id', 'experiment_id', 'member', 'model_id', 'version', 'frequency', 'variable', 'date']
-
-COLUMNS  = {'cordex': CORDEX_COLUMNS,
-           'cmip5': CMIP5_COLUMNS}
+CMIP6_COLUMNS = ['project_id', 'product', 'domain', 'institute', 'driving_model_id', 'experiment_id', 'member', 'model_id', 'version', 'frequency', 'variable', 'date']
 
 
 def logon(host=DKRZ_HOST):
     """logon to ESGF Host.
     """
+    from pyesgf.logon import LogonManager
     print('logon to: '.format(host))
     lm = LogonManager()
     lm.logoff()

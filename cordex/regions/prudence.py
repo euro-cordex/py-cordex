@@ -8,7 +8,7 @@ df = pd.read_csv("https://raw.githubusercontent.com/euro-cordex/tables/master/re
 
 def _create_polygons(df):
     from shapely.geometry import Polygon
-    return [ Polygon(get_vertices(area)) for area in df.index ]
+    return [ Polygon(_get_vertices(area)) for area in df.index ]
 
 
 def _get_vertices(df, area):
@@ -19,7 +19,7 @@ def _get_vertices(df, area):
 
 def _create_region(df, area):
     import regionmask
-    polygon = get_vertices(df, area)
+    polygon = _get_vertices(df, area)
     return regionmask.Regions([polygon])
 
 

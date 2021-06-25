@@ -12,6 +12,7 @@ def get_tempfile():
 
 def copy_dataset(src, varname=None, timestep=None, destination=None):
     """copy an existing NetCDF dataset on disk"""
+    from netCDF4 import Dataset
     if varname is None:
         variables = src.variables
     else:
