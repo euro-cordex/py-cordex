@@ -1,4 +1,5 @@
 from pooch import retrieve
+
 ##
 ##
 ### Download the file and save it locally. Running this again will not cause
@@ -33,7 +34,7 @@ GOODBOY = pooch.create(
     # Pooches are versioned so that you can use multiple versions of a
     # package simultaneously. Use PEP440 compliant version number. The
     # version will be appended to the path.
-    #version=version,
+    # version=version,
     # If a version as a "+XX.XXXXX" suffix, we'll assume that this is a dev
     # version and replace the version with this string.
     version_dev="master",
@@ -43,33 +44,32 @@ GOODBOY = pooch.create(
     # pooch. Keys are the file names (relative to *base_url*) and values
     # are their respective SHA256 hashes. Files will be downloaded
     # automatically when needed (see fetch_gravity_data).
-    registry={"vg2500_01-01.gk3.shape.zip": "md5:5a1a86cd131decd9cf116dbfc1a66f17"}
+    registry={"vg2500_01-01.gk3.shape.zip": "md5:5a1a86cd131decd9cf116dbfc1a66f17"},
 )
 # You can also load the registry from a file. Each line contains a file
 # name and it's sha256 hash separated by a space. This makes it easier to
 # manage large numbers of data files. The registry file should be packaged
 # and distributed with your software.
-#GOODBOY.load_registry(
+# GOODBOY.load_registry(
 #    pkg_resources.resource_stream("mypackage", "registry.txt")
-#)
+# )
 
 
 # Define functions that your users can call to get back the data in memory
 def fetch(dataset):
     """
-    Load dataset. 
+    Load dataset.
     """
     # Fetch the path to a file in the local storage. If it's not there,
     # we'll download it.
     fname = GOODBOY.fetch(dataset)
     # Load it with numpy/pandas/etc
-    #data = pandas.read_csv(fname)
+    # data = pandas.read_csv(fname)
     return fname
 
 
 def fetch_vg2500():
-    """Fetch Germany Verwaltungsgebiete 1:2,500,000
-    """
+    """Fetch Germany Verwaltungsgebiete 1:2,500,000"""
     fname = retrieve(
         url="https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/vg2500_01-01.gk3.shape.zip",
         known_hash="md5:5a1a86cd131decd9cf116dbfc1a66f17",

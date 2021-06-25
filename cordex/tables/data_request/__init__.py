@@ -1,3 +1,1 @@
-
-
-tables = {'cmip5': 'cordex-cmip5.csv'}
+tables = {"cmip5": "cordex-cmip5.csv"}

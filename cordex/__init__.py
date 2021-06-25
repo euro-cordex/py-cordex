@@ -6,14 +6,11 @@ try:
     dist_name = "py-cordex"
     __version__ = get_distribution(dist_name).version
 except DistributionNotFound:
-    __version__ = 'unknown'
+    __version__ = "unknown"
 finally:
     del get_distribution, DistributionNotFound
 
 
-from .domain import (
-        cordex_domain, 
-        create_dataset, rotated_coord_transform 
-        )
+from .domain import cordex_domain, create_dataset, rotated_coord_transform
 
 from .regions import prudence
