@@ -6,20 +6,12 @@ Subpackages
 
 .. toctree::
 
-   cordex.plot
+   cordex.core
+   cordex.domains
    cordex.regions
-   cordex.tables
 
 Submodules
 ----------
-
-cordex.cf module
-----------------
-
-.. automodule:: cordex.cf
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 cordex.cli module
 -----------------
@@ -33,14 +25,6 @@ cordex.data module
 ------------------
 
 .. automodule:: cordex.data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-cordex.domain module
---------------------
-
-.. automodule:: cordex.domain
    :members:
    :undoc-members:
    :show-inheritance:
@@ -65,14 +49,6 @@ cordex.skeleton module
 ----------------------
 
 .. automodule:: cordex.skeleton
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-cordex.utils module
--------------------
-
-.. automodule:: cordex.utils
    :members:
    :undoc-members:
    :show-inheritance:

@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from .tables import domains as tables
+from ..domains import read_cordex_tables
 from . import cf
 from . import utils
 
@@ -41,12 +41,12 @@ def domain_names(table_name=None):
 
     """
     if table_name:
-        return list(tables[table_name].index)
+        return list(read_cordex_tables()[table_name].index)
     else:
-        return list(pd.concat(tables.values()).index)
+        return list(pd.concat(read_cordex_tables().values()).index)
 
 
-def cordex_domain(short_name, dummy=False, tables=list(tables.values())):
+def cordex_domain(short_name, dummy=False, tables=None):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -57,7 +57,7 @@ def cordex_domain(short_name, dummy=False, tables=list(tables.values())):
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    tables: dataframe or list of dataframes
+    tables: dataframe or list of dataframes, default: cordex_tables
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
         provided, all standard tables will be searched.
@@ -68,6 +68,8 @@ def cordex_domain(short_name, dummy=False, tables=list(tables.values())):
         Dataset containing the coordinates.
 
     """
+    if tables is None:
+        tables = list(read_cordex_tables().values())
     if len(tables) > 1:
         config = pd.concat(tables).loc[short_name]
     else:
@@ -105,7 +107,7 @@ def create_dataset(
     return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy)
 
 
-def domain_info(short_name, tables=list(tables.values())):
+def domain_info(short_name, tables=None):
     """Returns a dictionary containg the domain grid definitions.
 
     Returns a dictionary with grid information according to the
@@ -124,6 +126,8 @@ def domain_info(short_name, tables=list(tables.values())):
         Dictionary containing the grid information.
 
     """
+    if tables is None:
+        tables = list(read_cordex_tables().values())
     if len(tables) > 1:
         config = pd.concat(tables).loc[short_name]
     else:

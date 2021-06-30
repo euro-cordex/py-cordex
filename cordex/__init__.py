@@ -11,6 +11,8 @@ finally:
     del get_distribution, DistributionNotFound
 
 
-from .domain import cordex_domain, create_dataset, rotated_coord_transform
+from . import core 
+from .core.domain import cordex_domain, create_dataset, rotated_coord_transform, domain_info
 
-from .regions import prudence
+from .core.regions import prudence
+from .domains import domains
