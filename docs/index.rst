@@ -12,7 +12,6 @@ Welcome to Cordex Python Package's documentation!
    contributing
    authors
    history
-   modules
    api
 
 Indices and tables
