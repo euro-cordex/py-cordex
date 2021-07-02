@@ -33,9 +33,7 @@ Python tools for the Cordex Community.
 Why
 ---
 
-The goal of this software package is to have a unified common code base for typical and reacurring tasks in the `CORDEX <https://cordex.org/>`_ community.
-More precisely, there are several tasks related to regional climate model data processing that are model independent and could become unified. This should
-enable better reproducability and exchange of scientific analyses in the community.
+Python tools to work with `CORDEX <https://cordex.org/>`_ domains and meta data.
 
 Meta Data
 ^^^^^^^^^
