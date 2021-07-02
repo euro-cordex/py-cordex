@@ -15,4 +15,4 @@ from . import core
 from .core.domain import cordex_domain, create_dataset, rotated_coord_transform, domain_info
 
 from .core.regions import prudence
-from .domains import domains
+from .tables import domains

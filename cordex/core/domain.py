@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from ..domains import read_cordex_tables
+from ..tables import domains 
 from . import cf
 from . import utils
 
@@ -41,9 +41,9 @@ def domain_names(table_name=None):
 
     """
     if table_name:
-        return list(read_cordex_tables()[table_name].index)
+        return list(domains.tables[table_name].index)
     else:
-        return list(pd.concat(read_cordex_tables().values()).index)
+        return list(domains.table.index)
 
 
 def cordex_domain(short_name, dummy=False, tables=None):
@@ -69,8 +69,8 @@ def cordex_domain(short_name, dummy=False, tables=None):
 
     """
     if tables is None:
-        tables = list(read_cordex_tables().values())
-    if len(tables) > 1:
+        tables = domains.table 
+    if isinstance(tables, list):
         config = pd.concat(tables).loc[short_name]
     else:
         config = tables.loc[short_name]
@@ -127,8 +127,8 @@ def domain_info(short_name, tables=None):
 
     """
     if tables is None:
-        tables = list(read_cordex_tables().values())
-    if len(tables) > 1:
+        tables = domains.table 
+    if isinstance(tables, list):
         config = pd.concat(tables).loc[short_name]
     else:
         config = tables.loc[short_name]
