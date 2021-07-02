@@ -1,11 +1,8 @@
-from . import _address as addr
-from . import mask
-
-"""convert to WGS84 latitude-longitude projection"""
-WGS84 = "EPSG:4326"
+from ._resources import fetch_vg2500
+from . import _regions
 
 
-class VG2500:
+class Germany:
     """VG2500 Deutschland Verwaltungsgrenzen
 
     ADE Administrative Ebene
@@ -25,15 +22,24 @@ class VG2500:
     """
 
     @staticmethod
-    def geodata(domain="lan"):
-        """ """
-        url = addr.VG2500(domain)
-        geodata = mask.get_geodata(url)
+    def _filename(domain):
+        # url = "https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/vg2500_01-01.gk3.shape.zip"
+        shp_file = "!vg2500_01-01.gk3.shape/vg2500/vg2500_{}.shp".format(domain)
+        fname = fetch_vg2500()
+        return "zip://" + fname + shp_file
+
+    @classmethod
+    def geodata(cls, domain="lan"):
+        """Returns a GeoDataFrame object."""
+        url = cls._filename(domain)
+        geodata = _regions.get_geodataframe(url)
         geodata["name"] = geodata["ARS"] + "_" + geodata["GEN"]
         return geodata
 
     @classmethod
     def regionmask(cls, domain="lan"):
-        return mask.get_regionmask(
-            cls.geodata(domain), names="name", abbrevs="_from_name"
-        )
+        """Returns a maks."""
+        return _regions.get_regionmask(cls.geodata(domain), names="name", abbrevs="_from_name")
+
+
+germany = Germany()

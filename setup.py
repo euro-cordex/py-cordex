@@ -10,6 +10,13 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+# get version
+with open("cordex/version.py") as f:
+    line = f.readline().strip().replace(" ", "").replace('"', "")
+    version = line.split("=")[1]
+    __version__ = version
+
+
 requirements = [ 'numpy', 'pandas', 'xarray', 'netCDF4' ]
 
 setup_requirements = [ ]
@@ -49,6 +56,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/euro-cordex/cordex',
-    version='0.1.2',
+    #version='0.1.2',
     zip_safe=False,
 )

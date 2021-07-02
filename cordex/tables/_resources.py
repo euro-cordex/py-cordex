@@ -4,7 +4,7 @@ import pooch
 
 base_url = "https://raw.githubusercontent.com/euro-cordex/tables/master/"
 
-cache_url = "~/.cordex"
+cache_url = "~/.py-cordex"
 
 DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS

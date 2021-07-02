@@ -1,33 +1,14 @@
 from pooch import retrieve
-
-##
-##
-### Download the file and save it locally. Running this again will not cause
-### a download. Pooch will check the hash (checksum) of the downloaded file
-### against the given value to make sure it's the right file (not corrupted
-### or outdated).
-##fname = retrieve(
-##    url="https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/vg2500_01-01.gk3.shape.zip",
-##    known_hash="md5:5a1a86cd131decd9cf116dbfc1a66f17",
-##)
-
-
-"""
-Module mypackage/datasets.py
-"""
-import pkg_resources
 import pandas
 import pooch
 
-# Get the version string from your project. You have one of these, right?
-from . import __version__ as version
-
+cache_url = "~/.py-cordex"
 
 # Create a new friend to manage your sample data storage
-GOODBOY = pooch.create(
+REGION_RESOURCE = pooch.create(
     # Folder where the data will be stored. For a sensible default, use the
     # default cache folder for your OS.
-    path=pooch.os_cache("py-cordex"),
+    path=cache_url, #pooch.os_cache("py-cordex"),
     # Base URL of the remote data store. Will call .format on this string
     # to insert the version (see below).
     base_url="https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/",
@@ -71,7 +52,18 @@ def fetch(dataset):
 def fetch_vg2500():
     """Fetch Germany Verwaltungsgebiete 1:2,500,000"""
     fname = retrieve(
+        path=cache_url,
         url="https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/vg2500_01-01.gk3.shape.zip",
         known_hash="md5:5a1a86cd131decd9cf116dbfc1a66f17",
+    )
+    return fname
+
+
+def fetch_prudence():
+    """Fetch Prudence regions table"""
+    fname = retrieve(
+        path=cache_url,
+        url="https://raw.githubusercontent.com/euro-cordex/tables/master/regions/prudence.csv",
+        known_hash="d87691a873110c9e3e4460a0ed35cd15f11f2a42aa86aced76feae9e87e8bed2",
     )
     return fname
