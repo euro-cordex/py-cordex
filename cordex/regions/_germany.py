@@ -35,7 +35,7 @@ class Germany:
         return "zip://" + fname + shp_file
 
     @classmethod
-    def geodata(cls, domain="lan"):
+    def geodataframe(cls, domain="lan"):
         """Returns a GeoDataFrame object."""
         url = cls._filename(domain)
         geodata = _regions.get_geodataframe(url)

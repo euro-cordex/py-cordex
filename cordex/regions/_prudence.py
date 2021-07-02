@@ -8,7 +8,7 @@ from ._regions import WGS84
 def _create_polygons(df):
     from shapely.geometry import Polygon
 
-    return [Polygon(_get_vertices(area)) for area in df.index]
+    return [Polygon(_get_vertices(df, area)) for area in df.index]
 
 
 def _get_vertices(df, area):
@@ -38,7 +38,7 @@ def regions(df):
 
 
 def geodataframe(df, crs=WGS84):
-    import geopadnas as gpd
+    import geopandas as gpd
 
     return gpd.GeoDataFrame(
         df.drop(["west", "south", "east", "north"], axis=1),
@@ -64,8 +64,8 @@ class Prudence:
     def df(self):
         return pd.read_csv(fetch_prudence(), na_filter=False, index_col="area")
 
-    def geodata(self):
-        return geotdataframe(self.df)
+    def geodataframe(self):
+        return geodataframe(self.df)
 
     def regionmask(self):
         return regions(self.df)
