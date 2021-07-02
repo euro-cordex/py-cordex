@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from ..tables import domains 
+from ..tables import domains
 from . import cf
 from . import utils
 
@@ -69,7 +69,7 @@ def cordex_domain(short_name, dummy=False, tables=None):
 
     """
     if tables is None:
-        tables = domains.table 
+        tables = domains.table
     if isinstance(tables, list):
         config = pd.concat(tables).loc[short_name]
     else:
@@ -127,7 +127,7 @@ def domain_info(short_name, tables=None):
 
     """
     if tables is None:
-        tables = domains.table 
+        tables = domains.table
     if isinstance(tables, list):
         config = pd.concat(tables).loc[short_name]
     else:

@@ -8,9 +8,9 @@ cache_url = "~/.py-cordex"
 
 DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
-    path=cache_url, #pooch.os_cache("cordex"),
+    path=cache_url,  # pooch.os_cache("cordex"),
     # The remote data is on Github
-    base_url= base_url + "domains/",
+    base_url=base_url + "domains/",
     registry={
         "cordex.csv": "115acce1612ff7d0908ba6693d3ef3892ee01f8656239b7383abdd633a3cbd7d",
         "cordex-high-res.csv": "a9b69a4a0db7e0b5920fc5ae4b030b770697f33e993f4b8fe39bd3a8093bad7c",
@@ -22,14 +22,13 @@ DOMAIN_RESOURCE = pooch.create(
 
 REGION_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
-    path=cache_url, #pooch.os_cache("cordex"),
+    path=cache_url,  # pooch.os_cache("cordex"),
     # The remote data is on Github
-    base_url= base_url + "regions/",
+    base_url=base_url + "regions/",
     registry={
-        "prudence.csv": "d87691a873110c9e3e4460a0ed35cd15f11f2a42aa86aced76feae9e87e8bed2",       
+        "prudence.csv": "d87691a873110c9e3e4460a0ed35cd15f11f2a42aa86aced76feae9e87e8bed2",
     },
 )
-
 
 
 def fetch_remote_table(name, resource):
@@ -47,19 +46,24 @@ def read_remote_table(name, resource, index_col=None):
 
     return pd.read_csv(fname, index_col=index_col)
 
-    
+
 def read_region_table(name):
-    
+
     return read_remote_table(name, resource=REGION_RESOURCE, index_col="area")
 
 
 def read_cordex_domain_tables():
-   
+
     resource = DOMAIN_RESOURCE
-    return {table.split(".")[0]: read_remote_table(table, resource, index_col="short_name") 
-            for table in resource.registry.keys()}
+    return {
+        table.split(".")[0]: read_remote_table(table, resource, index_col="short_name")
+        for table in resource.registry.keys()
+    }
 
 
 def region_tables():
-    
-    return {table.split(".")[0]: read_region_table(table) for table in REGION_RESOURCE.registry.keys()}
+
+    return {
+        table.split(".")[0]: read_region_table(table)
+        for table in REGION_RESOURCE.registry.keys()
+    }

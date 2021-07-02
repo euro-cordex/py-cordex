@@ -17,3 +17,12 @@ Top-level functions
    domain_info
    create_dataset
    rotated_coord_transform
+
+Regions within Euro-Cordex
+==========================
+
+.. autosummary::
+   :toctree: generated/
+
+   regions.germany
+   regions.prudence

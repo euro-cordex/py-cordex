@@ -7,8 +7,8 @@ Subpackages
 .. toctree::
 
    cordex.core
-   cordex.domains
    cordex.regions
+   cordex.tables
 
 Submodules
 ----------
@@ -17,14 +17,6 @@ cordex.cli module
 -----------------
 
 .. automodule:: cordex.cli
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-cordex.data module
-------------------
-
-.. automodule:: cordex.data
    :members:
    :undoc-members:
    :show-inheritance:
@@ -45,18 +37,18 @@ cordex.shapes module
    :undoc-members:
    :show-inheritance:
 
-cordex.skeleton module
-----------------------
-
-.. automodule:: cordex.skeleton
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 cordex.variable module
 ----------------------
 
 .. automodule:: cordex.variable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cordex.version module
+---------------------
+
+.. automodule:: cordex.version
    :members:
    :undoc-members:
    :show-inheritance:
