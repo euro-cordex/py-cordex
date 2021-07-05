@@ -73,7 +73,7 @@ class Prudence:
         return regions(self.df)
 
     def mask_3D(self, lon, lat, **kwargs):
-        return mask_3D(self.regionmask(), lon, lat, **kwargs)
+        return mask_3D(self.regionmask, lon, lat, **kwargs)
 
 
 
