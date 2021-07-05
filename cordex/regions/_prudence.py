@@ -48,8 +48,8 @@ def geodataframe(df, crs=WGS84):
     )
 
 
-def mask_3D(lon, lat, **kwargs):
-    regs = regions()
+def mask_3D(regions, lon, lat, **kwargs):
+    regs = regions
     masks = [regs[[i]].mask_3D(lon, lat, **kwargs) for i in regs.numbers]
     return xr.concat(masks, dim="region")
 
@@ -69,6 +69,10 @@ class Prudence:
 
     def regionmask(self):
         return regions(self.df)
+
+    def mask_3D(self, lon, lat, **kwargs):
+        return mask_3D(self.regionmask(), lon, lat, **kwargs)
+
 
 
 prudence = Prudence()
