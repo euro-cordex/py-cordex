@@ -46,7 +46,7 @@ def domain_names(table_name=None):
         return list(domains.table.index)
 
 
-def cordex_domain(short_name, dummy=False, tables=None):
+def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -61,6 +61,9 @@ def cordex_domain(short_name, dummy=False, tables=None):
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
         provided, all standard tables will be searched.
+    attrs: str or dict
+        Global attributes that should be added to the dataset. If `attrs='CORDEX'`
+        a set of standard CF global attributes.
 
     Returns
     -------
@@ -68,17 +71,20 @@ def cordex_domain(short_name, dummy=False, tables=None):
         Dataset containing the coordinates.
 
     """
+    if attrs is None:
+        attrs = {}
     if tables is None:
         tables = domains.table
     if isinstance(tables, list):
         config = pd.concat(tables).loc[short_name]
     else:
         config = tables.loc[short_name]
-    return create_dataset(**config, dummy=dummy)
+    return create_dataset(**config, name=short_name, dummy=dummy, attrs=attrs)
 
 
 def create_dataset(
-    nlon, nlat, dlon, dlat, ll_lon, ll_lat, pollon, pollat, dummy=False, **kwargs
+    nlon, nlat, dlon, dlat, ll_lon, ll_lat, pollon, pollat, 
+    name=None, dummy=False, attrs=None, **kwargs
 ):
     """Create domain dataset from grid information.
 
@@ -100,11 +106,24 @@ def create_dataset(
         pol longitude (degrees)
     pollat : float
         pol latitude (degrees)
+    dummy : str or logical
+        Name of dummy field, if dummy=topo, the cdo topo operator will be
+        used to create some dummy topography data. dummy data is useful for
+        looking at the domain with ncview.
+    attrs: str or dict
+        Global attributes that should be added to the dataset. If `attrs='CORDEX'`
+        a set of standard CF global attributes.
     """
+    if attrs == 'CORDEX':
+        attrs=cf.DEFAULT_CORDEX_ATTRS
+    elif attrs is None:
+        attrs = {}
+    if name:
+        attrs['CORDEX_domain'] = name
     rlon, rlat = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
     lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
     pole = _grid_mapping(pollon, pollat)
-    return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy)
+    return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy, attrs=attrs)
 
 
 def domain_info(short_name, tables=None):
