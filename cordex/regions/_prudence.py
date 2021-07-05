@@ -64,9 +64,11 @@ class Prudence:
     def df(self):
         return pd.read_csv(fetch_prudence(), na_filter=False, index_col="area")
 
+    @property
     def geodataframe(self):
         return geodataframe(self.df)
 
+    @property
     def regionmask(self):
         return regions(self.df)
 
