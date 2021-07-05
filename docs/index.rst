@@ -9,6 +9,7 @@ Welcome to Cordex Python Package's documentation!
    installation
    usage
    domains
+   science
    contributing
    authors
    history
