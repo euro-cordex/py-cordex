@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Lars Buntemeyer <lars.buntemeyer@hzg.de>
+* Lars Buntemeyer <lars.buntemeyer@hereon.de>
 
 Contributors
 ------------
