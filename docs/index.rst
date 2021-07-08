@@ -12,6 +12,7 @@ Welcome to Cordex Python Package's documentation!
    science
    contributing
    authors
+   whats_new
    history
    api
 
