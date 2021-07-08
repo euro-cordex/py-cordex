@@ -1,4 +1,4 @@
-.. currentmodule:: pyremo
+.. currentmodule:: cordex
 
 What's New
 ==========
@@ -10,6 +10,15 @@ What's New
 
 v0.2.0 (unreleased)
 -------------------
+
+New Features
+~~~~~~~~~~~~
+- Included new sub regions (germany and prudence) for masking and analyis
+  
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Tables are removed from the package and stored in an extra github repo.
+- Tables are download at first access using pooch.
 
 v0.1.2 (3 June 2021)
 --------------------
