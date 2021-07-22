@@ -70,6 +70,15 @@ def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
     Dataset : xarray.core.Dataset
         Dataset containing the coordinates.
 
+    Example
+    -------
+
+    To create a cordex rotated pole domain dataset, you can use ,e.g.,::
+
+        import cordex as cx
+
+        eur11 = cx.cordex_domain('EUR-11')
+
     """
     if attrs is None:
         attrs = {}
@@ -83,8 +92,18 @@ def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
 
 
 def create_dataset(
-    nlon, nlat, dlon, dlat, ll_lon, ll_lat, pollon, pollat, 
-    name=None, dummy=False, attrs=None, **kwargs
+    nlon,
+    nlat,
+    dlon,
+    dlat,
+    ll_lon,
+    ll_lat,
+    pollon,
+    pollat,
+    name=None,
+    dummy=False,
+    attrs=None,
+    **kwargs
 ):
     """Create domain dataset from grid information.
 
@@ -114,12 +133,12 @@ def create_dataset(
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
     """
-    if attrs == 'CORDEX':
-        attrs=cf.DEFAULT_CORDEX_ATTRS
+    if attrs == "CORDEX":
+        attrs = cf.DEFAULT_CORDEX_ATTRS
     elif attrs is None:
         attrs = {}
     if name:
-        attrs['CORDEX_domain'] = name
+        attrs["CORDEX_domain"] = name
     rlon, rlat = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
     lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
     pole = _grid_mapping(pollon, pollat)
