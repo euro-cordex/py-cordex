@@ -336,3 +336,41 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     lat_new = np.rad2deg(lat_new)
 
     return lon_new, lat_new
+
+
+def map_crs(lon, lat, projection, transform=None):
+    """coordinate transformation of longitude and latitude
+
+    Transforms the coordinates lat, lon from the transform crs
+    into the projection crs using cartopy.crs.
+
+    Parameters
+    ----------
+    lon : float array like
+        Longitude coordinate.
+    lat : float array like
+        Latitude coordinate.
+    projection : cartopy.crs
+        Target coordinate reference system into which lat and lon
+        should be projected.
+    transform : cartopy.crs
+        Source coordinate reference system in which lat and lon
+        are defined.
+
+    Returns
+    -------
+    lon : array like
+        Projected longitude coordinate.
+    lat : array like
+        Projected latitude coordinate.
+
+    """
+
+    from cartopy import crs as ccrs
+
+    if transform is None:
+        transform = ccrs.PlateCarree()
+    latlon = ccrs.PlateCarree()
+    lon_stack, lat_stack = xr.broadcast(lon, lat)
+    result = latlon.transform_points(projection, lon_stack.values, lat_stack.values)
+    return result[:, :, 0], result[:, :, 1]
