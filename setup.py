@@ -17,7 +17,8 @@ with open("cordex/version.py") as f:
     __version__ = version
 
 
-requirements = [ 'numpy', 'pandas', 'xarray', 'netCDF4' ]
+##requirements = [ 'numpy', 'pandas', 'xarray', 'netCDF4' ]
+requirements = open("requirements.txt").read().strip().split("\n")
 
 setup_requirements = [ ]
 
