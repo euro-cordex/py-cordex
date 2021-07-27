@@ -31,6 +31,17 @@ REGION_RESOURCE = pooch.create(
 )
 
 
+ECMWF_RESOURCE = pooch.create(
+    # Use the default cache folder for the OS
+    path=cache_url,  # pooch.os_cache("cordex"),
+    # The remote data is on Github
+    base_url=base_url + "ecmwf/",
+    registry={
+        "ecmwf_128.csv": "596761de21dd6cd304c65fd1d9ae1282779486bae1e73dd920bafbeedc0b7571",
+    },
+)
+
+
 def fetch_remote_table(name, resource):
     """
     uses pooch to cache files
@@ -66,4 +77,13 @@ def region_tables():
     return {
         table.split(".")[0]: read_region_table(table)
         for table in REGION_RESOURCE.registry.keys()
+    }
+
+
+def ecmwf_tables():
+
+    resource = ECMWF_RESOURCE
+    return {
+        table.split(".")[0]: read_remote_table(table, resource, index_col="code")
+        for table in ECMWF_RESOURCE.registry.keys()
     }

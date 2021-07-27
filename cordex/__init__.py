@@ -20,7 +20,7 @@ from .core.domain import (
     domain_info,
 )
 
-from .tables import domains
+from .tables import domains, ecmwf
 
 from .version import version
 

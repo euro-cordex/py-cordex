@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ._resources import read_cordex_domain_tables
+from ._resources import read_cordex_domain_tables, ecmwf_tables
 
 
 class read_cls:
@@ -20,3 +20,5 @@ class read_cls:
 
 
 domains = read_cls(read_cordex_domain_tables)
+
+ecmwf = read_cls(ecmwf_tables)
