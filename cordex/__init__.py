@@ -16,6 +16,7 @@ from .core.domain import (
     cordex_domain,
     create_dataset,
     rotated_coord_transform,
+    map_crs,
     domain_info,
 )
 

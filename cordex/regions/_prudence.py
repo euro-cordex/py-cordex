@@ -57,9 +57,10 @@ def mask_3D(regions, lon, lat, **kwargs):
 class Prudence:
     """Prudence regions in Europe.
 
-    Prediction of Regional scenarios and Uncertainties for Defining EuropeaN 
+    Prediction of Regional scenarios and Uncertainties for Defining EuropeaN
     Climate change risks and Effects.
     """
+
     @property
     def df(self):
         return pd.read_csv(fetch_prudence(), na_filter=False, index_col="area")
@@ -74,7 +75,6 @@ class Prudence:
 
     def mask_3D(self, lon, lat, **kwargs):
         return mask_3D(self.regionmask, lon, lat, **kwargs)
-
 
 
 prudence = Prudence()

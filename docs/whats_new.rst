@@ -13,7 +13,8 @@ v0.2.0 (unreleased)
 
 New Features
 ~~~~~~~~~~~~
-- Included new sub regions (germany and prudence) for masking and analyis
+- Included new sub regions (germany and prudence) for masking and analysis.
+- Included function ``map_crs`` for coordinate transformations using cartopy.
   
 Internal Changes
 ~~~~~~~~~~~~~~~~

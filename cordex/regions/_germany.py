@@ -7,7 +7,7 @@ class Germany:
 
     Attributes
     ----------
-    ADE : 
+    ADE :
         Administrative Ebene
         Werteübersicht: 1 = Staat 2 = Land 3 = Regierungsbezirk 4 = Kreis
     ARS :
@@ -40,11 +40,12 @@ class Germany:
         url = cls._filename(domain)
         geodata = _regions.get_geodataframe(url)
         geodata["name"] = geodata["ARS"] + "_" + geodata["GEN"]
+        # geodata["name"] = geodata["ARS"]
         return geodata
 
     @classmethod
     def regionmask(cls, domain="lan"):
-        """Returns a maks."""
+        """Returns a mask."""
         return _regions.get_regionmask(
             cls.geodataframe(domain), names="name", abbrevs="_from_name"
         )
