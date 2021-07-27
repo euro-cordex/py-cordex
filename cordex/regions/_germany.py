@@ -46,7 +46,7 @@ class Germany:
     def regionmask(cls, domain="lan"):
         """Returns a maks."""
         return _regions.get_regionmask(
-            cls.geodata(domain), names="name", abbrevs="_from_name"
+            cls.geodataframe(domain), names="name", abbrevs="_from_name"
         )
 
 
