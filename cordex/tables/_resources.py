@@ -37,7 +37,7 @@ ECMWF_RESOURCE = pooch.create(
     # The remote data is on Github
     base_url=base_url + "ecmwf/",
     registry={
-        "ecmwf_128.csv": "596761de21dd6cd304c65fd1d9ae1282779486bae1e73dd920bafbeedc0b7571",
+        "ecmwf_128.csv": "7c29b13c2d74b9442b532268f7f4ed9eaf507cc21f4dc78242495bb387ce6ff4",
     },
 )
 
