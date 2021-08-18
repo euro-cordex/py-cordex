@@ -20,6 +20,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 - Tables are removed from the package and stored in an extra github repo.
 - Tables are download at first access using pooch.
+- Using now conda environemt for testing (:pull:`18`).
 
 v0.1.2 (3 June 2021)
 --------------------
