@@ -20,15 +20,15 @@ jobs:
 
     steps:
     - name: Set environment variables
-        run: |
-          echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
-          echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
+      run: |
+        echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
+        echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
     - name: Cache conda
-        uses: actions/cache@v2
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{
-            hashFiles('ci/requirements/**.yml') }}
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{
+          hashFiles('ci/requirements/**.yml') }}
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
