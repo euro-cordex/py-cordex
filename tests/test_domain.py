@@ -15,7 +15,14 @@ def test_constructor():
     assert(eur11_user.equals(eur11))
 
 
-@requires_cartopy
+def test_domain_info():
+    import pandas as pd
+    info = {'short_name': 'EUR-11', 'region': 4, 'long_name': 'Europe', 'nlon': 424, 'nlat': 412, 'll_lon': -28.375, 'ur_lon': 18.155, 'll_lat': -23.375, 'ur_lat': 21.835, 'dlon': 0.11, 'dlat': 0.11, 'pollon': -162.0, 'pollat': 39.25}
+    table = pd.DataFrame.from_dict({key: [item] for key, item in info.items()}).set_index('short_name')
+    assert cx.domain_info('EUR-11', table) == info
+
+
+#@requires_cartopy
 def test_mapping():
     import cartopy.crs as ccrs
     eur11 = cx.cordex_domain('EUR-11')
@@ -26,4 +33,3 @@ def test_mapping():
 
     assert(np.allclose(lon1, lon2))
     assert(np.allclose(lat1, lat2))
-
