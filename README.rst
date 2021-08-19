@@ -45,8 +45,8 @@ Features
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
-Installation
-------------
+Installation from source
+------------------------
 
 You can install the package directly from github using pip:
 
