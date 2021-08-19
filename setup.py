@@ -56,7 +56,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/euro-cordex/cordex',
+    url='https://github.com/euro-cordex/py-cordex',
     version=__version__,
     zip_safe=False,
 )
