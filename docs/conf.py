@@ -45,6 +45,12 @@ extensions = [
         "IPython.sphinxext.ipython_console_highlighting"
 ]
 
+
+extlinks = {
+    "issue": ("https://github.com/euro-cordex/py-cordex/issues/%s", "GH"),
+    "pull": ("https://github.com/euro-cordex/py-cordex/pull/%s", "PR"),
+}
+
 autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
 
 autosummary_generate = True
