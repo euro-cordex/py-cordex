@@ -23,7 +23,7 @@ Cordex Python Package
 
 Python tools for the Cordex Community.
 
-|:point_right: Check out the `0.2.0a1 release <https://pypi.org/project/py-cordex/0.2.0a1/>`_ and let us know about any `issues <https://github.com/euro-cordex/py-cordex/issues>` you encounter.
+|:point_right: Check out the `0.2.0a1 release <https://pypi.org/project/py-cordex/0.2.0a1/>`_ and let us know about any `issues <https://github.com/euro-cordex/py-cordex/issues>`_ you encounter.
 
 .. code-block:: console
 
