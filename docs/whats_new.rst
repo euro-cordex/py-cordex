@@ -8,12 +8,12 @@ What's New
 
     import pyremo 
 
-v0.2.0 (unreleased)
--------------------
+v0.2.0 (28 October 2021)
+------------------------
 
 This is a new restructuring release, that cleanded a lot of things and includes
 much more documentation and example notebooks. All meta information is removed
-and accessed online using `pooch`.
+and accessed online. This version should be more open for contributions!
 
 New Features
 ~~~~~~~~~~~~
