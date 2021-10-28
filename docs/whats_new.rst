@@ -11,6 +11,10 @@ What's New
 v0.2.0 (unreleased)
 -------------------
 
+This is a new restructuring release, that cleanded a lot of things and includes
+much more documentation and example notebooks. All meta information is removed
+and accessed online using `pooch`.
+
 New Features
 ~~~~~~~~~~~~
 - Included new sub regions (germany and prudence) for masking and analysis.
@@ -21,6 +25,7 @@ Internal Changes
 - Tables are removed from the package and stored in an extra github repo.
 - Tables are download at first access using pooch.
 - Using now conda environemt for testing (:pull:`18`).
+- Restructured and cleaned dependencies (:pull:`21`).
 
 v0.1.2 (3 June 2021)
 --------------------
