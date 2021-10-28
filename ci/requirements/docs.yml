@@ -14,8 +14,6 @@ dependencies:
   - pip
   - sphinx_rtd_theme==0.4.3
   - sphinx==2.1.2
-  - sphinxcontrib
   - nbsphinx
   - nbsphinx-link
   - ipython
-  - ipykernel
