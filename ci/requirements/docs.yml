@@ -17,3 +17,5 @@ dependencies:
   - nbsphinx
   - nbsphinx-link
   - ipython
+  - pip:
+    - sphinxcontrib-mockautodoc
