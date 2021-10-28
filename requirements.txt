@@ -12,21 +12,18 @@
 # pip install -r requirements.txt
 # Remember to also add them in setup.cfg but unpinned.
 # Example:
-parse
 numpy
-pandas
 xarray
-netCDF4
-cdo
-urllib3
-xmltodict
-cdo
-tqdm
-sphinx-rtd-theme
-sphinxcontrib-mockautodoc
-numpydoc
-nbsphinx
-nbsphinx-link
-ipython
+#netCDF4
+#cdo
+#urllib3
+#cdo
+#tqdm
+#sphinx-rtd-theme
+#sphinxcontrib-mockautodoc
+#numpydoc
+#nbsphinx
+#nbsphinx-link
+#ipython
 pooch
 #
