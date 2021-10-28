@@ -14,16 +14,16 @@
 # Example:
 numpy
 xarray
-#netCDF4
-#cdo
-#urllib3
-#cdo
-#tqdm
-#sphinx-rtd-theme
-#sphinxcontrib-mockautodoc
-#numpydoc
-#nbsphinx
-#nbsphinx-link
-#ipython
+netCDF4
+cdo
+urllib3
+cdo
+tqdm
+sphinx-rtd-theme
+sphinxcontrib-mockautodoc
+numpydoc
+nbsphinx
+nbsphinx-link
+ipython
 pooch
 #
