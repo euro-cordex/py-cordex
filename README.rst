@@ -10,6 +10,9 @@ Cordex Python Package
 
 .. image:: https://img.shields.io/pypi/v/py-cordex.svg
     :target: https://pypi.python.org/pypi/py-cordex
+    
+.. image:: https://anaconda.org/conda-forge/py-cordex/badges/installer/conda.svg
+    :target: https://anaconda.org/conda-forge/py-cordex
 
 .. image:: https://readthedocs.org/projects/py-cordex/badge/?version=latest
     :target: https://py-cordex.readthedocs.io/en/latest/?badge=latest
