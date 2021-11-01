@@ -19,11 +19,11 @@ cdo
 urllib3
 cdo
 tqdm
-sphinx-rtd-theme
-sphinxcontrib-mockautodoc
+sphinx - rtd - theme
+sphinxcontrib - mockautodoc
 numpydoc
 nbsphinx
-nbsphinx-link
+nbsphinx - link
 ipython
 pooch
 #
