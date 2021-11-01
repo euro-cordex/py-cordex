@@ -8,13 +8,19 @@ Installation
 Stable release
 --------------
 
-To install Cordex Python Package, run this command in your terminal:
+We recommend installing `py-cordex` with conda:
+
+.. code-block:: console
+
+    conda install -c conda-forge py-cordex
+
+This is the preferred method to install Cordex Python Package, as it will always install the most recent stable release.
+
+However, you can also install by using pip:
 
 .. code-block:: console
 
     $ pip install py-cordex
-
-This is the preferred method to install Cordex Python Package, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -44,7 +50,7 @@ Once you have a copy of the source, you can install it with:
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ pip setup.py install
 
 
 .. _Github repo: https://github.com/euro-cordex/py-cordex
