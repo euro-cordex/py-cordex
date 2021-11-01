@@ -46,6 +46,16 @@ Features
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
+Installation
+------------
+
+We recommend installing `py-cordex` with conda:
+
+.. code-block:: console
+
+    conda install -c conda-forge py-cordex
+    
+
 Installation from source
 ------------------------
 
