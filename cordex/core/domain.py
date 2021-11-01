@@ -190,10 +190,8 @@ def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attr
     )
 
     for key, coord in ds.coords.items():
-        print(key)
         coord.encoding["_FillValue"] = None
         coord.attrs = cf.coords[key]
-        print(cf.coords[key])
 
     if dummy:
         if dummy is True:
