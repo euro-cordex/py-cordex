@@ -11,8 +11,8 @@ What's New
 v0.2.1 (01 November 2021)
 -------------------------
 
-Small bugfix release that updates the path to download germany shapefiles. Also
-added more tests (:pull:`24`).
+Small bugfix release that updates the path to download germany shapefiles (:pull:`24`).
+Also fixed coordinate attribute issues (:pull:`25`) and added a test.
 
 
 v0.2.0 (28 October 2021)
