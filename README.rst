@@ -67,7 +67,7 @@ You can install the package directly from github using pip:
     pip install git+https://github.com/euro-cordex/py-cordex
 
 
-If you want to contribute, please fork the repository to your github accound 
+If you want to contribute, please fork the repository to your github account
 and install it in development mode, e.g.
 
 
