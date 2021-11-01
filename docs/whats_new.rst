@@ -8,6 +8,13 @@ What's New
 
     import pyremo 
 
+v0.2.1 (01 November 2021)
+-------------------------
+
+Small bugfix release that updates the path to download germany shapefiles. Also
+added more tests (:pull:`24`).
+
+
 v0.2.0 (28 October 2021)
 ------------------------
 
