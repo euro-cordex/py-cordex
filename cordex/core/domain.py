@@ -190,8 +190,10 @@ def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attr
     )
 
     for key, coord in ds.coords.items():
+        print(key)
         coord.encoding["_FillValue"] = None
         coord.attrs = cf.coords[key]
+        print(cf.coords[key])
 
     if dummy:
         if dummy is True:
@@ -199,25 +201,23 @@ def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attr
         else:
             dummy_name = dummy
         dummy = xr.DataArray(
-            data=np.zeros((len(rlat), len(rlon))),
-            dims=["rlat", "rlon"],
-            coords=dict(
-                rlon=(["rlon"], rlon),
-                rlat=(["rlat"], rlat),
-                lon=(["rlat", "rlon"], lon),
-                lat=(["rlat", "rlon"], lat),
-            ),
+            data=np.zeros((ds.rlat.size, ds.rlon.size)),
+            coords=(ds.rlat, ds.rlon),
         )
         dummy.attrs = {"grid_mapping": mapping_name, "coordinates": "lon lat"}
         ds[dummy_name] = dummy
         if dummy_name == "topo":
+            # use cdo to create dummy topography data.
             from cdo import Cdo
 
             tmp = utils.get_tempfile()
             ds.to_netcdf(tmp)
-            topo = Cdo().topo(tmp, returnXDataset=True)["topo"][:]
-            ds[dummy_name] = topo
-
+            topo = Cdo().topo(tmp, returnXDataset=True)["topo"]
+            ds[dummy_name] = xr.DataArray(
+                data=topo.values,
+                coords=(ds.rlat, ds.rlon),
+            )
+            ds[dummy_name].attrs.update(topo.attrs)
     return ds
 
 
