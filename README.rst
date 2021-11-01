@@ -67,17 +67,19 @@ You can install the package directly from github using pip:
     pip install git+https://github.com/euro-cordex/py-cordex
 
 
-If you want to contribute, I recommend cloning the repository and installing the package in development mode, e.g.
+If you want to contribute, please fork the repository to your github accound 
+and install it in development mode, e.g.
 
 
 .. code-block:: console
 
-    git clone https://github.com/euro-cordex/py-cordex
+    git clone https://github.com/<your-account>/py-cordex
     cd cordex
     pip install -e .
 
 
-This will install the package but you can still edit it and you don't need the package in your :code:`PYTHONPATH`
+This will install the package but you can still edit it and you don't need the package in your :code:`PYTHONPATH`.
+Please get in contact as early as possible, e.g., using `draft pull requests <https://github.blog/2019-02-14-introducing-draft-pull-requests>`_.
 
 
 Requirements
