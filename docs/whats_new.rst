@@ -8,7 +8,14 @@ What's New
 
     import pyremo 
 
-v0.2.1 (01 November 2021)
+v0.3.0 (Unreleased)
+-------------------------
+
+New Features
+~~~~~~~~~~~~
+- Included experiment cmor table resource for development (:pull:`27`).
+
+v0.2.1 (1 November 2021)
 -------------------------
 
 Small bugfix release that updates the path to download germany shapefiles (:pull:`24`).
