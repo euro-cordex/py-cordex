@@ -42,6 +42,27 @@ ECMWF_RESOURCE = pooch.create(
 )
 
 
+CMOR_RESOURCE = pooch.create(
+    # Use the default cache folder for the OS
+    path="~/.remo_cmor",
+    # The remote data is on Github
+    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/main/tables/cordex-cmor-tables-test/Tables/",
+    registry={
+        "CORDEX_Amon.json": "51a16398ee9c1bcd8f71ee709426a3f06048c7a82f77e5dfba766b40248d4f6a",
+        "CORDEX_CV.json": "83c5d19ccf5670c9850d585d89802319f52367aca109ec05221fd5df68544a97",
+        "CORDEX_coordinate.json": "bf31a847cdad344b124734a5dbcb28dca740bfe496e2f85ee8af654acd213d8e",
+        "CORDEX_formula_terms.json": "6f4e7c60b6089cbc873db9a2e158982b83878780ffbc8d8abe9f172c22756023",
+        "CORDEX_grids.json": "970bdb5069598be9b422f9522715d97986c5d406970eb3914c177195224bdc5f",
+        "CORDEX_remo_example.json": "f2434504cc9e4c438bbe5b11a1f5a63286a4c356036bad08b23ff255dccbd7d0",
+    },
+)
+
+
+def fetch_cordex_cmor_table(table):
+    fmt = "CORDEX_{}.json"
+    return CMOR_RESOURCE.fetch(fmt.format(table))
+
+
 def fetch_remote_table(name, resource):
     """
     uses pooch to cache files

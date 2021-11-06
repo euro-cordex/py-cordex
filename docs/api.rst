@@ -1,4 +1,4 @@
-.. currentmodule:: cordex 
+.. currentmodule:: cordex
 
 #############
 API reference
@@ -18,6 +18,7 @@ Top-level functions
    create_dataset
    rotated_coord_transform
    map_crs
+   cordex_cmor_table
 
 Regions within Euro-Cordex
 ==========================
