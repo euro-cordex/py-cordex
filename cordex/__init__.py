@@ -20,7 +20,7 @@ from .core.domain import (
     domain_info,
 )
 
-from .tables import domains, ecmwf
+from .tables import domains, ecmwf, cordex_cmor_table
 
 from .version import version
 
