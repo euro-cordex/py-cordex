@@ -32,7 +32,7 @@ Python tools for the Cordex Community.
 Why
 ---
 
-Python tools to work with `CORDEX <https://cordex.org/>`_ domains and meta data.
+Python tools to work with `CORDEX <https://cordex.org/>`_ domains, meta data and cmorization.
 
 Meta Data
 ^^^^^^^^^
@@ -43,6 +43,7 @@ Features
 --------
 
 * Tools to manage Cordex Domain Data and Datasets
+* Utitlities for Cmorization to make the CORDEX ensembles more consistent.
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
