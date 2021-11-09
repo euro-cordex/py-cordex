@@ -20,6 +20,17 @@ Top-level functions
    map_crs
    cordex_cmor_table
 
+Cmorization
+===========
+
+.. autosummary::
+   :toctree: generated/
+
+   cmor.season
+   cmor.season_bounds
+   cmor.mid_of_month
+   cmor.month_bounds
+
 Regions within Euro-Cordex
 ==========================
 
