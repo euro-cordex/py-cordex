@@ -7,9 +7,10 @@ dependencies:
   - matplotlib-base
   - numpy
   - pooch
-  - regionmask 
+  - regionmask
   - setuptools
   - xarray
+  - cftime
 # for testing
   - pytest
   - pytest-cov
