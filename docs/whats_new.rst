@@ -16,8 +16,13 @@ New Features
 - Included experiment cmor table resource for development (:pull:`27`).
 - Included basic utitilities to compute time bounds (:pull:`28`).
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Coverage is ignored for unused modules (:pull:`29`).
+
+
 v0.2.1 (1 November 2021)
--------------------------
+------------------------
 
 Small bugfix release that updates the path to download germany shapefiles (:pull:`24`).
 Also fixed coordinate attribute issues (:pull:`25`) and added a test.
@@ -41,6 +46,7 @@ Internal Changes
 - Tables are download at first access using pooch.
 - Using now conda environemt for testing (:pull:`18`).
 - Restructured and cleaned dependencies (:pull:`21`).
+
 
 v0.1.2 (3 June 2021)
 --------------------
