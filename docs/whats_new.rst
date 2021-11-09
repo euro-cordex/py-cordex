@@ -14,8 +14,13 @@ v0.3.0 (Unreleased)
 New Features
 ~~~~~~~~~~~~
 - Included experiment cmor table resource for development (:pull:`27`).
+- Included experiment cmor table resource for development (:pull:`29`).
 
-v0.2.1 (1 November 2021)
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Coverage is ignored for unused modules (:pull:`29`).
+
+  v0.2.1 (1 November 2021)
 -------------------------
 
 Small bugfix release that updates the path to download germany shapefiles (:pull:`24`).
