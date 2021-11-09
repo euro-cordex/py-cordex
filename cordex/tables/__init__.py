@@ -24,7 +24,6 @@ domains = read_cls(read_cordex_domain_tables)
 ecmwf = read_cls(ecmwf_tables)
 
 
-
 def cordex_cmor_table(table):
     """fetch a cordex cmor table
 
