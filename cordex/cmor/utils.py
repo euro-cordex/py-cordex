@@ -18,6 +18,21 @@ def ensure_cftime(func):
 
 
 def to_cftime(date, calendar="proleptic_gregorian"):
+    """Convert datetime object to cftime object.
+
+    Parameters
+    ----------
+    date : datetime object
+        Datetime object.
+    calendar : str
+        Calendar of the cftime object.
+
+    Returns
+    -------
+    cftime : cftime object
+        Cftime ojbect.
+
+    """
     if type(date) == dt.date:
         date = dt.datetime.combine(date, dt.time())
     elif isinstance(date, cfdt.datetime):
