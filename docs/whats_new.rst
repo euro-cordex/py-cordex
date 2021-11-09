@@ -14,6 +14,7 @@ v0.3.0 (Unreleased)
 New Features
 ~~~~~~~~~~~~
 - Included experiment cmor table resource for development (:pull:`27`).
+- Included basic utitilities to compute time bounds (:pull:`28`).
 
 v0.2.1 (1 November 2021)
 -------------------------
