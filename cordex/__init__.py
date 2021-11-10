@@ -17,6 +17,7 @@ from .core.domain import (
     create_dataset,
     rotated_coord_transform,
     map_crs,
+    vertices,
     domain_info,
 )
 

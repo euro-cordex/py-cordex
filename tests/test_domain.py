@@ -75,4 +75,4 @@ def test_vertices():
         eur11.rotated_latitude_longitude.grid_north_pole_longitude,
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
-    vertices = cx.cmor.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
+    vertices = cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
