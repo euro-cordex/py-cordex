@@ -18,6 +18,7 @@ Top-level functions
    create_dataset
    rotated_coord_transform
    map_crs
+   vertices
    cordex_cmor_table
 
 Cmorization
@@ -30,7 +31,6 @@ Cmorization
    cmor.season_bounds
    cmor.mid_of_month
    cmor.month_bounds
-   cmor.vertices
    cmor.to_cftime
 
 Regions within Euro-Cordex

@@ -6,8 +6,6 @@ import datetime as dt
 import cftime as cfdt
 from dateutil import relativedelta as reld
 
-from ..core.domain import map_crs
-
 xr.set_options(keep_attrs=True)
 
 loffsets = {"3H": dt.timedelta(hours=1, minutes=30), "6H": dt.timedelta(hours=3)}
@@ -199,52 +197,3 @@ def mid_of_month(date):
     """
     bounds = month_bounds(date)
     return bounds[0] + 0.5 * (bounds[1] - bounds[0])
-
-
-def _dcoord(coord):
-    dcoord = coord.values[1:] - coord.values[:-1]
-    dcoord = np.insert(dcoord, 0, dcoord[0])
-    return dcoord
-
-
-def _bounds(coord):
-    dc = _dcoord(coord)
-    left = coord - 0.5*dc
-    right = coord + 0.5*dc
-    left.name = 'left'
-    right.name = 'right'
-    return xr.merge([left, right])
-
-
-def vertices(rlon, rlat, src_crs, trg_crs=None):
-    """Compute lon and lat vertices.
-    
-    Transformation of rlon vertices and rlat vertices 
-    into the target crs.
-
-    Parameters
-    ----------
-    rlon : xr.DataArray
-        Longitude in rotated pole grid.
-    rlat : xr.DataArray
-        Latitude in rotated pole grid.
-
-    Returns
-    -------
-    vertices : xr.Dataset
-        lon_vertices and lat_vertices in target crs.
-
-    """
-    rlon_bounds = _bounds(rlon)
-    rlat_bounds = _bounds(rlat)
-    # maps each vertex to lat lon coordinates
-    # order is counterclockwise starting from lower left vertex
-    v1 = map_crs(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
-    v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
-    v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
-    v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
-    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim='vertices').transpose(..., 'vertices')
-    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim='vertices').transpose(..., 'vertices')
-    lon_vertices.name = 'lon_vertices'
-    lat_vertices.name = 'lat_vertices'
-    return xr.merge([lon_vertices, lat_vertices])
