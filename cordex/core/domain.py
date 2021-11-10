@@ -46,8 +46,14 @@ def domain_names(table_name=None):
         return list(domains.table.index)
 
 
-def cordex_domain(short_name, dummy=False, add_vertices=False, tables=None, attrs=None,
-                 mapping_name=None):
+def cordex_domain(
+    short_name,
+    dummy=False,
+    add_vertices=False,
+    tables=None,
+    attrs=None,
+    mapping_name=None,
+):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -67,7 +73,7 @@ def cordex_domain(short_name, dummy=False, add_vertices=False, tables=None, attr
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
-    mapping_name: str 
+    mapping_name: str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
 
@@ -94,8 +100,14 @@ def cordex_domain(short_name, dummy=False, add_vertices=False, tables=None, attr
         config = pd.concat(tables).loc[short_name]
     else:
         config = tables.loc[short_name]
-    return create_dataset(**config, name=short_name, dummy=dummy, 
-                          add_vertices=add_vertices, attrs=attrs, mapping_name=mapping_name)
+    return create_dataset(
+        **config,
+        name=short_name,
+        dummy=dummy,
+        add_vertices=add_vertices,
+        attrs=attrs,
+        mapping_name=mapping_name
+    )
 
 
 def create_dataset(
@@ -143,7 +155,7 @@ def create_dataset(
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
-    mapping_name: str 
+    mapping_name: str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
     """
@@ -156,9 +168,17 @@ def create_dataset(
     rlon, rlat = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
     lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
     pole = _grid_mapping(pollon, pollat)
-    return _get_dataset(rlon, rlat, lon, lat, pole, 
-                        add_vertices=add_vertices, dummy=dummy, mapping_name=mapping_name,
-                        attrs=attrs)
+    return _get_dataset(
+        rlon,
+        rlat,
+        lon,
+        lat,
+        pole,
+        add_vertices=add_vertices,
+        dummy=dummy,
+        mapping_name=mapping_name,
+        attrs=attrs,
+    )
 
 
 def domain_info(short_name, tables=None):
@@ -189,8 +209,17 @@ def domain_info(short_name, tables=None):
     return {**{"short_name": short_name}, **dict(**config)}
 
 
-def _get_dataset(rlon, rlat, lon, lat, pole, add_vertices=False, 
-                 dummy=None, mapping_name=None, attrs=None):
+def _get_dataset(
+    rlon,
+    rlat,
+    lon,
+    lat,
+    pole,
+    add_vertices=False,
+    dummy=None,
+    mapping_name=None,
+    attrs=None,
+):
     if mapping_name is None:
         mapping_name = cf.DEFAULT_MAPPING_NCVAR
     data_vars = {mapping_name: pole}
@@ -205,11 +234,14 @@ def _get_dataset(rlon, rlat, lon, lat, pole, add_vertices=False,
         ),
         attrs=attrs,
     )
-    
+
     if add_vertices is True:
         from cartopy import crs as ccrs
-        pole = pole = (ds[mapping_name].grid_north_pole_longitude, 
-                       ds[mapping_name].grid_north_pole_latitude)
+
+        pole = pole = (
+            ds[mapping_name].grid_north_pole_longitude,
+            ds[mapping_name].grid_north_pole_latitude,
+        )
         v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
         ds = xr.merge([ds, v])
 
@@ -453,18 +485,18 @@ def _dcoord(coord):
 
 def _bounds(coord):
     dc = _dcoord(coord)
-    left = coord - 0.5*dc
-    right = coord + 0.5*dc
-    left.name = 'left'
-    right.name = 'right'
+    left = coord - 0.5 * dc
+    right = coord + 0.5 * dc
+    left.name = "left"
+    right.name = "right"
     return xr.merge([left, right])
 
 
 def vertices(rlon, rlat, src_crs, trg_crs=None):
     """Compute lon and lat vertices.
-    
-    Transformation of rlon vertices and rlat vertices 
-    into the target crs according to 
+
+    Transformation of rlon vertices and rlat vertices
+    into the target crs according to
     https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
 
     Parameters
@@ -488,8 +520,12 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
     v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
     v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
-    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim='vertices').transpose(..., 'vertices')
-    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim='vertices').transpose(..., 'vertices')
-    lon_vertices.name = 'lon_vertices'
-    lat_vertices.name = 'lat_vertices'
+    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim="vertices").transpose(
+        ..., "vertices"
+    )
+    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim="vertices").transpose(
+        ..., "vertices"
+    )
+    lon_vertices.name = "lon_vertices"
+    lat_vertices.name = "lat_vertices"
     return xr.merge([lon_vertices, lat_vertices])
