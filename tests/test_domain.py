@@ -60,7 +60,7 @@ def test_mapping():
     lon1, lat1 = cx.rotated_coord_transform(
         eur11.rlon, eur11.rlat, *pole, direction="rot2geo"
     )
-    transform = ccrs.RotatedPole(-162.0, 39.25)
+    transform = ccrs.RotatedPole(*pole)
     lon2, lat2 = cx.map_crs(eur11.rlon, eur11.rlat, transform)
 
     assert np.allclose(lon1, lon2)
@@ -70,9 +70,9 @@ def test_mapping():
 def test_vertices():
     eur11 = cx.cordex_domain("EUR-11")
     import cartopy.crs as ccrs
+
     pole = (
         eur11.rotated_latitude_longitude.grid_north_pole_longitude,
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
     vertices = cx.cmor.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
-

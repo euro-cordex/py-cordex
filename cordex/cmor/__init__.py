@@ -6,5 +6,5 @@ from .utils import (
     mid_of_month,
     month_bounds,
     to_cftime,
-    vertices
+    vertices,
 )

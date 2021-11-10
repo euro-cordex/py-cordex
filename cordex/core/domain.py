@@ -46,7 +46,8 @@ def domain_names(table_name=None):
         return list(domains.table.index)
 
 
-def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
+def cordex_domain(short_name, dummy=False, add_vertices=False, tables=None, attrs=None,
+                 mapping_name=None):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
@@ -57,6 +58,8 @@ def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
+    add_vertices : bool
+        Add grid boundaries in the gloabl coordinates (lon_vertices and lat_vertices).
     tables: dataframe or list of dataframes, default: cordex_tables
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
@@ -64,6 +67,9 @@ def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
+    mapping_name: str 
+        Variable name of the grid mapping, if mapping_name is `None`, the CF standard
+        variable name is used.
 
     Returns
     -------
@@ -88,7 +94,8 @@ def cordex_domain(short_name, dummy=False, tables=None, attrs=None):
         config = pd.concat(tables).loc[short_name]
     else:
         config = tables.loc[short_name]
-    return create_dataset(**config, name=short_name, dummy=dummy, attrs=attrs)
+    return create_dataset(**config, name=short_name, dummy=dummy, 
+                          add_vertices=add_vertices, attrs=attrs, mapping_name=mapping_name)
 
 
 def create_dataset(
@@ -102,7 +109,9 @@ def create_dataset(
     pollat,
     name=None,
     dummy=False,
+    add_vertices=False,
     attrs=None,
+    mapping_name=None,
     **kwargs
 ):
     """Create domain dataset from grid information.
@@ -129,9 +138,14 @@ def create_dataset(
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
+    add_vertices : bool
+        Add grid boundaries in the gloabl coordinates (lon_vertices and lat_vertices).
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
+    mapping_name: str 
+        Variable name of the grid mapping, if mapping_name is `None`, the CF standard
+        variable name is used.
     """
     if attrs == "CORDEX":
         attrs = cf.DEFAULT_CORDEX_ATTRS
@@ -142,7 +156,9 @@ def create_dataset(
     rlon, rlat = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
     lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
     pole = _grid_mapping(pollon, pollat)
-    return _get_dataset(rlon, rlat, lon, lat, pole, dummy=dummy, attrs=attrs)
+    return _get_dataset(rlon, rlat, lon, lat, pole, 
+                        add_vertices=add_vertices, dummy=dummy, mapping_name=mapping_name,
+                        attrs=attrs)
 
 
 def domain_info(short_name, tables=None):
@@ -173,7 +189,8 @@ def domain_info(short_name, tables=None):
     return {**{"short_name": short_name}, **dict(**config)}
 
 
-def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attrs=None):
+def _get_dataset(rlon, rlat, lon, lat, pole, add_vertices=False, 
+                 dummy=None, mapping_name=None, attrs=None):
     if mapping_name is None:
         mapping_name = cf.DEFAULT_MAPPING_NCVAR
     data_vars = {mapping_name: pole}
@@ -188,6 +205,13 @@ def _get_dataset(rlon, rlat, lon, lat, pole, dummy=None, mapping_name=None, attr
         ),
         attrs=attrs,
     )
+    
+    if add_vertices is True:
+        from cartopy import crs as ccrs
+        pole = pole = (ds[mapping_name].grid_north_pole_longitude, 
+                       ds[mapping_name].grid_north_pole_latitude)
+        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
+        ds = xr.merge([ds, v])
 
     for key, coord in ds.coords.items():
         coord.encoding["_FillValue"] = None
@@ -368,8 +392,8 @@ def _map_crs(lon, lat, src_crs=None, trg_crs=None):
 
     if trg_crs is None:
         trg_crs = ccrs.PlateCarree()
-    #latlon = ccrs.PlateCarree()
-    #lon_stack, lat_stack = xr.broadcast(lon, lat)
+    # latlon = ccrs.PlateCarree()
+    # lon_stack, lat_stack = xr.broadcast(lon, lat)
     lon_stack = np.broadcast_to(lon, (lat.shape[0], lon.shape[0])).T
     lat_stack = np.broadcast_to(lat, (lon.shape[0], lat.shape[0]))
     result = trg_crs.transform_points(src_crs, lon_stack, lat_stack)
@@ -405,7 +429,7 @@ def map_crs(lon, lat, src_crs=None, trg_crs=None):
 
     """
     input_core_dims = [[lon.dims[0]], [lat.dims[0]]] + [[], []]
-    output_core_dims = 2*[[lon.dims[0], lat.dims[0]]]
+    output_core_dims = 2 * [[lon.dims[0], lat.dims[0]]]
     result = xr.apply_ufunc(
         _map_crs,  # first the function
         lon,  # now arguments in the order expected by 'interp1_np'
@@ -413,9 +437,59 @@ def map_crs(lon, lat, src_crs=None, trg_crs=None):
         src_crs,
         trg_crs,
         input_core_dims=input_core_dims,  # list with one entry per arg
-        output_core_dims=output_core_dims#[["rlat", "rlon"], ["rlat", "rlon"]],
-        #exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
-        )
-    result[0].name = 'lon'
-    result[1].name = 'lat'
+        output_core_dims=output_core_dims  # [["rlat", "rlon"], ["rlat", "rlon"]],
+        # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
+    )
+    result[0].name = "lon"
+    result[1].name = "lat"
     return result
+
+
+def _dcoord(coord):
+    dcoord = coord.values[1:] - coord.values[:-1]
+    dcoord = np.insert(dcoord, 0, dcoord[0])
+    return dcoord
+
+
+def _bounds(coord):
+    dc = _dcoord(coord)
+    left = coord - 0.5*dc
+    right = coord + 0.5*dc
+    left.name = 'left'
+    right.name = 'right'
+    return xr.merge([left, right])
+
+
+def vertices(rlon, rlat, src_crs, trg_crs=None):
+    """Compute lon and lat vertices.
+    
+    Transformation of rlon vertices and rlat vertices 
+    into the target crs according to 
+    https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+
+    Parameters
+    ----------
+    rlon : xr.DataArray
+        Longitude in rotated pole grid.
+    rlat : xr.DataArray
+        Latitude in rotated pole grid.
+
+    Returns
+    -------
+    vertices : xr.Dataset
+        lon_vertices and lat_vertices in target crs.
+
+    """
+    rlon_bounds = _bounds(rlon)
+    rlat_bounds = _bounds(rlat)
+    # maps each vertex to lat lon coordinates
+    # order is counterclockwise starting from lower left vertex
+    v1 = map_crs(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
+    v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
+    v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
+    v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
+    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim='vertices').transpose(..., 'vertices')
+    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim='vertices').transpose(..., 'vertices')
+    lon_vertices.name = 'lon_vertices'
+    lat_vertices.name = 'lat_vertices'
+    return xr.merge([lon_vertices, lat_vertices])

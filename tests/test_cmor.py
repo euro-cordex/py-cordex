@@ -23,8 +23,14 @@ def test_season(dt):
 
 
 def test_month():
-    assert cx.cmor.month_bounds(dt.datetime(2000, 1, 10)) == ( dt.datetime(2000, 1, 1), dt.datetime(2000, 2, 1))
-    assert cx.cmor.month_bounds(dt.datetime(2000, 12, 10)) == ( dt.datetime(2000, 12, 1), dt.datetime(2001, 1, 1))
+    assert cx.cmor.month_bounds(dt.datetime(2000, 1, 10)) == (
+        dt.datetime(2000, 1, 1),
+        dt.datetime(2000, 2, 1),
+    )
+    assert cx.cmor.month_bounds(dt.datetime(2000, 12, 10)) == (
+        dt.datetime(2000, 12, 1),
+        dt.datetime(2001, 1, 1),
+    )
     assert cx.cmor.mid_of_month(dt.datetime(2000, 1, 1)) == dt.datetime(2000, 1, 16, 12)
     # leap years
     assert cx.cmor.mid_of_month(dt.datetime(2000, 2, 1)) == dt.datetime(2000, 2, 15, 12)
@@ -32,9 +38,18 @@ def test_month():
 
 
 def test_cfmonth():
-    assert cx.cmor.month_bounds(dt.datetime(2000, 1, 10)) == ( dt.datetime(2000, 1, 1), dt.datetime(2000, 2, 1))
+    assert cx.cmor.month_bounds(dt.datetime(2000, 1, 10)) == (
+        dt.datetime(2000, 1, 1),
+        dt.datetime(2000, 2, 1),
+    )
     # leap years
-    assert cx.cmor.mid_of_month(cfdt.datetime(2000, 2, 1)) == cfdt.datetime(2000, 2, 15, 12)
+    assert cx.cmor.mid_of_month(cfdt.datetime(2000, 2, 1)) == cfdt.datetime(
+        2000, 2, 15, 12
+    )
     assert cx.cmor.mid_of_month(cfdt.datetime(2001, 2, 1)) == cfdt.datetime(2001, 2, 15)
-    assert cx.cmor.mid_of_month(cfdt.datetime(2000, 2, 1, calendar="360_day")) == cfdt.datetime(2000, 2, 16, calendar="360_day")
-    assert cx.cmor.mid_of_month(cfdt.datetime(2001, 2, 1, calendar="360_day")) == cfdt.datetime(2001, 2, 16, calendar="360_day")
+    assert cx.cmor.mid_of_month(
+        cfdt.datetime(2000, 2, 1, calendar="360_day")
+    ) == cfdt.datetime(2000, 2, 16, calendar="360_day")
+    assert cx.cmor.mid_of_month(
+        cfdt.datetime(2001, 2, 1, calendar="360_day")
+    ) == cfdt.datetime(2001, 2, 16, calendar="360_day")
