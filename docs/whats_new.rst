@@ -15,6 +15,7 @@ New Features
 ~~~~~~~~~~~~
 - Included experiment cmor table resource for development (:pull:`27`).
 - Included basic utitilities to compute time bounds (:pull:`28`).
+- Additional cmorization utilities (:pull:`28`, :pull:`30`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
