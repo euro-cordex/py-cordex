@@ -392,7 +392,7 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     return lon_new, lat_new
 
 
-def _map_crs(lon, lat, src_crs=None, trg_crs=None):
+def _map_crs(lon, lat, src_crs, trg_crs=None):
     """coordinate transformation of longitude and latitude
 
     Transforms the coordinates lat, lon from the transform crs
@@ -433,7 +433,7 @@ def _map_crs(lon, lat, src_crs=None, trg_crs=None):
 
 
 # wrapper function for xarray.apply_ufunc
-def map_crs(lon, lat, src_crs=None, trg_crs=None):
+def map_crs(lon, lat, src_crs, trg_crs=None):
     """coordinate transformation of longitude and latitude
 
     Transforms the coordinates lat, lon from the transform crs
