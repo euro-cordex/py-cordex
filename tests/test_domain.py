@@ -9,6 +9,18 @@ import cordex as cx
 from . import has_cartopy, requires_cartopy
 
 
+def test_domain_basic():
+    eur11 = cx.cordex_domain("EUR-11")
+    assert 'lon_vertices' in cx.cordex_domain("EUR-11", add_vertices=True)
+    assert 'lat_vertices' in cx.cordex_domain("EUR-11", add_vertices=True)
+    assert 'rotated_pole' in cx.cordex_domain("EUR-11", mapping_name='rotated_pole')
+    assert 'rotated_pole' in cx.cordex_domain("EUR-11", mapping_name='rotated_pole')
+    assert 'dummy' in cx.cordex_domain("EUR-11", dummy=True)
+    assert 'topo' in cx.cordex_domain("EUR-11", dummy='topo')
+    assert cx.cordex_domain("EUR-11").attrs['CORDEX_domain'] == "EUR-11"
+    assert 'institution' in cx.cordex_domain("EUR-11", attrs='CORDEX').attrs
+
+
 def test_constructor():
     eur11 = cx.cordex_domain("EUR-11")
     eur11_user = cx.create_dataset(

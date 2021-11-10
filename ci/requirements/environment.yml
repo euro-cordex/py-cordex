@@ -11,6 +11,8 @@ dependencies:
   - setuptools
   - xarray
   - cftime
+  - cdo
+  - python-cdo
 # for testing
   - pytest
   - pytest-cov

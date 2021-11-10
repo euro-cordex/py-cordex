@@ -4,9 +4,9 @@
 import tempfile
 
 
-# def get_tempfile():
-#    """Creates a temporay filename."""
-#    return tempfile.mkstemp()[1]
+def get_tempfile():
+   """Creates a temporay filename."""
+   return tempfile.mkstemp()[1]
 #
 #
 # def copy_dataset(src, varname=None, timestep=None, destination=None):
