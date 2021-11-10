@@ -30,6 +30,7 @@ Cmorization
    cmor.season_bounds
    cmor.mid_of_month
    cmor.month_bounds
+   cmor.vertices
    cmor.to_cftime
 
 Regions within Euro-Cordex

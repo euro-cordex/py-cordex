@@ -336,7 +336,7 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     return lon_new, lat_new
 
 
-def map_crs(lon, lat, projection, transform=None):
+def _map_crs(lon, lat, src_crs=None, trg_crs=None):
     """coordinate transformation of longitude and latitude
 
     Transforms the coordinates lat, lon from the transform crs
@@ -348,12 +348,12 @@ def map_crs(lon, lat, projection, transform=None):
         Longitude coordinate.
     lat : float array like
         Latitude coordinate.
-    projection : cartopy.crs
-        Target coordinate reference system into which lat and lon
-        should be projected.
-    transform : cartopy.crs
-        Source coordinate reference system in which lat and lon
-        are defined.
+    src_crs : cartopy.crs
+        Source coordinate reference system into which lat and lon
+        should are defined.
+    trg_crs : cartopy.crs
+        Target coordinate reference system in which lat and lon
+        should be transformed. If `None`, `PlateCarree` is used.
 
     Returns
     -------
@@ -366,9 +366,56 @@ def map_crs(lon, lat, projection, transform=None):
 
     from cartopy import crs as ccrs
 
-    if transform is None:
-        transform = ccrs.PlateCarree()
-    latlon = ccrs.PlateCarree()
-    lon_stack, lat_stack = xr.broadcast(lon, lat)
-    result = latlon.transform_points(projection, lon_stack.values, lat_stack.values)
+    if trg_crs is None:
+        trg_crs = ccrs.PlateCarree()
+    #latlon = ccrs.PlateCarree()
+    #lon_stack, lat_stack = xr.broadcast(lon, lat)
+    lon_stack = np.broadcast_to(lon, (lat.shape[0], lon.shape[0])).T
+    lat_stack = np.broadcast_to(lat, (lon.shape[0], lat.shape[0]))
+    result = trg_crs.transform_points(src_crs, lon_stack, lat_stack)
     return result[:, :, 0], result[:, :, 1]
+
+
+# wrapper function for xarray.apply_ufunc
+def map_crs(lon, lat, src_crs=None, trg_crs=None):
+    """coordinate transformation of longitude and latitude
+
+    Transforms the coordinates lat, lon from the transform crs
+    into the projection crs using cartopy.crs.
+
+    Parameters
+    ----------
+    lon : float array like
+        Longitude coordinate.
+    lat : float array like
+        Latitude coordinate.
+    src_crs : cartopy.crs
+        Source coordinate reference system into which lat and lon
+        should are defined.
+    trg_crs : cartopy.crs
+        Target coordinate reference system in which lat and lon
+        should be transformed. If `None`, `PlateCarree` is used.
+
+    Returns
+    -------
+    lon : xr.DataArray
+        Projected longitude coordinate with dims (lat, lon).
+    lat : xr.DataArray
+        Projected latitude coordinate with dims (lat, lon).
+
+    """
+    input_core_dims = [[lon.dims[0]], [lat.dims[0]]] + [[], []]
+    output_core_dims = 2*[[lon.dims[0], lat.dims[0]]]
+    result = xr.apply_ufunc(
+        _map_crs,  # first the function
+        lon,  # now arguments in the order expected by 'interp1_np'
+        lat,
+        src_crs,
+        trg_crs,
+        input_core_dims=input_core_dims,  # list with one entry per arg
+        output_core_dims=output_core_dims#[["rlat", "rlon"], ["rlat", "rlon"]],
+        #exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
+        )
+    result[0].name = 'lon'
+    result[1].name = 'lat'
+    return result

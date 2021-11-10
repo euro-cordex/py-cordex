@@ -65,3 +65,14 @@ def test_mapping():
 
     assert np.allclose(lon1, lon2)
     assert np.allclose(lat1, lat2)
+
+
+def test_vertices():
+    eur11 = cx.cordex_domain("EUR-11")
+    import cartopy.crs as ccrs
+    pole = (
+        eur11.rotated_latitude_longitude.grid_north_pole_longitude,
+        eur11.rotated_latitude_longitude.grid_north_pole_latitude,
+    )
+    vertices = cx.cmor.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
+
