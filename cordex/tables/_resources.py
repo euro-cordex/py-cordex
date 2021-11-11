@@ -6,6 +6,8 @@ base_url = "https://raw.githubusercontent.com/euro-cordex/tables/master/"
 
 cache_url = "~/.py-cordex"
 
+cmor_table_version = "0.1.0"
+
 DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
     path=cache_url,  # pooch.os_cache("cordex"),
@@ -44,11 +46,15 @@ ECMWF_RESOURCE = pooch.create(
 
 CMOR_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
-    path="~/.remo_cmor",
+    path="~/.cordex-cmor-tables",
     # The remote data is on Github
-    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/main/tables/cordex-cmor-tables-test/Tables/",
+    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/v{}/tables/cordex-cmor-tables-test/Tables/".format(cmor_table_version),
     registry={
-        "CORDEX_Amon.json": "51a16398ee9c1bcd8f71ee709426a3f06048c7a82f77e5dfba766b40248d4f6a",
+        "CORDEX_Amon.json": "f0731506317d30df97d3b7d9241ba66418cb25ee7ab245c00b95ed8050866fa1",
+        "CORDEX_day.json": "1ba4acd4a6d3c5fdeedf411334f8be7bcbc1034314056bbf002e9bb55e3f3746",
+        "CORDEX_1hr.json": "682ea997943fe23f4ad44f99e9cdeefbf54b5b94d5e6c8f6c67531013ed8fcb8",
+        "CORDEX_3hr.json": "b8bf9fbf94b326de9a42a30b0d608cafd4e194e9789362be695b91969dfd5c25",
+        "CORDEX_fx.json": "fdb95ed8e2e8a13626abaf4e391038077913e5e26ac9122463f72aa33b0d3750",
         "CORDEX_CV.json": "83c5d19ccf5670c9850d585d89802319f52367aca109ec05221fd5df68544a97",
         "CORDEX_coordinate.json": "bf31a847cdad344b124734a5dbcb28dca740bfe496e2f85ee8af654acd213d8e",
         "CORDEX_formula_terms.json": "6f4e7c60b6089cbc873db9a2e158982b83878780ffbc8d8abe9f172c22756023",

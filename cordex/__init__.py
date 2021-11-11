@@ -22,7 +22,9 @@ from .core.domain import (
 )
 
 from .tables import domains, ecmwf, cordex_cmor_table
+from . import tables
 
 from .version import version
 
 __version__ = version
+__cmor_table_version__ = tables.__cmor_table_version__
