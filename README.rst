@@ -42,7 +42,8 @@ meta information should be guaranteed by tables collected here: https://github.c
 Features
 --------
 
-* Tools to manage Cordex Domain Data and Datasets
+* Tools to manage Cordex Grids as xarray Datasets.
+* Includes coordinate transformations, bounds and vertices for CORDEX datasets.
 * Utitlities for Cmorization to make the CORDEX ensembles more consistent.
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
