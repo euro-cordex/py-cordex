@@ -42,7 +42,7 @@ meta information should be guaranteed by tables collected here: https://github.c
 Features
 --------
 
-* Tools to manage Cordex grids as xarray datasets.
+* Tools to manage CORDEX grids as xarray datasets.
 * Includes coordinate transformations, bounds and vertices for CORDEX datasets.
 * Utitlities for cmorization to make the CORDEX ensembles more consistent.
 
