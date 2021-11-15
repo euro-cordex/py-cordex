@@ -6,7 +6,7 @@ base_url = "https://raw.githubusercontent.com/euro-cordex/tables/master/"
 
 cache_url = "~/.py-cordex"
 
-cmor_table_version = "0.1.0"
+cmor_table_version = "0.1.1"
 
 DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
@@ -55,7 +55,7 @@ CMOR_RESOURCE = pooch.create(
         "CORDEX_1hr.json": "682ea997943fe23f4ad44f99e9cdeefbf54b5b94d5e6c8f6c67531013ed8fcb8",
         "CORDEX_3hr.json": "b8bf9fbf94b326de9a42a30b0d608cafd4e194e9789362be695b91969dfd5c25",
         "CORDEX_fx.json": "fdb95ed8e2e8a13626abaf4e391038077913e5e26ac9122463f72aa33b0d3750",
-        "CORDEX_CV.json": "83c5d19ccf5670c9850d585d89802319f52367aca109ec05221fd5df68544a97",
+        "CORDEX_CV.json": "8025a469390897f0a858c9b5607f5898ec76dfc88b8cd735968ba20a152b24ae",
         "CORDEX_coordinate.json": "bf31a847cdad344b124734a5dbcb28dca740bfe496e2f85ee8af654acd213d8e",
         "CORDEX_formula_terms.json": "6f4e7c60b6089cbc873db9a2e158982b83878780ffbc8d8abe9f172c22756023",
         "CORDEX_grids.json": "970bdb5069598be9b422f9522715d97986c5d406970eb3914c177195224bdc5f",
