@@ -133,11 +133,15 @@ def rename_cordex(ds, rename_dict=None):
     for va in ds.data_vars:
         for key, value in ds[va].attrs.items():
             if isinstance(value, np.ndarray):
-                ds[va].attrs[key] = str(value)
+                ds[va].attrs[key] = list(value)
     
     # restore attributes
     ds.attrs = attrs
 
+    for key, value in ds.attrs.items():
+        if isinstance(value, np.ndarray):
+            ds.attrs[key] = str(value)
+    
     return ds
 
 
@@ -147,6 +151,15 @@ def promote_empty_dims(ds):
     for di in ds.dims:
         if di not in ds.coords:
             ds = ds.assign_coords({di: ds[di]})
+    return ds
+
+
+def attr_to_coord(ds, attr, expand=True):
+    ds = ds.copy()
+    value = ds.attrs[attr]
+    ds = ds.assign_coords({attr: value})
+    if expand is True:
+        return ds.expand_dims(dim=attr)
     return ds
 
 
@@ -185,6 +198,10 @@ def crop_to_cordex_domain(ds):
     pass
 
 
+def split_by_coordinate(ds):
+    pass
+
+
 def remap_lambert_conformal(ds, regridder=None):
     ds = ds.copy()
     if regridder is None:
@@ -201,13 +218,65 @@ def remap_lambert_conformal(ds, regridder=None):
 
 
 def member_id_to_dset_id(ds_dict):
-    keys = 'CORDEX_domain.driving_model_id.institute_id.model_id.experiment_id.frequency'.split('.')
-    for key, ds in ds_dict.items():
-        attrs = dict(zip(keys, [attr for attr in key.split('.')]))
-        for member, ds_member in ds.groupby('member'):
-            ds_split[key+'.'+member] = ds_member
+    """Expand the member coordinate into the dataset id
+    
+    If there are more than two members in the dataset, the function
+    will give back a dict with new dataset ids containing the member
+    as keys and a dataset for each member.
+    
+    """
+    ds_split = {}
+    for ds in ds_dict.values():
+        ds_split.update(flatten_coordinate_to_dset_id(ds, 'member'))
+    return ds_split
 
-            
+
+def flatten_coordinate_to_dset_id(ds, coord):
+    flatten = {}
+    for xcoord, ds_coord in ds.groupby(coord):
+            dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
+            flatten[dset_id] = ds_coord
+    return flatten
+
+
+def dset_ids_to_coord(ds_dict):
+    """Creates a DataArray from dataset ids"""
+    dset_ids = list(ds_dict.keys())
+    dim = xr.DataArray(dset_ids, dims='dset_id', name='dset_id',
+                      coords={'dset_id': dset_ids})
+    return dim
+
+
+def align_time_axis(ds_dict):
+    from datetime import datetime as dt
+    for ds in ds_dict.values():
+        #ds = ds.copy()
+        ds.coords['time'] = [dt(date.year, date.month, 15) for date in ds.time.values]
+    return ds_dict
+
+
+def concat_along_dset_id(ds_dict, coords='minimal', compat='override', **kwargs ):
+    dset_coord = dset_ids_to_coord(ds_dict)
+    ds_dict = align_time_axis(ds_dict)
+    ds_list = []
+    for ds in ds_dict.values():
+        ds = replace_rlon_rlat(ds)
+        ds = replace_lon_lat(ds)
+        ds_list.append(ds)
+    return xr.concat(ds_list, dim=dset_coord, 
+                     coords=coords, compat=compat, **kwargs)
+
+
+def sort_ds_dict_by_attr(ds_dict, attr):
+    """Sorts the dataset dict by a certain attribute"""
+    from collections import defaultdict
+    dsets_sorted = defaultdict(dict)
+    for dset_id, ds in ds_dict.items():
+        value = ds.attrs[attr]
+        dsets_sorted[value][dset_id] = ds
+    return dsets_sorted   
+    
+    
 def correct_lon(ds):
     """Wraps negative x and lon values around to have 0-360 lons.
     longitude names expected to be corrected with `rename_cordex`"""
@@ -232,6 +301,10 @@ def correct_lon(ds):
 def _key_from_attrs(ds, attrs, sep="."):
     return sep.join([ds.attrs[i] if i in ds.attrs.keys() else "none" for i in attrs])
 
+
+def get_rotated_pole_datasets():
+    pass
+
             
 def cordex_dataset_id(
     ds,
@@ -243,7 +316,7 @@ def cordex_dataset_id(
         "model_id",
         "experiment_id",
         "frequency",
-        "driving_model_ensemble_member"
+      #  "driving_model_ensemble_member"
     ],
 ):
     """Creates a unique string id for e.g. saving files to disk from CORDEX output
