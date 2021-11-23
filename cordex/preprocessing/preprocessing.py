@@ -7,7 +7,7 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 
 import xarray as xr
 import numpy as np
-from cordex import cordex_domain
+from ..core.domain import cordex_domain
 
 
 regridder = None
@@ -101,7 +101,11 @@ def rename_cordex(ds, rename_dict=None):
             for k in ds_reset.data_vars
         }
     )
-    
+    #return {
+    #        k: _maybe_rename(ds_reset[k], inverted_rename_dict)
+    #        for k in ds_reset.data_vars
+    #    }
+    #return ds
     #ds_reset = ds_reset.assign_coords()
 
     # special treatment for 'lon'/'lat' if there is no 'x'/'y' after renaming process
@@ -119,14 +123,19 @@ def rename_cordex(ds, rename_dict=None):
         except:
             pass
     
+    # handle WRF where lon lat might be in variable dims
     for va in ds.data_vars:
         try:
             if "lon" in ds[va].dims and "lat" in ds[va].dims:
                 ds[va] = ds[va].rename({'lon': 'rlon', 'lat': 'rlat'})
         except:
             pass
+    return ds
     
-    ds = ds.set_coords(('lon', 'lat'))
+    #  re-set lon lat to coordinates
+    for coord in ['lat', 'lon']:
+        if coord in ds.data_vars:
+            ds = ds.set_coords(coord)
     
     # numpy arrays as netcdf attributes do not work with dict_union
     # in intake_esm...
@@ -138,9 +147,9 @@ def rename_cordex(ds, rename_dict=None):
     # restore attributes
     ds.attrs = attrs
 
-    for key, value in ds.attrs.items():
-        if isinstance(value, np.ndarray):
-            ds.attrs[key] = str(value)
+    #for key, value in ds.attrs.items():
+    #    if isinstance(value, np.ndarray):
+    #        ds.attrs[key] = str(value)
     
     return ds
 
@@ -200,6 +209,14 @@ def crop_to_cordex_domain(ds):
 
 def split_by_coordinate(ds):
     pass
+
+
+def get_grid_mapping(ds):
+    """Returns grid mapping dataarray"""
+    grid_mapping = next(ds[va].attrs['grid_mapping'] 
+                        for va in ds.data_vars 
+                        if 'grid_mapping' in ds[va].attrs)
+    return ds[grid_mapping]
 
 
 def remap_lambert_conformal(ds, regridder=None):

@@ -258,7 +258,7 @@ def _get_dataset(
             data=np.zeros((ds.rlat.size, ds.rlon.size)),
             coords=(ds.rlat, ds.rlon),
         )
-        dummy.attrs = {"grid_mapping": mapping_name, "coordinates": "lon lat"}
+        dummy.attrs = {"grid_mapping": mapping_name, "coordinates": "lat lon"}
         ds[dummy_name] = dummy
         if dummy_name == "topo":
             # use cdo to create dummy topography data.
