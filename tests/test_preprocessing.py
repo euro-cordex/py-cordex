@@ -1,24 +1,21 @@
-
 import xarray as xr
 
-from cordex.preprocessing import (
-    rename_cordex
-)
+from cordex.preprocessing import rename_cordex
 
 from cordex import cordex_domain
-    
 
-def create_test_ds(name, pol_name='rotated_latitude_longitude'):
-    domain = cordex_domain(name, mapping_name=pol_name,
-                          dummy=True, add_vertices=True)
+
+def create_test_ds(name, pol_name="rotated_latitude_longitude"):
+    domain = cordex_domain(name, mapping_name=pol_name, dummy=True, add_vertices=True)
     return domain
-    
-    
+
+
 def create_wrf_test(name):
-    ds = create_test_ds('EUR-11', 'rotated_pole')
+    ds = create_test_ds("EUR-11", "rotated_pole")
     # reindex dummy with lon lat like in wrf
-    ds['dummy'] = xr.DataArray(ds.dummy.values, 
-                               dims=('lat', 'lon'), attrs=ds.dummy.attrs)
+    ds["dummy"] = xr.DataArray(
+        ds.dummy.values, dims=("lat", "lon"), attrs=ds.dummy.attrs
+    )
     return ds
 
 
@@ -43,7 +40,5 @@ def create_wrf_test(name):
 
 def test_wrf_case():
     """Test the wrf exception"""
-    ds = create_wrf_test('EUR-11')
-    assert rename_cordex(ds).equals(create_test_ds('EUR-11'))
-
-
+    ds = create_wrf_test("EUR-11")
+    assert rename_cordex(ds).equals(create_test_ds("EUR-11"))

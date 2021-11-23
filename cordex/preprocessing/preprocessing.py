@@ -12,8 +12,10 @@ from ..core.domain import cordex_domain
 
 regridder = None
 
+
 def _init_regridder(src_grid, trg_grid, method="bilinear", **kwargs):
     import xesmf as xe
+
     global regridder
     regridder = xe.Regridder(src_grid, trg_grid, method=method, **kwargs)
 
@@ -42,8 +44,8 @@ def cordex_renaming_dict():
         "lat_vertices": ["vertices_latitude"],
         "rotated_latitude_longitude": ["rotated_pole"],
         # coordinate labels
-     #   "lon": ["longitude", "nav_lon"],
-     #   "lat": ["latitude", "nav_lat"],
+        #   "lon": ["longitude", "nav_lon"],
+        #   "lat": ["latitude", "nav_lat"],
         "lev_bounds": [
             "deptht_bounds",
             "lev_bnds",
@@ -101,12 +103,12 @@ def rename_cordex(ds, rename_dict=None):
             for k in ds_reset.data_vars
         }
     )
-    #return {
+    # return {
     #        k: _maybe_rename(ds_reset[k], inverted_rename_dict)
     #        for k in ds_reset.data_vars
     #    }
-    #return ds
-    #ds_reset = ds_reset.assign_coords()
+    # return ds
+    # ds_reset = ds_reset.assign_coords()
 
     # special treatment for 'lon'/'lat' if there is no 'x'/'y' after renaming process
     for di, co in [("rlon", "lon"), ("rlat", "lat")]:
@@ -122,35 +124,35 @@ def rename_cordex(ds, rename_dict=None):
             ds = ds.rename({va: inverted_rename_dict[va]})
         except:
             pass
-    
+
     # handle WRF where lon lat might be in variable dims
     for va in ds.data_vars:
         try:
             if "lon" in ds[va].dims and "lat" in ds[va].dims:
-                ds[va] = ds[va].rename({'lon': 'rlon', 'lat': 'rlat'})
+                ds[va] = ds[va].rename({"lon": "rlon", "lat": "rlat"})
         except:
             pass
     return ds
-    
+
     #  re-set lon lat to coordinates
-    for coord in ['lat', 'lon']:
+    for coord in ["lat", "lon"]:
         if coord in ds.data_vars:
             ds = ds.set_coords(coord)
-    
+
     # numpy arrays as netcdf attributes do not work with dict_union
     # in intake_esm...
     for va in ds.data_vars:
         for key, value in ds[va].attrs.items():
             if isinstance(value, np.ndarray):
                 ds[va].attrs[key] = list(value)
-    
+
     # restore attributes
     ds.attrs = attrs
 
-    #for key, value in ds.attrs.items():
+    # for key, value in ds.attrs.items():
     #    if isinstance(value, np.ndarray):
     #        ds.attrs[key] = str(value)
-    
+
     return ds
 
 
@@ -174,32 +176,32 @@ def attr_to_coord(ds, attr, expand=True):
 
 def check_domain(ds, domain=None):
     if domain is None:
-        domain = ds.attrs.get('CORDEX_domain')
+        domain = ds.attrs.get("CORDEX_domain")
     dm = cordex_domain(domain)
-    if 'rotated_latitude_longitude' in ds:
-        assert(ds.rlon.size == dm.rlon.size)
-        assert(ds.rlat.size == dm.rlat.size)
-        assert(np.all(ds.rlon == dm.rlon))
-        assert(np.all(ds.rlat == dm.rlat))
+    if "rotated_latitude_longitude" in ds:
+        assert ds.rlon.size == dm.rlon.size
+        assert ds.rlat.size == dm.rlat.size
+        assert np.all(ds.rlon == dm.rlon)
+        assert np.all(ds.rlat == dm.rlat)
 
-        
+
 def replace_rlon_rlat(ds, domain=None):
     """Replace lon lat coordinates with domain coordinates"""
     ds = ds.copy()
     if domain is None:
-        domain = cordex_domain(ds.attrs.get('CORDEX_domain', None))
-    ds.coords['rlon'] = domain.rlon
-    ds.coords['rlat'] = domain.rlat
+        domain = cordex_domain(ds.attrs.get("CORDEX_domain", None))
+    ds.coords["rlon"] = domain.rlon
+    ds.coords["rlat"] = domain.rlat
     return ds
-        
+
 
 def replace_lon_lat(ds, domain=None):
     """Replace lon lat coordinates with domain coordinates"""
     ds = ds.copy()
     if domain is None:
-        domain = cordex_domain(ds.attrs.get('CORDEX_domain', None))
-    ds.coords['lon'] = domain.lon
-    ds.coords['lat'] = domain.lat
+        domain = cordex_domain(ds.attrs.get("CORDEX_domain", None))
+    ds.coords["lon"] = domain.lon
+    ds.coords["lat"] = domain.lat
     return ds
 
 
@@ -213,9 +215,11 @@ def split_by_coordinate(ds):
 
 def get_grid_mapping(ds):
     """Returns grid mapping dataarray"""
-    grid_mapping = next(ds[va].attrs['grid_mapping'] 
-                        for va in ds.data_vars 
-                        if 'grid_mapping' in ds[va].attrs)
+    grid_mapping = next(
+        ds[va].attrs["grid_mapping"]
+        for va in ds.data_vars
+        if "grid_mapping" in ds[va].attrs
+    )
     return ds[grid_mapping]
 
 
@@ -223,11 +227,12 @@ def remap_lambert_conformal(ds, regridder=None):
     ds = ds.copy()
     if regridder is None:
         import xesmf as xe
-        domain = cordex_domain(ds.attrs['CORDEX_domain'])
+
+        domain = cordex_domain(ds.attrs["CORDEX_domain"])
         regridder = xe.Regridder(ds, domain, method="bilinear")
     for va in ds.data_vars:
         try:
-            if ds[va].attrs['grid_mapping'] == 'Lambert_Conformal':
+            if ds[va].attrs["grid_mapping"] == "Lambert_Conformal":
                 ds[va] = regridder(ds[va])
         except:
             pass
@@ -236,43 +241,45 @@ def remap_lambert_conformal(ds, regridder=None):
 
 def member_id_to_dset_id(ds_dict):
     """Expand the member coordinate into the dataset id
-    
+
     If there are more than two members in the dataset, the function
     will give back a dict with new dataset ids containing the member
     as keys and a dataset for each member.
-    
+
     """
     ds_split = {}
     for ds in ds_dict.values():
-        ds_split.update(flatten_coordinate_to_dset_id(ds, 'member'))
+        ds_split.update(flatten_coordinate_to_dset_id(ds, "member"))
     return ds_split
 
 
 def flatten_coordinate_to_dset_id(ds, coord):
     flatten = {}
     for xcoord, ds_coord in ds.groupby(coord):
-            dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
-            flatten[dset_id] = ds_coord
+        dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
+        flatten[dset_id] = ds_coord
     return flatten
 
 
 def dset_ids_to_coord(ds_dict):
     """Creates a DataArray from dataset ids"""
     dset_ids = list(ds_dict.keys())
-    dim = xr.DataArray(dset_ids, dims='dset_id', name='dset_id',
-                      coords={'dset_id': dset_ids})
+    dim = xr.DataArray(
+        dset_ids, dims="dset_id", name="dset_id", coords={"dset_id": dset_ids}
+    )
     return dim
 
 
 def align_time_axis(ds_dict):
     from datetime import datetime as dt
+
     for ds in ds_dict.values():
-        #ds = ds.copy()
-        ds.coords['time'] = [dt(date.year, date.month, 15) for date in ds.time.values]
+        # ds = ds.copy()
+        ds.coords["time"] = [dt(date.year, date.month, 15) for date in ds.time.values]
     return ds_dict
 
 
-def concat_along_dset_id(ds_dict, coords='minimal', compat='override', **kwargs ):
+def concat_along_dset_id(ds_dict, coords="minimal", compat="override", **kwargs):
     dset_coord = dset_ids_to_coord(ds_dict)
     ds_dict = align_time_axis(ds_dict)
     ds_list = []
@@ -280,20 +287,20 @@ def concat_along_dset_id(ds_dict, coords='minimal', compat='override', **kwargs 
         ds = replace_rlon_rlat(ds)
         ds = replace_lon_lat(ds)
         ds_list.append(ds)
-    return xr.concat(ds_list, dim=dset_coord, 
-                     coords=coords, compat=compat, **kwargs)
+    return xr.concat(ds_list, dim=dset_coord, coords=coords, compat=compat, **kwargs)
 
 
 def sort_ds_dict_by_attr(ds_dict, attr):
     """Sorts the dataset dict by a certain attribute"""
     from collections import defaultdict
+
     dsets_sorted = defaultdict(dict)
     for dset_id, ds in ds_dict.items():
         value = ds.attrs[attr]
         dsets_sorted[value][dset_id] = ds
-    return dsets_sorted   
-    
-    
+    return dsets_sorted
+
+
 def correct_lon(ds):
     """Wraps negative x and lon values around to have 0-360 lons.
     longitude names expected to be corrected with `rename_cordex`"""
@@ -322,7 +329,7 @@ def _key_from_attrs(ds, attrs, sep="."):
 def get_rotated_pole_datasets():
     pass
 
-            
+
 def cordex_dataset_id(
     ds,
     sep=".",
@@ -333,7 +340,7 @@ def cordex_dataset_id(
         "model_id",
         "experiment_id",
         "frequency",
-      #  "driving_model_ensemble_member"
+        #  "driving_model_ensemble_member"
     ],
 ):
     """Creates a unique string id for e.g. saving files to disk from CORDEX output
