@@ -40,8 +40,8 @@ def cordex_renaming_dict():
         "lat": ["latitude"],
         "lev": ["deptht", "olevel", "zlev", "olev", "depth"],
         "bnds": ["bnds", "axis_nbounds", "d2"],
-        "lon_vertices": ["vertices_longitude"],
-        "lat_vertices": ["vertices_latitude"],
+        "lon_vertices": ["longitude_vertices"],
+        "lat_vertices": ["latitude_vertices"],
         "rotated_latitude_longitude": ["rotated_pole"],
         # coordinate labels
         #   "lon": ["longitude", "nav_lon"],
@@ -132,7 +132,6 @@ def rename_cordex(ds, rename_dict=None):
                 ds[va] = ds[va].rename({"lon": "rlon", "lat": "rlat"})
         except:
             pass
-    return ds
 
     #  re-set lon lat to coordinates
     for coord in ["lat", "lon"]:
@@ -205,6 +204,14 @@ def replace_lon_lat(ds, domain=None):
     return ds
 
 
+def replace_coords(ds, domain=None):
+    """Replace spatial coordinates with domain coordinates"""
+    ds = ds.copy()
+    ds = replace_rlon_rlat(ds, domain)
+    ds = replace_lon_lat(ds, domain)
+    return ds
+
+
 def crop_to_cordex_domain(ds):
     pass
 
@@ -270,24 +277,24 @@ def dset_ids_to_coord(ds_dict):
     return dim
 
 
-def align_time_axis(ds_dict):
-    from datetime import datetime as dt
+# def align_time_axis(ds_dict):
+#     from datetime import datetime as dt
 
-    for ds in ds_dict.values():
-        # ds = ds.copy()
-        ds.coords["time"] = [dt(date.year, date.month, 15) for date in ds.time.values]
-    return ds_dict
+#     for ds in ds_dict.values():
+#         # ds = ds.copy()
+#         ds.coords["time"] = [dt(date.year, date.month, 15) for date in ds.time.values]
+#     return ds_dict
 
 
-def concat_along_dset_id(ds_dict, coords="minimal", compat="override", **kwargs):
-    dset_coord = dset_ids_to_coord(ds_dict)
-    ds_dict = align_time_axis(ds_dict)
-    ds_list = []
-    for ds in ds_dict.values():
-        ds = replace_rlon_rlat(ds)
-        ds = replace_lon_lat(ds)
-        ds_list.append(ds)
-    return xr.concat(ds_list, dim=dset_coord, coords=coords, compat=compat, **kwargs)
+# def concat_along_dset_id(ds_dict, coords="minimal", compat="override", **kwargs):
+#     dset_coord = dset_ids_to_coord(ds_dict)
+#     ds_dict = align_time_axis(ds_dict)
+#     ds_list = []
+#     for ds in ds_dict.values():
+#         ds = replace_rlon_rlat(ds)
+#         ds = replace_lon_lat(ds)
+#         ds_list.append(ds)
+#     return xr.concat(ds_list, dim=dset_coord, coords=coords, compat=compat, **kwargs)
 
 
 def sort_ds_dict_by_attr(ds_dict, attr):

@@ -1,6 +1,12 @@
 import xarray as xr
+import numpy as np
+import pytest
 
-from cordex.preprocessing import rename_cordex
+from cordex.preprocessing.preprocessing import (
+    rename_cordex,
+    get_grid_mapping,
+    replace_coords
+)
 
 from cordex import cordex_domain
 
@@ -42,3 +48,29 @@ def test_wrf_case():
     """Test the wrf exception"""
     ds = create_wrf_test("EUR-11")
     assert rename_cordex(ds).equals(create_test_ds("EUR-11"))
+    
+
+@pytest.mark.parametrize("lon_name", ["longitude"])
+@pytest.mark.parametrize("lat_name", ["latitude"])
+@pytest.mark.parametrize("pol_name", ["rotated_latitude_longitude", "rotated_pole"])
+@pytest.mark.parametrize("lon_vertices", ["longitude_vertices"])
+@pytest.mark.parametrize("lat_vertices", ["latitude_vertices"])
+def test_rename_cordex(lon_name, lat_name, pol_name, lon_vertices, lat_vertices):
+    dm = create_test_ds('EUR-11', pol_name)
+    dm = dm.rename({'lon': lon_name, 'lat': lat_name, 'lon_vertices': lon_vertices, 'lat_vertices': lat_vertices})
+    assert rename_cordex(dm).equals(create_test_ds('EUR-11'))
+    
+    
+
+def test_grid_mapping():
+    ds = create_test_ds('EUR-11')
+    assert (get_grid_mapping(ds).equals(ds.rotated_latitude_longitude))
+    
+    
+def test_replace_coords():
+    ds = create_test_ds('EUR-11')
+    ds['rlon'] = np.arange(ds.rlon.size)
+    ds['rlat'] = np.arange(ds.rlat.size)
+    ds['lon'] = np.arange(ds.lon.size)
+    ds['lat'] = np.arange(ds.lon.size)
+    assert(replace_coords(ds).equals(create_test_ds('EUR-11')))
