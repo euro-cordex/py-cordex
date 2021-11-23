@@ -5,14 +5,17 @@ import pytest
 from cordex.preprocessing.preprocessing import (
     rename_cordex,
     get_grid_mapping,
-    replace_coords
+    replace_coords,
+    cordex_dataset_id
 )
 
 from cordex import cordex_domain
 
 
-def create_test_ds(name, pol_name="rotated_latitude_longitude"):
-    domain = cordex_domain(name, mapping_name=pol_name, dummy=True, add_vertices=True)
+def create_test_ds(name, pol_name="rotated_latitude_longitude", dummy=True,
+                  add_vertices=True, **kwargs):
+    domain = cordex_domain(name, mapping_name=pol_name, dummy=dummy, 
+                           add_vertices=add_vertices, **kwargs)
     return domain
 
 
@@ -74,3 +77,13 @@ def test_replace_coords():
     ds['lon'] = np.arange(ds.lon.size)
     ds['lat'] = np.arange(ds.lon.size)
     assert(replace_coords(ds).equals(create_test_ds('EUR-11')))
+    
+    
+def test_cordex_dataset_id():
+    ds = create_test_ds('EUR-11', attrs='CORDEX')
+    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
+    ds.attrs['institute_id'] = 'INSTITUTE'
+    ds.attrs['model_id'] = 'RCM'
+    ds.attrs['experiment_id'] = 'historical'
+    ds.attrs['frequency'] = 'mon'
+    assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
