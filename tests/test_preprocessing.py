@@ -6,6 +6,7 @@ from . import has_xesmf, requires_xesmf
 
 from cordex.preprocessing.preprocessing import (
     rename_cordex,
+    check_domain,
     get_grid_mapping,
     replace_coords,
     cordex_dataset_id,
@@ -162,6 +163,9 @@ def test_sort_ds_dict_by_attr(test_ensemble):
     ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, "experiment_id")
     assert "evaluation" in ds_dict_sorted
 
+
+def test_check_domain():
+    assert check_domain(cordex_domain('EUR-11'))
 
 @requires_xesmf
 def test_remap_lambert_conformal(test_ensemble):

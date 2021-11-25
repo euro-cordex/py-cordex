@@ -235,6 +235,7 @@ def check_domain(ds, domain=None):
         assert ds.rlat.size == dm.rlat.size
         assert np.all(ds.rlon == dm.rlon)
         assert np.all(ds.rlat == dm.rlat)
+    return True
 
 
 def replace_rlon_rlat(ds, domain=None):
