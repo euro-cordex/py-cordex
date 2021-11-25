@@ -21,6 +21,8 @@ from .core.domain import (
     domain_info,
 )
 
+from .core import tutorial
+
 from .tables import domains, ecmwf, cordex_cmor_table
 from . import tables
 
