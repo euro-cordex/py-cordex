@@ -5,8 +5,11 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
+   cordex.cmor
    cordex.core
+   cordex.preprocessing
    cordex.regions
    cordex.tables
 
@@ -29,14 +32,6 @@ cordex.esgf\_access module
    :undoc-members:
    :show-inheritance:
 
-cordex.shapes module
---------------------
-
-.. automodule:: cordex.shapes
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 cordex.variable module
 ----------------------
 
@@ -52,7 +47,6 @@ cordex.version module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

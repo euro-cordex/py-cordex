@@ -13,7 +13,6 @@ Welcome to Cordex Python Package's documentation!
    contributing
    authors
    whats_new
-   history
    api
 
 Indices and tables

@@ -18,3 +18,4 @@ def _importorskip(modname):
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_cartopy, requires_cartopy = _importorskip("cartopy")
 has_regionmask, requires_regionmask = _importorskip("regionmask")
+has_xesmf, requires_xesmf = _importorskip("xesmf")

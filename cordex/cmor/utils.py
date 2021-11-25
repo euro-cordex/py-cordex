@@ -22,7 +22,7 @@ def ensure_cftime(func):
     return wrapper
 
 
-def to_cftime(date, calendar="proleptic_gregorian"):
+def to_cftime(date, calendar="gregorian"):
     """Convert datetime object to cftime object.
 
     Parameters

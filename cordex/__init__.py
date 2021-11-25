@@ -11,7 +11,7 @@
 #    del get_distribution, DistributionNotFound
 
 
-from . import core, regions, cmor
+from . import core, regions, cmor, preprocessing
 from .core.domain import (
     cordex_domain,
     create_dataset,
@@ -20,6 +20,8 @@ from .core.domain import (
     vertices,
     domain_info,
 )
+
+from .core import tutorial
 
 from .tables import domains, ecmwf, cordex_cmor_table
 from . import tables
