@@ -11,7 +11,10 @@ from cordex.preprocessing.preprocessing import (
     cordex_dataset_id,
     promote_empty_dims,
     remap_lambert_conformal,
-    sort_ds_dict_by_attr
+    sort_ds_dict_by_attr,
+    get_grid_mapping_name,
+    member_id_to_dset_id,
+    attr_to_coord
 )
 
 from cordex import cordex_domain
@@ -100,6 +103,33 @@ def test_cordex_dataset_id():
     assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
     
     
+def test_cordex_dataset_id():
+    ds = create_test_ds('EUR-11', attrs='CORDEX')
+    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
+    ds.attrs['institute_id'] = 'INSTITUTE'
+    ds.attrs['model_id'] = 'RCM'
+    ds.attrs['experiment_id'] = 'historical'
+    ds.attrs['frequency'] = 'mon'
+    assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
+
+
+def test_member_id_to_dset_id():
+    ds = create_test_ds('EUR-11', attrs='CORDEX')
+    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
+    ds.attrs['institute_id'] = 'INSTITUTE'
+    ds.attrs['model_id'] = 'RCM'
+    ds.attrs['experiment_id'] = 'historical'
+    ds.attrs['frequency'] = 'mon'
+    ds.attrs['member'] = 'r1i1p1'
+    
+    ds = attr_to_coord(ds, 'member')
+    ds_id_old = cordex_dataset_id(ds, sep=".")# == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
+    ds_dict = {ds_id_old: ds}
+    ds_dict_new = member_id_to_dset_id(ds_dict)
+    for ds_id, ds in ds_dict_new.items():
+        assert ds_id == ds_id_old + ".{}".format(ds.attrs['member'])
+
+    
 def test_promote_empty_dims():
     ds = create_test_ds('EUR-11')
     ds = ds.drop_vars(["rlon", "rlat"])
@@ -111,7 +141,14 @@ def test_sort_ds_dict_by_attr(test_ensemble):
     ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, 'experiment_id')
     assert 'evaluation' in ds_dict_sorted
     
+    
+def test_sort_ds_dict_by_attr(test_ensemble):
+    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, 'experiment_id')
+    assert 'evaluation' in ds_dict_sorted
+    
 
 @requires_xesmf
 def test_remap_lambert_conformal(test_ensemble):
     remap = {key : remap_lambert_conformal(ds) for key, ds in test_ensemble.items()}
+    for ds in remap.values():
+        assert get_grid_mapping_name(ds) in ["rotated_latitude_longitude", "rotated_pole"]
