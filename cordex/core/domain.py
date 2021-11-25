@@ -243,7 +243,7 @@ def _get_dataset(
             ds[mapping_name].grid_north_pole_latitude,
         )
         v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
-        ds = xr.merge([ds, v])
+        ds = xr.merge([ds, v], combine_attrs='override')
 
     for key, coord in ds.coords.items():
         coord.encoding["_FillValue"] = None
