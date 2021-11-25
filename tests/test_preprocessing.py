@@ -2,15 +2,20 @@ import xarray as xr
 import numpy as np
 import pytest
 
+from . import has_xesmf, requires_xesmf
+
 from cordex.preprocessing.preprocessing import (
     rename_cordex,
     get_grid_mapping,
     replace_coords,
     cordex_dataset_id,
-    promote_empty_dims
+    promote_empty_dims,
+    remap_lambert_conformal,
+    sort_ds_dict_by_attr
 )
 
 from cordex import cordex_domain
+import cordex as cx
 
 
 def create_test_ds(name, pol_name="rotated_latitude_longitude", dummy=True,
@@ -18,6 +23,11 @@ def create_test_ds(name, pol_name="rotated_latitude_longitude", dummy=True,
     domain = cordex_domain(name, mapping_name=pol_name, dummy=dummy, 
                            add_vertices=add_vertices, **kwargs)
     return domain
+
+
+@pytest.fixture
+def test_ensemble():
+    return cx.tutorial.ensemble()
 
 
 def create_wrf_test(name):
@@ -95,3 +105,13 @@ def test_promote_empty_dims():
     ds = ds.drop_vars(["rlon", "rlat"])
     ds_promoted = promote_empty_dims(ds)
     assert set(["rlon", "rlat"]).issubset(set(ds_promoted.coords))
+    
+    
+def test_sort_ds_dict_by_attr(test_ensemble):
+    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, 'experiment_id')
+    assert 'evaluation' in ds_dict_sorted
+    
+
+@requires_xesmf
+def test_remap_lambert_conformal(test_ensemble):
+    remap = {key : remap_lambert_conformal(ds) for key, ds in test_ensemble.items()}

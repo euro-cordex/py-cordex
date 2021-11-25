@@ -216,14 +216,6 @@ def replace_coords(ds, domain=None):
     return ds
 
 
-def crop_to_cordex_domain(ds):
-    pass
-
-
-def split_by_coordinate(ds):
-    pass
-
-
 def get_grid_mapping_name(ds):
     """Returns grid mapping name"""
     return next(
