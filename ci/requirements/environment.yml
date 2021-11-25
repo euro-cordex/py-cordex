@@ -12,6 +12,7 @@ dependencies:
   - xarray
   - cftime
   - netCDF4
+  - xesmf
   - cdo==1.9.9 # python-cdo fails with cdo2
   - python-cdo
 # for testing
