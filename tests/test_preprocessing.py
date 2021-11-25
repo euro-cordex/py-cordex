@@ -6,7 +6,8 @@ from cordex.preprocessing.preprocessing import (
     rename_cordex,
     get_grid_mapping,
     replace_coords,
-    cordex_dataset_id
+    cordex_dataset_id,
+    promote_empty_dims
 )
 
 from cordex import cordex_domain
@@ -87,3 +88,10 @@ def test_cordex_dataset_id():
     ds.attrs['experiment_id'] = 'historical'
     ds.attrs['frequency'] = 'mon'
     assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
+    
+    
+def test_promote_empty_dims():
+    ds = create_test_ds('EUR-11')
+    ds = ds.drop_vars(["rlon", "rlat"])
+    ds_promoted = promote_empty_dims(ds)
+    assert set(["rlon", "rlat"]).issubset(set(ds_promoted.coords))
