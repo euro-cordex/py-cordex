@@ -82,7 +82,7 @@ def _invert_dict(rdict):
 
 
 def rename_cordex(ds, rename_dict=None):
-    """Homogenizes cordex dataasets to common naming"""
+    """Homogenizes cordex datasets to common naming"""
     ds = ds.copy()
     attrs = {k: v for k, v in ds.attrs.items()}
 
@@ -175,7 +175,7 @@ def attr_to_coord(ds, attr, expand=True):
 
 def check_domain(ds, domain=None):
     if domain is None:
-        domain = ds.attrs.get("CORDEX_domain")
+        domain = ds.attrs.get("CORDEX_domain", None)
     dm = cordex_domain(domain)
     if "rotated_latitude_longitude" in ds:
         assert ds.rlon.size == dm.rlon.size
@@ -188,9 +188,11 @@ def replace_rlon_rlat(ds, domain=None):
     """Replace lon lat coordinates with domain coordinates"""
     ds = ds.copy()
     if domain is None:
-        domain = cordex_domain(ds.attrs.get("CORDEX_domain", None))
-    ds.coords["rlon"] = domain.rlon
-    ds.coords["rlat"] = domain.rlat
+        domain = ds.attrs.get("CORDEX_domain", None)
+    dm = cordex_domain(domain)
+    for coord in ['rlon', 'rlat']:
+        if coord in ds.coords:
+            ds = ds.drop(coord).assign_coords({coord: dm[coord]})
     return ds
 
 
@@ -198,9 +200,11 @@ def replace_lon_lat(ds, domain=None):
     """Replace lon lat coordinates with domain coordinates"""
     ds = ds.copy()
     if domain is None:
-        domain = cordex_domain(ds.attrs.get("CORDEX_domain", None))
-    ds.coords["lon"] = domain.lon
-    ds.coords["lat"] = domain.lat
+        domain = ds.attrs.get("CORDEX_domain", None)
+    dm = cordex_domain(domain)
+    for coord in ['lon', 'lat']:
+        if coord in ds.coords:
+            ds = ds.drop(coord).assign_coords({coord: dm[coord]})
     return ds
 
 
@@ -220,29 +224,55 @@ def split_by_coordinate(ds):
     pass
 
 
-def get_grid_mapping(ds):
-    """Returns grid mapping dataarray"""
-    grid_mapping = next(
+def get_grid_mapping_name(ds):
+    """Returns grid mapping name"""
+    return next(
         ds[va].attrs["grid_mapping"]
         for va in ds.data_vars
         if "grid_mapping" in ds[va].attrs
     )
-    return ds[grid_mapping]
+    
+
+def get_grid_mapping(ds):
+    """Returns grid mapping dataarray"""
+    return ds[get_grid_mapping_name(ds)]
 
 
-def remap_lambert_conformal(ds, regridder=None):
+def remap_lambert_conformal(ds, regridder=None, domain=None):
+    """Remap lambert conformal grid to rotated pole grid"""
     ds = ds.copy()
+    ds_attrs = ds.attrs
+    if domain is None:
+        domain = ds.attrs.get("CORDEX_domain", None)
+    dm = cordex_domain(domain)
     if regridder is None:
         import xesmf as xe
 
-        domain = cordex_domain(ds.attrs["CORDEX_domain"])
-        regridder = xe.Regridder(ds, domain, method="bilinear")
+        regridder = xe.Regridder(ds, dm, method="bilinear")
     for va in ds.data_vars:
         try:
             if ds[va].attrs["grid_mapping"] == "Lambert_Conformal":
+                attrs = ds[va].attrs
                 ds[va] = regridder(ds[va])
+                ds[va].attrs.update(attrs)
+                ds[va].attrs.update({"grid_mapping" : "rotated_latitude_longitude"})
+                try:
+                    ds = ds.drop("Lambert_Conformal")
+                    ds['rotated_latitude_longitude'] = dm.rotated_latitude_longitude
+                except:
+                    pass
         except:
             pass
+    ds = replace_coords(ds, domain)
+    ds.attrs = ds_attrs
+    try:
+        ds = ds.drop(('x', 'y'))
+    except:
+        pass
+    try:
+        ds.attrs['CORDEX_domain'] = dm.attrs['CORDEX_domain']
+    except:
+        pass
     return ds
 
 
