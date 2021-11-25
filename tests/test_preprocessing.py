@@ -14,17 +14,19 @@ from cordex.preprocessing.preprocessing import (
     sort_ds_dict_by_attr,
     get_grid_mapping_name,
     member_id_to_dset_id,
-    attr_to_coord
+    attr_to_coord,
 )
 
 from cordex import cordex_domain
 import cordex as cx
 
 
-def create_test_ds(name, pol_name="rotated_latitude_longitude", dummy=True,
-                  add_vertices=True, **kwargs):
-    domain = cordex_domain(name, mapping_name=pol_name, dummy=dummy, 
-                           add_vertices=add_vertices, **kwargs)
+def create_test_ds(
+    name, pol_name="rotated_latitude_longitude", dummy=True, add_vertices=True, **kwargs
+):
+    domain = cordex_domain(
+        name, mapping_name=pol_name, dummy=dummy, add_vertices=add_vertices, **kwargs
+    )
     return domain
 
 
@@ -65,7 +67,7 @@ def test_wrf_case():
     """Test the wrf exception"""
     ds = create_wrf_test("EUR-11")
     assert rename_cordex(ds).equals(create_test_ds("EUR-11"))
-    
+
 
 @pytest.mark.parametrize("lon_name", ["longitude"])
 @pytest.mark.parametrize("lat_name", ["latitude"])
@@ -73,82 +75,99 @@ def test_wrf_case():
 @pytest.mark.parametrize("lon_vertices", ["longitude_vertices"])
 @pytest.mark.parametrize("lat_vertices", ["latitude_vertices"])
 def test_rename_cordex(lon_name, lat_name, pol_name, lon_vertices, lat_vertices):
-    dm = create_test_ds('EUR-11', pol_name)
-    dm = dm.rename({'lon': lon_name, 'lat': lat_name, 'lon_vertices': lon_vertices, 'lat_vertices': lat_vertices})
-    assert rename_cordex(dm).equals(create_test_ds('EUR-11'))
-    
-    
+    dm = create_test_ds("EUR-11", pol_name)
+    dm = dm.rename(
+        {
+            "lon": lon_name,
+            "lat": lat_name,
+            "lon_vertices": lon_vertices,
+            "lat_vertices": lat_vertices,
+        }
+    )
+    assert rename_cordex(dm).equals(create_test_ds("EUR-11"))
+
 
 def test_grid_mapping():
-    ds = create_test_ds('EUR-11')
-    assert (get_grid_mapping(ds).equals(ds.rotated_latitude_longitude))
-    
-    
+    ds = create_test_ds("EUR-11")
+    assert get_grid_mapping(ds).equals(ds.rotated_latitude_longitude)
+
+
 def test_replace_coords():
-    ds = create_test_ds('EUR-11')
-    ds['rlon'] = np.arange(ds.rlon.size)
-    ds['rlat'] = np.arange(ds.rlat.size)
-    ds['lon'] = np.arange(ds.lon.size)
-    ds['lat'] = np.arange(ds.lon.size)
-    assert(replace_coords(ds).equals(create_test_ds('EUR-11')))
-    
-    
+    ds = create_test_ds("EUR-11")
+    ds["rlon"] = np.arange(ds.rlon.size)
+    ds["rlat"] = np.arange(ds.rlat.size)
+    ds["lon"] = np.arange(ds.lon.size)
+    ds["lat"] = np.arange(ds.lon.size)
+    assert replace_coords(ds).equals(create_test_ds("EUR-11"))
+
+
 def test_cordex_dataset_id():
-    ds = create_test_ds('EUR-11', attrs='CORDEX')
-    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
-    ds.attrs['institute_id'] = 'INSTITUTE'
-    ds.attrs['model_id'] = 'RCM'
-    ds.attrs['experiment_id'] = 'historical'
-    ds.attrs['frequency'] = 'mon'
-    assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
-    
-    
+    ds = create_test_ds("EUR-11", attrs="CORDEX")
+    ds.attrs["driving_model_id"] = "MY-DRIVE-MODEL"
+    ds.attrs["institute_id"] = "INSTITUTE"
+    ds.attrs["model_id"] = "RCM"
+    ds.attrs["experiment_id"] = "historical"
+    ds.attrs["frequency"] = "mon"
+    assert (
+        cordex_dataset_id(ds, sep=".")
+        == "EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon"
+    )
+
+
 def test_cordex_dataset_id():
-    ds = create_test_ds('EUR-11', attrs='CORDEX')
-    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
-    ds.attrs['institute_id'] = 'INSTITUTE'
-    ds.attrs['model_id'] = 'RCM'
-    ds.attrs['experiment_id'] = 'historical'
-    ds.attrs['frequency'] = 'mon'
-    assert cordex_dataset_id(ds, sep=".") == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
+    ds = create_test_ds("EUR-11", attrs="CORDEX")
+    ds.attrs["driving_model_id"] = "MY-DRIVE-MODEL"
+    ds.attrs["institute_id"] = "INSTITUTE"
+    ds.attrs["model_id"] = "RCM"
+    ds.attrs["experiment_id"] = "historical"
+    ds.attrs["frequency"] = "mon"
+    assert (
+        cordex_dataset_id(ds, sep=".")
+        == "EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon"
+    )
 
 
 def test_member_id_to_dset_id():
-    ds = create_test_ds('EUR-11', attrs='CORDEX')
-    ds.attrs['driving_model_id'] = 'MY-DRIVE-MODEL'
-    ds.attrs['institute_id'] = 'INSTITUTE'
-    ds.attrs['model_id'] = 'RCM'
-    ds.attrs['experiment_id'] = 'historical'
-    ds.attrs['frequency'] = 'mon'
-    ds.attrs['member'] = 'r1i1p1'
-    
-    ds = attr_to_coord(ds, 'member')
-    ds_id_old = cordex_dataset_id(ds, sep=".")# == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
+    ds = create_test_ds("EUR-11", attrs="CORDEX")
+    ds.attrs["driving_model_id"] = "MY-DRIVE-MODEL"
+    ds.attrs["institute_id"] = "INSTITUTE"
+    ds.attrs["model_id"] = "RCM"
+    ds.attrs["experiment_id"] = "historical"
+    ds.attrs["frequency"] = "mon"
+    ds.attrs["member"] = "r1i1p1"
+
+    ds = attr_to_coord(ds, "member")
+    ds_id_old = cordex_dataset_id(
+        ds, sep="."
+    )  # == 'EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon'
     ds_dict = {ds_id_old: ds}
     ds_dict_new = member_id_to_dset_id(ds_dict)
     for ds_id, ds in ds_dict_new.items():
-        assert ds_id == ds_id_old + ".{}".format(ds.attrs['member'])
+        assert ds_id == ds_id_old + ".{}".format(ds.attrs["member"])
 
-    
+
 def test_promote_empty_dims():
-    ds = create_test_ds('EUR-11')
+    ds = create_test_ds("EUR-11")
     ds = ds.drop_vars(["rlon", "rlat"])
     ds_promoted = promote_empty_dims(ds)
     assert set(["rlon", "rlat"]).issubset(set(ds_promoted.coords))
-    
-    
+
+
 def test_sort_ds_dict_by_attr(test_ensemble):
-    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, 'experiment_id')
-    assert 'evaluation' in ds_dict_sorted
-    
-    
+    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, "experiment_id")
+    assert "evaluation" in ds_dict_sorted
+
+
 def test_sort_ds_dict_by_attr(test_ensemble):
-    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, 'experiment_id')
-    assert 'evaluation' in ds_dict_sorted
-    
+    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, "experiment_id")
+    assert "evaluation" in ds_dict_sorted
+
 
 @requires_xesmf
 def test_remap_lambert_conformal(test_ensemble):
-    remap = {key : remap_lambert_conformal(ds) for key, ds in test_ensemble.items()}
+    remap = {key: remap_lambert_conformal(ds) for key, ds in test_ensemble.items()}
     for ds in remap.values():
-        assert get_grid_mapping_name(ds) in ["rotated_latitude_longitude", "rotated_pole"]
+        assert get_grid_mapping_name(ds) in [
+            "rotated_latitude_longitude",
+            "rotated_pole",
+        ]

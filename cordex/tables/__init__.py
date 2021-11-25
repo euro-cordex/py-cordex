@@ -1,8 +1,14 @@
 import pandas as pd
 
-from ._resources import read_cordex_domain_tables, ecmwf_tables, fetch_cordex_cmor_table, cmor_table_version
+from ._resources import (
+    read_cordex_domain_tables,
+    ecmwf_tables,
+    fetch_cordex_cmor_table,
+    cmor_table_version,
+)
 
 __cmor_table_version__ = cmor_table_version
+
 
 class read_cls:
     def __init__(self, reader):

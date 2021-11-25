@@ -82,7 +82,24 @@ def _invert_dict(rdict):
 
 
 def rename_cordex(ds, rename_dict=None):
-    """Homogenizes cordex datasets to common naming"""
+    """Homogenizes cordex datasets to common naming conventions.
+
+    Renames dataset names and attributes according to CORDEX conventions.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    rename_dict: dict
+        Renaming dictionary, defaults to None. If rename_dict is None,
+        a standard CORDEX dictionary is used.
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset according to CORDEX conventions.
+
+    """
     ds = ds.copy()
     attrs = {k: v for k, v in ds.attrs.items()}
 
@@ -156,7 +173,19 @@ def rename_cordex(ds, rename_dict=None):
 
 
 def promote_empty_dims(ds):
-    """Convert empty dimensions to actual coordinates"""
+    """Convert empty dimensions to actual coordinates.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with promoted dims.
+
+    """
     ds = ds.copy()
     for di in ds.dims:
         if di not in ds.coords:
@@ -165,6 +194,19 @@ def promote_empty_dims(ds):
 
 
 def attr_to_coord(ds, attr, expand=True):
+    """Promote a dataset attribute to a coordinate.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with new coordinate.
+
+    """
     ds = ds.copy()
     value = ds.attrs[attr]
     ds = ds.assign_coords({attr: value})
@@ -174,6 +216,17 @@ def attr_to_coord(ds, attr, expand=True):
 
 
 def check_domain(ds, domain=None):
+    """Check if coordinates are conform with archive specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    """
     if domain is None:
         domain = ds.attrs.get("CORDEX_domain", None)
     dm = cordex_domain(domain)
@@ -185,31 +238,78 @@ def check_domain(ds, domain=None):
 
 
 def replace_rlon_rlat(ds, domain=None):
-    """Replace lon lat coordinates with domain coordinates"""
+    """Replace rlon rlat coordinates with archive specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with updated rlon, rlat.
+
+    """
     ds = ds.copy()
     if domain is None:
         domain = ds.attrs.get("CORDEX_domain", None)
     dm = cordex_domain(domain)
-    for coord in ['rlon', 'rlat']:
+    for coord in ["rlon", "rlat"]:
         if coord in ds.coords:
             ds = ds.drop(coord).assign_coords({coord: dm[coord]})
     return ds
 
 
 def replace_lon_lat(ds, domain=None):
-    """Replace lon lat coordinates with domain coordinates"""
+    """Replace lon lat coordinates with archive specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with updated lon, lat.
+
+    """
     ds = ds.copy()
     if domain is None:
         domain = ds.attrs.get("CORDEX_domain", None)
     dm = cordex_domain(domain)
-    for coord in ['lon', 'lat']:
+    for coord in ["lon", "lat"]:
         if coord in ds.coords:
             ds = ds.drop(coord).assign_coords({coord: dm[coord]})
     return ds
 
 
 def replace_coords(ds, domain=None):
-    """Replace spatial coordinates with domain coordinates"""
+    """Replace spatial coordinates with coordinates according
+    to archive specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with updated rlon, rlat, lon and lat.
+
+
+    """
     ds = ds.copy()
     ds = replace_rlon_rlat(ds, domain)
     ds = replace_lon_lat(ds, domain)
@@ -217,21 +317,74 @@ def replace_coords(ds, domain=None):
 
 
 def get_grid_mapping_name(ds):
-    """Returns grid mapping name"""
+    """Returns grid mapping name.
+
+    Returns the variable name of the first grid mapping found
+    in the dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+
+    Returns
+    -------
+    grid_mapping_name : str
+        Variable name of the grid mapping.
+
+    """
     return next(
         ds[va].attrs["grid_mapping"]
         for va in ds.data_vars
         if "grid_mapping" in ds[va].attrs
     )
-    
+
 
 def get_grid_mapping(ds):
-    """Returns grid mapping dataarray"""
+    """Returns grid mapping dataarray.
+
+    Returns the grid_mapping dataarray of the first grid mapping
+    found in the dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+
+    Returns
+    -------
+    grid_mapping : xr.DataArray
+        Dataarray containing the grid mapping meta data.
+
+    """
     return ds[get_grid_mapping_name(ds)]
 
 
 def remap_lambert_conformal(ds, regridder=None, domain=None):
-    """Remap lambert conformal grid to rotated pole grid"""
+    """Remap lambert conformal grid to rotated pole grid
+
+    Remap CORDEX dataset with lambert conformal grid mapping to
+    rotated pole grid mapping using xesmf.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    regridder: xesmf.Regridder
+        Regridder instance for use in the remapping. If regridder is None,
+        an instance will be created to remap the dataset to the rotated_pole
+        grid defined by the CORDEX_domain dataset attribute.
+    domain : str
+        Domain name of the target grid. If domain is None, remap the dataset
+        to the rotated_pole grid defined by the CORDEX_domain dataset attribute.
+
+    Returns
+    -------
+    remapped dataset : xr.Dataset
+        Dataset with lambert conformal data remapped to rotated pole.
+
+
+    """
     ds = ds.copy()
     ds_attrs = ds.attrs
     if domain is None:
@@ -247,10 +400,10 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
                 attrs = ds[va].attrs
                 ds[va] = regridder(ds[va])
                 ds[va].attrs.update(attrs)
-                ds[va].attrs.update({"grid_mapping" : "rotated_latitude_longitude"})
+                ds[va].attrs.update({"grid_mapping": "rotated_latitude_longitude"})
                 try:
                     ds = ds.drop("Lambert_Conformal")
-                    ds['rotated_latitude_longitude'] = dm.rotated_latitude_longitude
+                    ds["rotated_latitude_longitude"] = dm.rotated_latitude_longitude
                 except:
                     pass
         except:
@@ -258,14 +411,23 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
     ds = replace_coords(ds, domain)
     ds.attrs = ds_attrs
     try:
-        ds = ds.drop(('x', 'y'))
+        ds = ds.drop(("x", "y"))
     except:
         pass
     try:
-        ds.attrs['CORDEX_domain'] = dm.attrs['CORDEX_domain']
+        ds.attrs["CORDEX_domain"] = dm.attrs["CORDEX_domain"]
     except:
         pass
     return ds
+
+
+def flatten_coordinate_to_dset_id(ds, coord):
+    """Flattens an arbitrary coordinate to become part of the dataset id."""
+    flatten = {}
+    for xcoord, ds_coord in ds.groupby(coord):
+        dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
+        flatten[dset_id] = ds_coord
+    return flatten
 
 
 def member_id_to_dset_id(ds_dict):
@@ -273,7 +435,18 @@ def member_id_to_dset_id(ds_dict):
 
     If there are more than two members in the dataset, the function
     will give back a dict with new dataset ids containing the member
-    as keys and a dataset for each member.
+    in the key and a dataset for each member. This is useful for creating
+    and ensemble dataset to avoid sparse datasets.
+
+    Parameters
+    ----------
+    ds_dict : dict
+        CORDEX ensemble with dataset ids as keys and datasets as items.
+
+    Returns
+    -------
+    ds_dict : dict
+        CORDEX ensemble with keys expanded to the member id.
 
     """
     ds_split = {}
@@ -282,21 +455,13 @@ def member_id_to_dset_id(ds_dict):
     return ds_split
 
 
-def flatten_coordinate_to_dset_id(ds, coord):
-    flatten = {}
-    for xcoord, ds_coord in ds.groupby(coord):
-        dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
-        flatten[dset_id] = ds_coord
-    return flatten
-
-
-def dset_ids_to_coord(ds_dict):
-    """Creates a DataArray from dataset ids"""
-    dset_ids = list(ds_dict.keys())
-    dim = xr.DataArray(
-        dset_ids, dims="dset_id", name="dset_id", coords={"dset_id": dset_ids}
-    )
-    return dim
+# def dset_ids_to_coord(ds_dict):
+#     """Creates a DataArray from dataset ids"""
+#     dset_ids = list(ds_dict.keys())
+#     dim = xr.DataArray(
+#         dset_ids, dims="dset_id", name="dset_id", coords={"dset_id": dset_ids}
+#     )
+#     return dim
 
 
 # def align_time_axis(ds_dict):
@@ -320,7 +485,25 @@ def dset_ids_to_coord(ds_dict):
 
 
 def sort_ds_dict_by_attr(ds_dict, attr):
-    """Sorts the dataset dict by a certain attribute"""
+    """Sorts the dataset dict by a certain attribute.
+
+    Creates a dictionary containing the datasets sorted according to
+    a dataset attribute (e.g., sort by ``experiment_id``).
+
+    Parameters
+    ----------
+    ds_dict : dict
+        CORDEX ensemble with dataset ids as keys and datasets as items.
+    attr : str
+        Dataset attribute used for sorting, e.g., ``experiment_id``.
+
+    Returns
+    -------
+    ds_dict : dict
+        CORDEX ensemble sorted by dataset attributes.
+
+
+    """
     from collections import defaultdict
 
     dsets_sorted = defaultdict(dict)
@@ -372,16 +555,19 @@ def cordex_dataset_id(
         #  "driving_model_ensemble_member"
     ],
 ):
-    """Creates a unique string id for e.g. saving files to disk from CORDEX output
+    """Creates a unique string id for e.g. saving files to disk from CORDEX output.
+
     Parameters
     ----------
     ds : xr.Dataset
         Input dataset
     sep : str, optional
         String/Symbol to seperate fields in resulting string, by default "."
+
     Returns
     -------
     str
         Concatenated
+
     """
     return _key_from_attrs(ds, id_attrs, sep=sep)

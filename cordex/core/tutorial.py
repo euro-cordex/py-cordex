@@ -58,7 +58,6 @@ def _check_netcdf_engine_installed(name):
                 )
 
 
-
 def _construct_cache_dir(path):
     import pooch
 
@@ -68,7 +67,6 @@ def _construct_cache_dir(path):
         path = pooch.os_cache(_default_cache_dir_name)
 
     return path
-
 
 
 # idea borrowed from Seaborn
@@ -142,8 +140,10 @@ def open_dataset(
 
 
 def ensemble():
-    files = ["tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",
-             "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012",
-             "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012",
-             "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012"]
+    files = [
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012",
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012",
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012",
+    ]
     return {cordex_dataset_id(ds): ds for ds in [open_dataset(f) for f in files]}

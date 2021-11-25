@@ -48,7 +48,9 @@ CMOR_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
     path="~/.cordex-cmor-tables",
     # The remote data is on Github
-    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/v{}/tables/cordex-cmor-tables-test/Tables/".format(cmor_table_version),
+    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/v{}/tables/cordex-cmor-tables-test/Tables/".format(
+        cmor_table_version
+    ),
     registry={
         "CORDEX_Amon.json": "f0731506317d30df97d3b7d9241ba66418cb25ee7ab245c00b95ed8050866fa1",
         "CORDEX_day.json": "1ba4acd4a6d3c5fdeedf411334f8be7bcbc1034314056bbf002e9bb55e3f3746",

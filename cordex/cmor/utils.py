@@ -22,7 +22,7 @@ def ensure_cftime(func):
     return wrapper
 
 
-def to_cftime(date, calendar='gregorian'):
+def to_cftime(date, calendar="gregorian"):
     """Convert datetime object to cftime object.
 
     Parameters
@@ -51,7 +51,7 @@ def to_cftime(date, calendar='gregorian'):
         date.minute,
         date.second,
         date.microsecond,
-        calendar=calendar
+        calendar=calendar,
     )
 
 
