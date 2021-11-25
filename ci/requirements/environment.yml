@@ -11,6 +11,7 @@ dependencies:
   - setuptools
   - xarray
   - cftime
+  - netCDF4
   - cdo==1.9.9 # python-cdo fails with cdo2
   - python-cdo
 # for testing
