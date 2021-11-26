@@ -161,7 +161,7 @@ def rename_cordex(ds, rename_dict=None):
         for key, value in ds[va].attrs.items():
             if isinstance(value, np.ndarray):
                 ds[va].attrs[key] = list(value)
-            if key == 'grid_mapping' and values == 'rotated_pole':
+            if key == 'grid_mapping' and value == 'rotated_pole':
                 ds[va].attrs[key] = 'rotated_latitude_longitude'
 
     # restore attributes
