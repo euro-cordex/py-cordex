@@ -161,10 +161,14 @@ def rename_cordex(ds, rename_dict=None):
         for key, value in ds[va].attrs.items():
             if isinstance(value, np.ndarray):
                 ds[va].attrs[key] = list(value)
+            if key == 'grid_mapping' and values == 'rotated_pole':
+                ds[va].attrs[key] = 'rotated_latitude_longitude'
 
     # restore attributes
     ds.attrs = attrs
 
+    # numpy arrays as netcdf attributes do not work with dict_union
+    # in intake_esm...
     for key, value in ds.attrs.items():
         if isinstance(value, np.ndarray):
             ds.attrs[key] = list(value)
