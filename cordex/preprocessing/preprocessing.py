@@ -40,8 +40,8 @@ def cordex_renaming_dict():
         "lat": ["latitude"],
         "lev": ["deptht", "olevel", "zlev", "olev", "depth"],
         "bnds": ["bnds", "axis_nbounds", "d2"],
-        "lon_vertices": ["longitude_vertices"],
-        "lat_vertices": ["latitude_vertices"],
+        "lon_vertices": ["longitude_vertices", "lon_bounds"],
+        "lat_vertices": ["latitude_vertices", "lat_bounds"],
         "rotated_latitude_longitude": ["rotated_pole"],
         # coordinate labels
         #   "lon": ["longitude", "nav_lon"],
@@ -265,7 +265,36 @@ def replace_rlon_rlat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["rlon", "rlat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord).assign_coords({coord: dm[coord]})
+            ds = ds.drop(coord)#
+        ds = ds.assign_coords({coord: dm[coord]})
+    return ds
+
+
+def replace_vertices(ds, domain=None):
+    """Replace vertices coordinates with archive specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with updated vertices.
+
+    """
+    ds = ds.copy()
+    if domain is None:
+        domain = ds.attrs.get("CORDEX_domain", None)
+    dm = cordex_domain(domain, add_vertices=True)
+    for var in ["lon_vertices", "lat_vertices"]:
+        if var in ds.coords:
+            ds = ds.drop(coord)#
+        ds[var] = dm[var]
     return ds
 
 
@@ -292,7 +321,8 @@ def replace_lon_lat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["lon", "lat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord).assign_coords({coord: dm[coord]})
+            ds = ds.drop(coord)#
+        ds = ds.assign_coords({coord: dm[coord]})
     return ds
 
 
@@ -321,8 +351,54 @@ def replace_coords(ds, domain=None):
     return ds
 
 
+def replace_grid(ds, domain=None):
+    """Replace complete grid definitions with CORDEX archive
+    specifications.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+    domain: str
+        CORDEX domain name. Required if domain is not specified in the
+        dataset attributes (e.g., CORDEX_domain).
+
+    Returns
+    -------
+    ds : xr.Dataset
+        Dataset with updated: rlon, rlat, lon, lat, lon_vertices, lat_vertices.
+
+
+    """
+    ds = ds.copy()
+    ds = replace_rlon_rlat(ds, domain)
+    ds = replace_lon_lat(ds, domain)
+    ds = replace_vertices(ds, domain)
+    return ds
+
+
 def get_grid_mapping_name(ds):
     """Returns grid mapping name.
+
+    Returns the grid_mapping_name attribute of the grid_mapping
+    in the dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        CORDEX like dataset.
+
+    Returns
+    -------
+    grid_mapping_name : str
+        grid_mapping_name attribute.
+
+    """
+    return get_grid_mapping(ds).grid_mapping_name
+
+
+def get_grid_mapping_varname(ds):
+    """Returns grid mapping dataarray name.
 
     Returns the variable name of the first grid mapping found
     in the dataset.
@@ -334,7 +410,7 @@ def get_grid_mapping_name(ds):
 
     Returns
     -------
-    grid_mapping_name : str
+    grid_mapping_varname : str
         Variable name of the grid mapping.
 
     """
@@ -362,7 +438,7 @@ def get_grid_mapping(ds):
         Dataarray containing the grid mapping meta data.
 
     """
-    return ds[get_grid_mapping_name(ds)]
+    return ds[get_grid_mapping_varname(ds)]
 
 
 def remap_lambert_conformal(ds, regridder=None, domain=None):
@@ -390,6 +466,12 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
 
 
     """
+    def grid_mapping_name(da):
+        try:
+            return ds[da.grid_mapping].grid_mapping_name
+        except:
+            return None
+        
     ds = ds.copy()
     ds_attrs = ds.attrs
     if domain is None:
@@ -401,13 +483,14 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
         regridder = xe.Regridder(ds, dm, method="bilinear")
     for va in ds.data_vars:
         try:
-            if ds[va].attrs["grid_mapping"] == "Lambert_Conformal":
+            if grid_mapping_name(ds[va]) == "lambert_conformal_conic":
+                old_mapping = ds[va].attrs['grid_mapping']
                 attrs = ds[va].attrs
                 ds[va] = regridder(ds[va])
                 ds[va].attrs.update(attrs)
                 ds[va].attrs.update({"grid_mapping": "rotated_latitude_longitude"})
                 try:
-                    ds = ds.drop("Lambert_Conformal")
+                    ds = ds.drop(old_mapping)
                     ds["rotated_latitude_longitude"] = dm.rotated_latitude_longitude
                 except:
                     pass
