@@ -22,11 +22,6 @@ Cordex Python Package
     :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
     :alt: Updates
     
-.. image:: http://mybinder.org/badge_logo.svg
-    :alt: py-cordex examples
-    :target: https://mybinder.org/v2/gh/euro-cordex/py-cordex/master?urlpath=lab%2Ftree%2Fnotebooks%2Fdomains.ipynb
-
-
 
 Python tools for the Cordex Community.
 
@@ -35,6 +30,10 @@ Python tools for the Cordex Community.
 
 Why
 ---
+
+.. image:: http://mybinder.org/badge_logo.svg
+    :alt: py-cordex examples
+    :target: https://mybinder.org/v2/gh/euro-cordex/py-cordex/master?urlpath=lab%2Ftree%2Fnotebooks%2Fdomains.ipynb
 
 Python tools to work with `CORDEX <https://cordex.org/>`_ domains, meta data and cmorization.
 
