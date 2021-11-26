@@ -165,9 +165,9 @@ def rename_cordex(ds, rename_dict=None):
     # restore attributes
     ds.attrs = attrs
 
-    # for key, value in ds.attrs.items():
-    #    if isinstance(value, np.ndarray):
-    #        ds.attrs[key] = str(value)
+    for key, value in ds.attrs.items():
+        if isinstance(value, np.ndarray):
+            ds.attrs[key] = list(value)
 
     return ds
 
