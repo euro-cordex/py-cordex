@@ -53,6 +53,7 @@ def cordex_domain(
     tables=None,
     attrs=None,
     mapping_name=None,
+    bounds=None
 ):
     """Creates an xarray dataset containg the domain grid definitions.
 
@@ -76,6 +77,8 @@ def cordex_domain(
     mapping_name: str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
+    bounds: str
+        Add spatial bounds.
 
     Returns
     -------
@@ -106,7 +109,8 @@ def cordex_domain(
         dummy=dummy,
         add_vertices=add_vertices,
         attrs=attrs,
-        mapping_name=mapping_name
+        mapping_name=mapping_name,
+        bounds=bounds
     )
 
 
@@ -124,6 +128,7 @@ def create_dataset(
     add_vertices=False,
     attrs=None,
     mapping_name=None,
+    bounds=None,
     **kwargs
 ):
     """Create domain dataset from grid information.
@@ -477,19 +482,41 @@ def map_crs(lon, lat, src_crs, trg_crs=None):
     return result
 
 
-def _dcoord(coord):
+def _dcoord(coord, include="left"):
     dcoord = coord.values[1:] - coord.values[:-1]
-    dcoord = np.insert(dcoord, 0, dcoord[0])
+    if include in ["left", "both"]:
+        dcoord = np.insert(dcoord, 0, dcoord[0])
+    if include in ["right", "both"]:
+        dcoord = np.insert(dcoord, dcoord.size, dcoord[-1])
     return dcoord
 
 
-def _bounds(coord):
-    dc = _dcoord(coord)
+def _bounds(coord, include="left"):
+    dc = _dcoord(coord, include)
     left = coord - 0.5 * dc
     right = coord + 0.5 * dc
     left.name = "left"
     right.name = "right"
     return xr.merge([left, right])
+
+
+def bounds_coordinate(ds, coords):
+    """Adds coordinate bounds as coordinates to the dataset."""
+    if isinstance(coords, str):
+        coords = (coords, )
+    bounds = []
+    for coord in coords:
+        lr = _bounds(ds.coords[coord])
+        name = ds.coords[coord].name+'_b'
+        bounds.append(xr.DataArray(np.append(lr.left, lr.right[-1]), dims=name, name=name))
+    return ds.assign_coords({b.name: b for b in bounds})
+    
+
+def bounds(coords):
+    if isinstance(coords, xr.DataArray):
+        coords = (coords, )
+    return xr.merge([_bounds(coord).left for coord in coords])
+    #return xr.merge([_bounds(coord).left.rename({"left": coord.name+"bounds"}) for coord in coords])
 
 
 def vertices(rlon, rlat, src_crs, trg_crs=None):
