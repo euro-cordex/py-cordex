@@ -48,6 +48,7 @@ Features
 * Tools to manage CORDEX grids as xarray datasets.
 * Includes coordinate transformations, bounds and vertices for CORDEX datasets.
 * Utitlities for cmorization to make the CORDEX ensembles more consistent.
+* Preprocessing for easy access to a homogenized CORDEX ensemble dataset.
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
