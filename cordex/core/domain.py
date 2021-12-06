@@ -500,7 +500,7 @@ def _bounds(coord, include="left"):
     return xr.merge([left, right])
 
 
-def bounds_coordinate(ds, coords):
+def bounds_coordinates(ds, coords):
     """Adds coordinate bounds as coordinates to the dataset."""
     if isinstance(coords, str):
         coords = (coords, )
@@ -556,3 +556,49 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     lon_vertices.name = "lon_vertices"
     lat_vertices.name = "lat_vertices"
     return xr.merge([lat_vertices, lon_vertices])
+
+
+def lon_lat_bounds_coordinates(ds, src_crs=None, trg_crs=None):
+    """Compute lon and lat bounds coordinates.
+
+    Transformation of rlon vertices and rlat vertices
+    into the target crs according to
+    https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+
+    Parameters
+    ----------
+    rlon : xr.DataArray
+        Longitude in rotated pole grid.
+    rlat : xr.DataArray
+        Latitude in rotated pole grid.
+
+    Returns
+    -------
+    vertices : xr.Dataset
+        lon_vertices and lat_vertices in target crs.
+
+    """
+    if src_crs is None:
+        src_crs = get_pole_crs(ds)
+    rot_bounds = bounds_coordinates(ds, ('rlon', 'rlat'))
+    lon_bounds, lat_bounds = map_crs(rot_bounds.coords['rlon_b'], rot_bounds.coords['rlat_b'], src_crs, trg_crs)
+    return ds.assign_coords(lon_b = lon_bounds.transpose(), lat_b = lat_bounds.transpose())
+
+
+def get_pole_crs(ds, grid_mapping_name='rotated_latitude_longitude'):
+    """Create cartopy crs from rotated pole dataset."""
+    from cartopy import crs as ccrs
+    pole = (ds[grid_mapping_name].grid_north_pole_longitude, 
+            ds[grid_mapping_name].grid_north_pole_latitude)
+    return ccrs.RotatedPole(*pole)
+
+
+def extend_coordinate(coord, n=1):
+    data = coord
+    #insert = np.array([data[0] - n*(data[1]-data[0]) + i*(data[1]-data[0]) for i in range(0, n)])
+    insert = np.array([data[0] - (n-i)*(data[1]-data[0]) for i in range(0, n)])
+    return insert
+    data_extended = np.insert(data, 0, data[0]-(data[1]-data[0]))
+    #return data_extended
+    #data_extended = np.append(data_extended, data[-1]+(data[-1]-data[-2]))
+    return xr.DataArray(data_extended, dims=coord.dims, name=coord.name)
