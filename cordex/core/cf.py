@@ -7,7 +7,9 @@ LAT_NAME = "lat"
 LON_NAME = "lon"
 RLAT_NAME = "rlat"
 RLON_NAME = "rlon"
-
+LON_BOUNDS = "lon_vertices"
+LAT_BOUNDS = "lat_vertices"
+BOUNDS_DIM = "vertices"
 
 coords = {
     "rlon": {
@@ -30,6 +32,12 @@ coords = {
     "lat": {
         "standard_name": "latitude",
         "long_name": "latitude",
+        "units": "degrees_north",
+    },
+    "lon_vertices": {
+        "units": "degrees_east",
+    },
+    "lat_vertices": {
         "units": "degrees_north",
     },
 }
