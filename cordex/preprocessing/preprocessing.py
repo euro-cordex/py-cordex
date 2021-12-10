@@ -177,7 +177,6 @@ def rename_cordex(ds, rename_dict=None):
     return ds
 
 
-
 def fix_known_issues(ds_dict):
     """Fix known issues in CORDEX datasets"""
     for ds_id, ds in ds_dict.items():
@@ -185,8 +184,6 @@ def fix_known_issues(ds_dict):
             ds_dict[ds_id] = fixes.ALADIN53(ds)
     return ds_dict
             
-
-
 
 def promote_empty_dims(ds):
     """Convert empty dimensions to actual coordinates.
