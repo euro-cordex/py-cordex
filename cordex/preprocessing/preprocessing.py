@@ -8,6 +8,7 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 import xarray as xr
 import numpy as np
 from ..core.domain import cordex_domain
+from . import known_issues as fixes
 
 
 regridder = None
@@ -174,6 +175,17 @@ def rename_cordex(ds, rename_dict=None):
             ds.attrs[key] = list(value)
 
     return ds
+
+
+
+def fix_known_issues(ds_dict):
+    """Fix known issues in CORDEX datasets"""
+    for ds_id, ds in ds_dict.items():
+        if ds.model_id == 'ALADIN53':
+            ds_dict[ds_id] = fixes.ALADIN53(ds)
+    return ds_dict
+            
+
 
 
 def promote_empty_dims(ds):

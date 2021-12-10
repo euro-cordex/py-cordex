@@ -11,5 +11,6 @@ from .preprocessing import (
     get_grid_mapping_name,
     attr_to_coord,
     replace_vertices,
-    replace_grid
+    replace_grid,
+    fix_known_issues
 )
