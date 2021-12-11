@@ -162,8 +162,8 @@ def rename_cordex(ds, rename_dict=None):
         for key, value in ds[va].attrs.items():
             if isinstance(value, np.ndarray):
                 ds[va].attrs[key] = list(value)
-            if key == 'grid_mapping' and value == 'rotated_pole':
-                ds[va].attrs[key] = 'rotated_latitude_longitude'
+            if key == "grid_mapping" and value == "rotated_pole":
+                ds[va].attrs[key] = "rotated_latitude_longitude"
 
     # restore attributes
     ds.attrs = attrs
@@ -180,10 +180,10 @@ def rename_cordex(ds, rename_dict=None):
 def fix_known_issues(ds_dict):
     """Fix known issues in CORDEX datasets"""
     for ds_id, ds in ds_dict.items():
-        if ds.model_id == 'ALADIN53':
+        if ds.model_id == "ALADIN53":
             ds_dict[ds_id] = fixes.ALADIN53(ds)
     return ds_dict
-            
+
 
 def promote_empty_dims(ds):
     """Convert empty dimensions to actual coordinates.
@@ -274,7 +274,7 @@ def replace_rlon_rlat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["rlon", "rlat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord)#
+            ds = ds.drop(coord)  #
         ds = ds.assign_coords({coord: dm[coord]})
     return ds
 
@@ -302,7 +302,7 @@ def replace_vertices(ds, domain=None):
     dm = cordex_domain(domain, add_vertices=True)
     for var in ["lon_vertices", "lat_vertices"]:
         if var in ds.coords:
-            ds = ds.drop(coord)#
+            ds = ds.drop(coord)  #
         ds[var] = dm[var]
     return ds
 
@@ -330,7 +330,7 @@ def replace_lon_lat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["lon", "lat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord)#
+            ds = ds.drop(coord)  #
         ds = ds.assign_coords({coord: dm[coord]})
     return ds
 
@@ -475,12 +475,13 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
 
 
     """
+
     def grid_mapping_name(da):
         try:
             return ds[da.grid_mapping].grid_mapping_name
         except:
             return None
-        
+
     ds = ds.copy()
     ds_attrs = ds.attrs
     if domain is None:
@@ -493,7 +494,7 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
     for va in ds.data_vars:
         try:
             if grid_mapping_name(ds[va]) == "lambert_conformal_conic":
-                old_mapping = ds[va].attrs['grid_mapping']
+                old_mapping = ds[va].attrs["grid_mapping"]
                 attrs = ds[va].attrs
                 ds[va] = regridder(ds[va])
                 ds[va].attrs.update(attrs)
