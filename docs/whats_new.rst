@@ -17,7 +17,7 @@ New Features
 - Included basic utitilities to compute time bounds (:pull:`28`).
 - Added ``add_vertices`` option to ``cx.cordex_domain`` (:pull:`32`).
 - Additional cmorization utilities (:pull:`28`, :pull:`30`).
-- Preprocessing module for working with CORDEX ensembles (:pull:`35`).
+- Preprocessing module for working with CORDEX ensembles (:pull:`35`, :pull:`36`).
 - Tutorial module for loading simple CORDEX test datasets (:pull:`35`).
 
 Internal Changes
