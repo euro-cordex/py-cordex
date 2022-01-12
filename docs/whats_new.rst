@@ -8,6 +8,15 @@ What's New
 
     import pyremo 
 
+v0.4.0 (Unreleased)
+------------------------
+
+New Features
+~~~~~~~~~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
 
 v0.3.0 (12 January 2022)
 ------------------------
