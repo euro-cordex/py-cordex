@@ -21,7 +21,9 @@ Cordex Python Package
 .. image:: https://pyup.io/repos/github/euro-cordex/py-cordex/shield.svg
     :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
     :alt: Updates
-    
+
+.. image:: https://zenodo.org/badge/304687410.svg
+   :target: https://zenodo.org/badge/latestdoi/304687410
 
 Python tools for the Cordex Community.
 
