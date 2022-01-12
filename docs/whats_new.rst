@@ -8,8 +8,15 @@ What's New
 
     import pyremo 
 
-v0.3.0 (Unreleased)
--------------------------
+
+v0.3.0 (12 January 2022)
+------------------------
+
+This release introduces the cmorization and preprocessing modules. We outsourced
+some more code that was REMO dependent to be more useful for CORDEX datasets
+in general. The CORDEX tables are not available for CMIP6 yet, so the tables
+are only useful for the development of a cmorization workflow. The peprocessing
+module aims at overcoming CF related inconsistencies in ESGF CORDEX datasets.
 
 New Features
 ~~~~~~~~~~~~
