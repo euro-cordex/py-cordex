@@ -8,14 +8,12 @@ What's New
 
     import pyremo 
 
-v0.4.0 (Unreleased)
-------------------------
+v0.3.1 (24 February 2022)
+-------------------------
 
-New Features
-~~~~~~~~~~~~
-
-Internal Changes
-~~~~~~~~~~~~~~~~
+Bug Fixes
+~~~~~~~~~
+Added ``cftime`` to pip dependencies.
 
 
 v0.3.0 (12 January 2022)
