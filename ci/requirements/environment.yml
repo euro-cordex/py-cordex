@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - cartopy
+  - cartopy>=0.20
   - matplotlib-base
   - numpy
   - pooch
