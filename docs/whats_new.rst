@@ -6,16 +6,29 @@ What's New
 .. ipython:: python
    :suppress:
 
-    import pyremo 
-
+    import pyremo
+    
 v0.4.0 (Unreleased)
-------------------------
+-------------------
 
 New Features
 ~~~~~~~~~~~~
 
+Bug Fixes
+~~~~~~~~~
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
+
+
+v0.3.1 (24 February 2022)
+-------------------------
+
+Patch release to fix dependencies when ``py-cordex``` is installed with pip.
+
+Bug Fixes
+~~~~~~~~~
+Added ``cftime`` to pip dependencies.
 
 
 v0.3.0 (12 January 2022)
