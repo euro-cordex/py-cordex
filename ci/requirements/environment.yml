@@ -3,9 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - cartopy==0.20.2
-  - proj==9.0.0
-  - pyproj==3.3.0
+  - cartopy
   - matplotlib-base
   - numpy
   - pooch
@@ -16,7 +14,7 @@ dependencies:
   - netCDF4
   - xesmf
   - dask
-  - cdo==1.9.9 # python-cdo fails with cdo2
+  - cdo # python-cdo fails with cdo2
   - python-cdo
 # for testing
   - pytest
