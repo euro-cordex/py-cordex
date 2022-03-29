@@ -14,7 +14,7 @@ v0.4.0 (Unreleased)
 New Features
 ~~~~~~~~~~~~
 
-- Added python3.10 support (:pull:`48`).
+- Added ``python3.10`` support (:pull:`48`).
 
 Bug Fixes
 ~~~~~~~~~
