@@ -4,6 +4,8 @@ channels:
   - nodefaults
 dependencies:
   - cartopy==0.20.2
+  - proj==9.0.0
+  - pyproj==3.3.0
   - matplotlib-base
   - numpy
   - pooch
