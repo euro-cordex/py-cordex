@@ -26,7 +26,7 @@ Internal Changes
 v0.3.1 (24 February 2022)
 -------------------------
 
-Patch release to fix dependencies when ``py-cordex``` is installed with pip.
+Patch release to fix dependencies when ``py-cordex`` is installed with pip.
 
 Bug Fixes
 ~~~~~~~~~
