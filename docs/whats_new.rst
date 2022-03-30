@@ -26,6 +26,8 @@ Internal Changes
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Fixed imports (:pull:`51`).
+
 
 v0.3.1 (24 February 2022)
 -------------------------
