@@ -26,6 +26,7 @@ Internal Changes
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Fixed vertices order (:pull:`50`).
 - Fixed imports (:pull:`51`).
 
 
