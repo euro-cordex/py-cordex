@@ -247,12 +247,12 @@ def _get_dataset(
     if add_vertices is True:
         from cartopy import crs as ccrs
 
-        pole = pole = (
+        pole = (
             ds[mapping_name].grid_north_pole_longitude,
             ds[mapping_name].grid_north_pole_latitude,
         )
         v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
-        ds = xr.merge([ds, v], combine_attrs="override")
+        ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
@@ -563,6 +563,8 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     # )
     lon_vertices.name = cf.LON_BOUNDS
     lat_vertices.name = cf.LAT_BOUNDS
+    lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
+    lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
     return xr.merge([lat_vertices, lon_vertices])
 
 
