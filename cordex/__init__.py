@@ -11,7 +11,7 @@
 #    del get_distribution, DistributionNotFound
 
 
-from . import core, regions, cmor, preprocessing
+from . import core, regions#, cmor, preprocessing
 from .core.domain import (
     cordex_domain,
     create_dataset,
