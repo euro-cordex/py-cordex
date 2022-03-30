@@ -14,6 +14,8 @@ v0.4.0 (Unreleased)
 New Features
 ~~~~~~~~~~~~
 
+- Added ``python3.10`` support (:pull:`48`).
+
 Bug Fixes
 ~~~~~~~~~
 
@@ -24,7 +26,7 @@ Internal Changes
 v0.3.1 (24 February 2022)
 -------------------------
 
-Patch release to fix dependencies when ``py-cordex``` is installed with pip.
+Patch release to fix dependencies when ``py-cordex`` is installed with pip.
 
 Bug Fixes
 ~~~~~~~~~

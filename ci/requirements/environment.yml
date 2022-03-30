@@ -14,7 +14,7 @@ dependencies:
   - netCDF4
   - xesmf
   - dask
-  - cdo==1.9.9 # python-cdo fails with cdo2
+  - cdo # python-cdo fails with cdo2
   - python-cdo
 # for testing
   - pytest
