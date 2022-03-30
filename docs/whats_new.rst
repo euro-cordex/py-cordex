@@ -8,14 +8,10 @@ What's New
 
     import pyremo
     
-v0.3.2 (Unreleased)
--------------------
+v0.3.2 (30 March 2022)
+----------------------
 
-New Features
-~~~~~~~~~~~~
-
-Bug Fixes
-~~~~~~~~~
+Patch release to fix vertices issues, imports and dependencies. Also includes ``python3.10`` support.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
