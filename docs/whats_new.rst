@@ -27,6 +27,7 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Fixed vertices order (:pull:`50`).
+- Fixed imports (:pull:`51`).
 
 
 v0.3.1 (24 February 2022)
