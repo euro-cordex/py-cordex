@@ -8,18 +8,22 @@ What's New
 
     import pyremo
     
-v0.4.0 (Unreleased)
+v0.3.2 (Unreleased)
 -------------------
 
 New Features
 ~~~~~~~~~~~~
 
-- Added ``python3.10`` support (:pull:`48`).
-
 Bug Fixes
 ~~~~~~~~~
 
 Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Added ``python3.10`` support (:pull:`48`).
+- Fixed vertices attributes (:pull:`49`).
+
+Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 
