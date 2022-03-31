@@ -143,6 +143,7 @@ def open_dataset(
 def ensemble():
     files = [
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012",
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012",
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012",
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012",
