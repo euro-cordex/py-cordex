@@ -83,6 +83,7 @@ def open_dataset(
     If a local copy is found then always use that to avoid network traffic.
     Available datasets:
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012"``: Racmo Output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012"``: Alaro output (lambert conformal)
