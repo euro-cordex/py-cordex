@@ -16,10 +16,12 @@ from .core.domain import (
     cordex_domain,
     create_dataset,
     rotated_coord_transform,
-    map_crs,
     vertices,
     domain_info,
+    map_crs
 )
+
+#from .core.utils import map_crs
 
 from .core import tutorial
 
