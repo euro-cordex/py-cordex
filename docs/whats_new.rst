@@ -19,6 +19,8 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Updated external resource from pooch to ignore hashes and use main branch from `tables <https://github.com/euro-cordex/tables>`_ repository (:pull:`53`). This should protect earlier version from breaking if the tables change.
+
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
