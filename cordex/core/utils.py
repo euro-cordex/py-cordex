@@ -51,9 +51,9 @@ def map_crs(x, y, src_crs, trg_crs=None):
     Parameters
     ----------
     x : float array like
-        X coordinate of source crs.
+        x coordinate of source crs.
     y : float array like
-        Y coordinate of source crs.
+        y coordinate of source crs.
     src_crs : cartopy.crs
         Source coordinate reference system in which x and y
         are defined.
@@ -65,7 +65,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
     -------
     x_map : xr.DataArray
         Projected x coordinate.
-    x_map : xr.DataArray
+    y_map : xr.DataArray
         Projected y coordinate.
 
     """
