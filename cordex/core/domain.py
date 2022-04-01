@@ -256,6 +256,10 @@ def _get_regular_dataset(
         coord.encoding["_FillValue"] = None
         coord.attrs = cf.coords[key]
 
+    ds.lon.attrs['axis'] = 'X'
+    ds.lat.attrs['axis'] = 'Y'
+
+
     if add_vertices is True:
         from cartopy import crs as ccrs
 
