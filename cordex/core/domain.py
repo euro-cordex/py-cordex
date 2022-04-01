@@ -20,6 +20,7 @@ Example:
 import numpy as np
 import pandas as pd
 import xarray as xr
+from warnings import warn
 
 from ..tables import domains
 from . import cf
@@ -620,6 +621,7 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
         lon_vertices and lat_vertices in target crs.
 
     """
+    warn('Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34')
     rlon_bounds = _bounds(rlon)
     rlat_bounds = _bounds(rlat)
     # maps each vertex to lat lon coordinates

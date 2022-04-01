@@ -7,7 +7,24 @@ What's New
    :suppress:
 
     import pyremo
-    
+ 
+v0.4.0 (Unreleased)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Updated ``map_crs`` to work for arbitray transformations (:pull:`52`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- ``map_crs`` switched order of coordinates to `COARDS <https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_ (:pull:`52`).
+
+ 
 v0.3.2 (30 March 2022)
 ----------------------
 
