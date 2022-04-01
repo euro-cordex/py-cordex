@@ -103,6 +103,7 @@ def open_dataset(
     """
     try:
         import pooch
+        from pooch import HTTPDownloader
     except ImportError as e:
         raise ImportError(
             "tutorial.open_dataset depends on pooch to download and manage datasets."
