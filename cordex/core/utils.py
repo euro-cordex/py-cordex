@@ -1,7 +1,3 @@
-#! /usr/bin/python
-# coding: utf-8
-
-
 import tempfile
 import warnings
 from . import cf
@@ -30,15 +26,15 @@ def pole(ds):
 def pole_crs(ds):
     """Return a cartropy RotatedPole instance"""
     from cartopy.crs import RotatedPole
+
     return RotatedPole(*pole(ds))
 
 
 def _map_crs(x_stack, y_stack, src_crs, trg_crs=None):
-    """coordinate transformation of longitude and latitude
-
-    """
+    """coordinate transformation of longitude and latitude"""
 
     from cartopy import crs as ccrs
+
     if trg_crs is None:
         trg_crs = ccrs.PlateCarree()
     result = trg_crs.transform_points(src_crs, x_stack, y_stack)
@@ -49,8 +45,8 @@ def _map_crs(x_stack, y_stack, src_crs, trg_crs=None):
 def map_crs(x, y, src_crs, trg_crs=None):
     """coordinate transformation using cartopy
 
-    Transforms the coordinates x, y from the transform crs
-    into the projection crs using cartopy.crs.
+    Transforms the coordinates x, y from the source crs
+    into the target crs using cartopy.
 
     Parameters
     ----------
@@ -59,10 +55,10 @@ def map_crs(x, y, src_crs, trg_crs=None):
     y : float array like
         Y coordinate of source crs.
     src_crs : cartopy.crs
-        Source coordinate reference system into which X and Y
-        should are defined.
+        Source coordinate reference system in which x and y
+        are defined.
     trg_crs : cartopy.crs
-        Target coordinate reference system in which X and Y
+        Target coordinate reference system into which x and y
         should be transformed. If `None`, `PlateCarree` is used.
 
     Returns
@@ -73,9 +69,9 @@ def map_crs(x, y, src_crs, trg_crs=None):
         Projected y coordinate.
 
     """
-    warnings.warn('output shape has changed to apply to COARDS conventions')
+    warnings.warn("output shape has changed to apply to COARDS conventions")
     y_stack, x_stack = xr.broadcast(y, x)
-    input_core_dims = 2*[list(x_stack.dims)] + [[], []]
+    input_core_dims = 2 * [list(x_stack.dims)] + [[], []]
     output_core_dims = 2 * [list(x_stack.dims)]
     result = xr.apply_ufunc(
         _map_crs,  # first the function
@@ -90,6 +86,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
     result[0].name = "x_map"
     result[1].name = "y_map"
     return result
+
 
 #
 #
