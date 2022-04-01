@@ -18,10 +18,9 @@ from .core.domain import (
     rotated_coord_transform,
     vertices,
     domain_info,
-    map_crs
 )
 
-#from .core.utils import map_crs
+from .core.utils import map_crs
 
 from .core import tutorial
 

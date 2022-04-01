@@ -2,6 +2,7 @@
 # flake8: noqa
 
 import numpy as np
+import xarray as xr
 import pytest
 
 import cordex as cx
@@ -75,8 +76,15 @@ def test_mapping():
     transform = ccrs.RotatedPole(*pole)
     lon2, lat2 = cx.map_crs(eur11.rlon, eur11.rlat, transform)
 
-    assert np.allclose(lon1, lon2)
-    assert np.allclose(lat1, lat2)
+    assert np.allclose(lon1.T, lon2)
+    assert np.allclose(lat1.T, lat2)
+
+    # test if retransforming of lon lat to rlon rlat gives correct results
+    rlon2, rlat2 = cx.map_crs(eur11.lon, eur11.lat, src_crs=ccrs.PlateCarree(), trg_crs=transform)
+    rlat1, rlon1 = xr.broadcast(eur11.rlat, eur11.rlon)
+
+    assert np.allclose(rlon1, rlon2)
+    assert np.allclose(rlat1, rlat2)
 
 
 def test_vertices():

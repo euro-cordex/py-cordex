@@ -3,6 +3,7 @@
 
 
 import tempfile
+import warnings
 from . import cf
 
 import xarray as xr
@@ -38,12 +39,9 @@ def _map_crs(x_stack, y_stack, src_crs, trg_crs=None):
     """
 
     from cartopy import crs as ccrs
-
     if trg_crs is None:
         trg_crs = ccrs.PlateCarree()
-
     result = trg_crs.transform_points(src_crs, x_stack, y_stack)
-    print(result.shape)
     return result[:, :, 0], result[:, :, 1]
 
 
@@ -75,6 +73,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
         Projected y coordinate.
 
     """
+    warnings.warn('output shape has changed to apply to COARDS conventions')
     y_stack, x_stack = xr.broadcast(y, x)
     input_core_dims = 2*[list(x_stack.dims)] + [[], []]
     output_core_dims = 2 * [list(x_stack.dims)]
