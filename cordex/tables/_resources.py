@@ -18,6 +18,7 @@ DOMAIN_RESOURCE = pooch.create(
         "cordex-high-res.csv": None,
         "cordex-fps.csv": None,
         "cordex-core.csv": None,
+        "cordex-regular.csv": None,
     },
 )
 
