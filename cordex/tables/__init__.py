@@ -33,7 +33,7 @@ ecmwf = read_cls(ecmwf_tables)
 
 
 def cordex_cmor_table(table, table_dir=None):
-    """fetch a cordex cmor table
+    """fetch a experimental cordex cmor table
 
     If required, the table will be download from github.
     The tables are experimental right now and only used
@@ -42,22 +42,18 @@ def cordex_cmor_table(table, table_dir=None):
     Parameters
     ----------
     table: str
-        Name of the cordex table without the CORDEX_ prefix
-        and the .json suffix.
-    table_dir: str
-        Path to table directory. If `None`, the tables will
-        be downloaded from the github repo if neccessary.
+        Name of the cordex table.
 
     Returns
     -------
     filename : str
-        Filepath to the Cordex cmor table.
+        Filepath to the cordex cmor table.
     """
     return fetch_cordex_cmor_table(table)
 
 
-def cmip6_cmor_table(table, table_dir=None):
-    """fetch a cordex cmor table
+def cmip6_cmor_table(table):
+    """fetch a cmip6 cmor table
 
     If required, the table will be download from github.
     The tables are experimental right now and only used
@@ -66,15 +62,11 @@ def cmip6_cmor_table(table, table_dir=None):
     Parameters
     ----------
     table: str
-        Name of the cordex table without the CORDEX_ prefix
-        and the .json suffix.
-    table_dir: str
-        Path to table directory. If `None`, the tables will
-        be downloaded from the github repo if neccessary.
+        Name of the cmip6 table.
 
     Returns
     -------
     filename : str
-        Filepath to the Cordex cmor table.
+        Filepath to the cmip6 cmor table.
     """
     return fetch_cmip6_cmor_table(table)

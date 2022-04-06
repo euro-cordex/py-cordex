@@ -19,7 +19,6 @@ Top-level functions
    rotated_coord_transform
    map_crs
    vertices
-   cordex_cmor_table
 
 Tutorial
 ========
@@ -59,6 +58,15 @@ Cmorization
    cmor.mid_of_month
    cmor.month_bounds
    cmor.to_cftime
+
+CMOR Tables
+-----------
+
+.. autosummary::
+   :toctree: generated/
+
+   tables.cordex_cmor_table
+   tables.cmip6_cmor_table
 
 Regions within Euro-Cordex
 ==========================

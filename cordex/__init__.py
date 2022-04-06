@@ -22,7 +22,7 @@ from .core.domain import (
 
 from .core.utils import map_crs
 
-from .core import tutorial
+from . import tutorial
 
 from .tables import domains, ecmwf
 from . import tables

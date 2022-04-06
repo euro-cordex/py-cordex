@@ -14,7 +14,7 @@ from xarray import open_dataset as _open_dataset
 from xarray import DataArray
 from xarray import Dataset
 
-from ..preprocessing import cordex_dataset_id
+from .preprocessing import cordex_dataset_id
 
 _default_cache_dir_name = "py-cordex_tutorial_data"
 base_url = "https://github.com/euro-cordex/py-cordex-data"
@@ -80,18 +80,22 @@ def open_dataset(
 ):
     """
     Open a dataset from the online repository (requires internet).
+
     If a local copy is found then always use that to avoid network traffic.
+
     Available datasets:
+    
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012"``: Racmo Output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012"``: Alaro output (lambert conformal)
+
     Parameters
     ----------
     name : str
         Name of the file containing the dataset.
-        e.g. 'air_temperature'
+        e.g. 'tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012'
     cache_dir : path-like, optional
         The directory in which to search for and write cached data.
     cache : bool, optional
@@ -142,6 +146,17 @@ def open_dataset(
 
 
 def ensemble():
+    """Retrieve a mini CORDEX test ensemble.
+    
+    Available datasets:
+    
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012"``: Racmo Output (rotated pole)
+    * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012"``: Alaro output (lambert conformal)
+    
+    """
     files = [
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012",
