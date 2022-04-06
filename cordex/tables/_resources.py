@@ -10,9 +10,6 @@ cache_url = "~/.py-cordex"
 
 _default_cache_dir_name = "py-cordex-tables"
 
-base_url = "https://github.com/pydata/xarray-data"
-version = "master"
-
 
 def _construct_cache_dir(path):
     import pooch
