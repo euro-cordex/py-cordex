@@ -22,12 +22,11 @@ from .core.domain import (
 
 from .core.utils import map_crs
 
-from .core import tutorial
+from . import tutorial
 
-from .tables import domains, ecmwf, cordex_cmor_table
+from .tables import domains, ecmwf
 from . import tables
 
 from .version import version
 
 __version__ = version
-__cmor_table_version__ = tables.__cmor_table_version__

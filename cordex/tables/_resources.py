@@ -1,12 +1,27 @@
+import os
 import pandas as pd
 import pooch
+from pathlib import Path
 
 
 base_url = "https://raw.githubusercontent.com/euro-cordex/tables/main/"
 
 cache_url = "~/.py-cordex"
 
-cmor_table_version = "0.1.1"
+_default_cache_dir_name = "py-cordex-tables"
+
+
+def _construct_cache_dir(path):
+    import pooch
+
+    if isinstance(path, os.PathLike):
+        path = os.fspath(path)
+    elif path is None:
+        path = pooch.os_cache(_default_cache_dir_name)
+
+    return path
+
+
 
 DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
@@ -44,31 +59,26 @@ ECMWF_RESOURCE = pooch.create(
 )
 
 
-CMOR_RESOURCE = pooch.create(
-    # Use the default cache folder for the OS
-    path="~/.cordex-cmor-tables",
-    # The remote data is on Github
-    base_url="https://raw.githubusercontent.com/ludwiglierhammer/cmor-tables/v{}/tables/cordex-cmor-tables-test/Tables/".format(
-        cmor_table_version
-    ),
-    registry={
-        "CORDEX_Amon.json": None,
-        "CORDEX_day.json": None,
-        "CORDEX_1hr.json": None,
-        "CORDEX_3hr.json": None,
-        "CORDEX_fx.json": None,
-        "CORDEX_CV.json": None,
-        "CORDEX_coordinate.json": None,
-        "CORDEX_formula_terms.json": None,
-        "CORDEX_grids.json": None,
-        "CORDEX_remo_example.json": None,
-    },
-)
-
+cmor_tables_inpath = str(pooch.os_cache("cmor-tables"))
 
 def fetch_cordex_cmor_table(table):
-    fmt = "CORDEX_{}.json"
-    return CMOR_RESOURCE.fetch(fmt.format(table))
+    return retrieve_cmor_table(table, 
+                               url="https://github.com/euro-cordex/cordex-cmor-tables/raw/main/Tables")
+
+
+def fetch_cmip6_cmor_table(table):
+    return retrieve_cmor_table(table, 
+                               url="https://github.com/PCMDI/cmip6-cmor-tables/raw/master/Tables")
+
+    
+def retrieve_cmor_table(table, url):
+    path = cmor_tables_inpath
+    if Path(table).suffix == "":
+        fname = "{}.json".format(table)
+    else:
+        fname = table
+    return pooch.retrieve(os.path.join(url,fname), known_hash=None, 
+                          fname=fname, path=path)
 
 
 def fetch_remote_table(name, resource):
