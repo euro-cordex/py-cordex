@@ -25,19 +25,15 @@ Cordex Python Package
 .. image:: https://zenodo.org/badge/304687410.svg
    :target: https://zenodo.org/badge/latestdoi/304687410
 
-Python tools for the Cordex Community.
+This package offers python tools for the `CORDEX <https://cordex.org/>`_ community and should make your work with CORDEX grids and meta data easy. 
+Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the 
+form of an ``xarray.Dataset`` directly from the official `CORDEX archive specifications <https://cordex.org/experiment-guidelines/experiment-protocol-rcms/>`_.
 
-* Free software: MIT license
-* Documentation: https://py-cordex.readthedocs.io.
-
-Why
----
+Check out the tutorial notebook on binder!
 
 .. image:: http://mybinder.org/badge_logo.svg
     :alt: py-cordex examples
     :target: https://mybinder.org/v2/gh/euro-cordex/py-cordex/master?urlpath=lab%2Ftree%2Fnotebooks%2Fdomains.ipynb
-
-Python tools to work with `CORDEX <https://cordex.org/>`_ domains, meta data and cmorization.
 
 Meta Data
 ^^^^^^^^^
