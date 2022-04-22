@@ -1,6 +1,6 @@
-=====================
-Cordex Python Package
-=====================
+============================================
+py-cordex: create cordex grids and meta data
+============================================
 
 .. image:: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml/badge.svg
     :target: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml
