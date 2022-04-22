@@ -256,9 +256,8 @@ def _get_regular_dataset(
         coord.encoding["_FillValue"] = None
         coord.attrs = cf.coords[key]
 
-    ds.lon.attrs['axis'] = 'X'
-    ds.lat.attrs['axis'] = 'Y'
-
+    ds.lon.attrs["axis"] = "X"
+    ds.lat.attrs["axis"] = "Y"
 
     if add_vertices is True:
         from cartopy import crs as ccrs
@@ -420,7 +419,6 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     lat_new : array like
         New latitude coordinate.
     """
-
     # Convert degrees to radians
     lon = np.deg2rad(lon)
     lat = np.deg2rad(lat)
@@ -625,7 +623,9 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
         lon_vertices and lat_vertices in target crs.
 
     """
-    warn('Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34')
+    warn(
+        "Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34"
+    )
     rlon_bounds = _bounds(rlon)
     rlat_bounds = _bounds(rlat)
     # maps each vertex to lat lon coordinates
