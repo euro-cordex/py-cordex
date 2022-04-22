@@ -15,6 +15,7 @@ New Features
 ~~~~~~~~~~~~
 
 - Updated ``map_crs`` to work for arbitray transformations (:pull:`52`).
+- Added ``cordex-regular`` table and options to create regular cordex domains (:pull:`53`, :pull:`54`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~

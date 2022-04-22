@@ -12,6 +12,10 @@ from . import has_cartopy, requires_cartopy
 
 def test_domain_basic():
     eur11 = cx.cordex_domain("EUR-11")
+    assert eur11.rlon.ndim == 1
+    assert eur11.rlat.ndim == 1
+    assert eur11.lon.ndim == 2
+    assert eur11.lat.ndim == 2
     assert "lon_vertices" in cx.cordex_domain("EUR-11", add_vertices=True)
     assert "lat_vertices" in cx.cordex_domain("EUR-11", add_vertices=True)
     assert "rotated_pole" in cx.cordex_domain("EUR-11", mapping_name="rotated_pole")
@@ -20,6 +24,13 @@ def test_domain_basic():
     assert "topo" in cx.cordex_domain("EUR-11", dummy="topo")
     assert cx.cordex_domain("EUR-11").attrs["CORDEX_domain"] == "EUR-11"
     assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
+    assert "rotated_latitude_longitude" not in cx.cordex_domain("EUR-11i").data_vars
+
+
+def test_cordex_regular():
+    eur11i = cx.cordex_domain("EUR-11i")
+    assert eur11i.lon.ndim == 1
+    assert eur11i.lat.ndim == 1
 
 
 def test_constructor():
@@ -55,9 +66,7 @@ def test_domain_info():
         "pollon": -162.0,
         "pollat": 39.25,
     }
-    table = pd.DataFrame.from_dict(
-        {key: [item] for key, item in info.items()}
-    ).set_index("short_name")
+    table = pd.DataFrame(info, index=[0]).set_index("short_name")
     assert cx.domain_info("EUR-11", table) == info
 
 
@@ -80,7 +89,9 @@ def test_mapping():
     assert np.allclose(lat1.T, lat2)
 
     # test if retransforming of lon lat to rlon rlat gives correct results
-    rlon2, rlat2 = cx.map_crs(eur11.lon, eur11.lat, src_crs=ccrs.PlateCarree(), trg_crs=transform)
+    rlon2, rlat2 = cx.map_crs(
+        eur11.lon, eur11.lat, src_crs=ccrs.PlateCarree(), trg_crs=transform
+    )
     rlat1, rlon1 = xr.broadcast(eur11.rlat, eur11.rlon)
 
     assert np.allclose(rlon1, rlon2)

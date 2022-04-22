@@ -122,8 +122,8 @@ def create_dataset(
     dlat,
     ll_lon,
     ll_lat,
-    pollon,
-    pollat,
+    pollon=None,
+    pollat=None,
     name=None,
     dummy=False,
     add_vertices=False,
@@ -145,9 +145,9 @@ def create_dataset(
     dlat : float
         latitudal resolution (degrees)
     ll_lon : float
-        lower left rotated longitude (degrees)
+        lower left longitude (degrees)
     ll_lat : float
-        lower left rotated latitude (degrees)
+        lower left latitude (degrees)
     pollon : float
         pol longitude (degrees)
     pollat : float
@@ -157,7 +157,7 @@ def create_dataset(
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
     add_vertices : bool
-        Add grid boundaries in the gloabl coordinates (lon_vertices and lat_vertices).
+        Add grid boundaries in the global coordinates (lon_vertices and lat_vertices).
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
@@ -165,26 +165,46 @@ def create_dataset(
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
     """
+    rotated = True
     if attrs == "CORDEX":
         attrs = cf.DEFAULT_CORDEX_ATTRS
     elif attrs is None:
         attrs = {}
     if name:
         attrs["CORDEX_domain"] = name
-    rlon, rlat = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
-    lon, lat = rotated_coord_transform(*_stack(rlon, rlat), pollon, pollat)
-    pole = _grid_mapping(pollon, pollat)
-    return _get_dataset(
-        rlon,
-        rlat,
-        lon,
-        lat,
-        pole,
-        add_vertices=add_vertices,
-        dummy=dummy,
-        mapping_name=mapping_name,
-        attrs=attrs,
-    )
+    if pollon is None or pollat is None:
+        rotated = False
+    try:
+        if np.isnan(pollon) or np.isnan(pollat):
+            rotated = False
+    except:
+        pass
+
+    x, y = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
+    if rotated is True:
+        lon, lat = rotated_coord_transform(*_stack(x, y), pollon, pollat)
+        pole = _grid_mapping(pollon, pollat)
+        if mapping_name is None:
+            mapping_name = cf.DEFAULT_MAPPING_NCVAR
+        return _get_rotated_dataset(
+            x,
+            y,
+            lon,
+            lat,
+            pole,
+            add_vertices=add_vertices,
+            dummy=dummy,
+            mapping_name=mapping_name,
+            attrs=attrs,
+        )
+    else:
+        return _get_regular_dataset(
+            x,
+            y,
+            add_vertices=add_vertices,
+            dummy=dummy,
+            attrs=attrs,
+        )
 
 
 def domain_info(short_name, tables=None):
@@ -215,7 +235,69 @@ def domain_info(short_name, tables=None):
     return {**{"short_name": short_name}, **dict(**config)}
 
 
-def _get_dataset(
+def _get_regular_dataset(
+    lon,
+    lat,
+    add_vertices=False,
+    dummy=None,
+    attrs=None,
+):
+
+    ds = xr.Dataset(
+        data_vars=None,
+        coords=dict(
+            lon=(cf.LON_NAME, lon),
+            lat=(cf.LAT_NAME, lat),
+        ),
+        attrs=attrs,
+    )
+
+    for key, coord in ds.coords.items():
+        coord.encoding["_FillValue"] = None
+        coord.attrs = cf.coords[key]
+
+    ds.lon.attrs["axis"] = "X"
+    ds.lat.attrs["axis"] = "Y"
+
+    if add_vertices is True:
+        from cartopy import crs as ccrs
+
+        pole = (
+            ds[mapping_name].grid_north_pole_longitude,
+            ds[mapping_name].grid_north_pole_latitude,
+        )
+        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
+        ds = xr.merge([ds, v])
+        ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
+        ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+
+    if dummy:
+        if dummy is True:
+            dummy_name = "dummy"
+        else:
+            dummy_name = dummy
+        dummy = xr.DataArray(
+            data=np.zeros((ds.lat.size, ds.lon.size)),
+            coords=(ds.lat, ds.lon),
+        )
+        dummy.attrs = {"coordinates": "lat lon"}
+        ds[dummy_name] = dummy
+        if dummy_name == "topo":
+            # use cdo to create dummy topography data.
+            from cdo import Cdo
+
+            tmp = utils.get_tempfile()
+            ds.to_netcdf(tmp)
+            topo = Cdo().topo(tmp, returnXDataset=True)["topo"]
+            ds[dummy_name] = xr.DataArray(
+                data=topo.values,
+                coords=(ds.lat, ds.lon),
+            )
+            ds[dummy_name].attrs.update(topo.attrs)
+    return ds
+
+
+def _get_rotated_dataset(
     rlon,
     rlat,
     lon,
@@ -226,8 +308,6 @@ def _get_dataset(
     mapping_name=None,
     attrs=None,
 ):
-    if mapping_name is None:
-        mapping_name = cf.DEFAULT_MAPPING_NCVAR
     data_vars = {mapping_name: pole}
 
     ds = xr.Dataset(
@@ -339,7 +419,6 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     lat_new : array like
         New latitude coordinate.
     """
-
     # Convert degrees to radians
     lon = np.deg2rad(lon)
     lat = np.deg2rad(lat)
@@ -544,7 +623,9 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
         lon_vertices and lat_vertices in target crs.
 
     """
-    warn('Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34')
+    warn(
+        "Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34"
+    )
     rlon_bounds = _bounds(rlon)
     rlat_bounds = _bounds(rlat)
     # maps each vertex to lat lon coordinates

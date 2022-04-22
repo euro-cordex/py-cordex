@@ -165,7 +165,8 @@ def test_sort_ds_dict_by_attr(test_ensemble):
 
 
 def test_check_domain():
-    assert check_domain(cordex_domain('EUR-11'))
+    assert check_domain(cordex_domain("EUR-11"))
+
 
 @requires_xesmf
 def test_remap_lambert_conformal(test_ensemble):
