@@ -1,10 +1,9 @@
 """CORDEX Cmorization utilities.
 """
-import numpy as np
-import xarray as xr
 import datetime as dt
+
 import cftime as cfdt
-from dateutil import relativedelta as reld
+import xarray as xr
 
 xr.set_options(keep_attrs=True)
 
@@ -15,11 +14,11 @@ def _get_loffset(time):
     return loffsets.get(time, None)
 
 
-def ensure_cftime(func):
-    def wrapper(date, **kwargs):
-        return func(_to_cftime(date), **kwargs)
-
-    return wrapper
+# def ensure_cftime(func):
+#    def wrapper(date, **kwargs):
+#        return func(_to_cftime(date), **kwargs)
+#
+#    return wrapper
 
 
 def to_cftime(date, calendar="gregorian"):
@@ -97,7 +96,7 @@ def season_bounds(date):
         year = date.year + 1
     try:
         calendar = date.calendar
-    except:
+    except Exception:
         calendar = None
     seasons_bounds = _seasons_bounds(year, calendar=calendar)
     return seasons_bounds[season(date)]

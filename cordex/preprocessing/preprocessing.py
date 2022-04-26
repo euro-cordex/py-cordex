@@ -5,11 +5,11 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 """
 
 
-import xarray as xr
 import numpy as np
+import xarray as xr
+
 from ..core.domain import cordex_domain
 from . import known_issues as fixes
-
 
 regridder = None
 
@@ -140,7 +140,7 @@ def rename_cordex(ds, rename_dict=None):
     for va in ds.data_vars:
         try:
             ds = ds.rename({va: inverted_rename_dict[va]})
-        except:
+        except Exception:
             pass
 
     # handle WRF where lon lat might be in variable dims
@@ -148,7 +148,7 @@ def rename_cordex(ds, rename_dict=None):
         try:
             if "lon" in ds[va].dims and "lat" in ds[va].dims:
                 ds[va] = ds[va].rename({"lon": "rlon", "lat": "rlat"})
-        except:
+        except Exception:
             pass
 
     #  re-set lon lat to coordinates
@@ -302,7 +302,7 @@ def replace_vertices(ds, domain=None):
     dm = cordex_domain(domain, add_vertices=True)
     for var in ["lon_vertices", "lat_vertices"]:
         if var in ds.coords:
-            ds = ds.drop(coord)  #
+            ds = ds.drop(var)  #
         ds[var] = dm[var]
     return ds
 
@@ -479,7 +479,7 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
     def grid_mapping_name(da):
         try:
             return ds[da.grid_mapping].grid_mapping_name
-        except:
+        except Exception:
             return None
 
     ds = ds.copy()
@@ -502,19 +502,19 @@ def remap_lambert_conformal(ds, regridder=None, domain=None):
                 try:
                     ds = ds.drop(old_mapping)
                     ds["rotated_latitude_longitude"] = dm.rotated_latitude_longitude
-                except:
+                except Exception:
                     pass
-        except:
+        except Exception:
             pass
     ds = replace_coords(ds, domain)
     ds.attrs = ds_attrs
     try:
         ds = ds.drop(("x", "y"))
-    except:
+    except Exception:
         pass
     try:
         ds.attrs["CORDEX_domain"] = dm.attrs["CORDEX_domain"]
-    except:
+    except Exception:
         pass
     return ds
 

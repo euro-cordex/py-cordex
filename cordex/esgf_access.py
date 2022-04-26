@@ -5,7 +5,7 @@ import pandas as pd
 
 try:
     from tqdm import tqdm
-except:
+except Exception:
 
     def tqdm(x):
         return x
@@ -13,7 +13,7 @@ except:
 
 try:
     from pyesgf.search import SearchConnection
-except:
+except Exception:
     print(
         "pyesgf client is not installed! please install https://github.com/ESGF/esgf-pyclient to make use of this module."
     )
@@ -72,7 +72,7 @@ def logon(host=DKRZ_HOST):
     """logon to ESGF Host."""
     from pyesgf.logon import LogonManager
 
-    print("logon to: ".format(host))
+    print("logon to: {}".format(host))
     lm = LogonManager()
     lm.logoff()
     lm.logon(hostname=host, interactive=True, bootstrap=True)

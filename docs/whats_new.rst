@@ -7,7 +7,7 @@ What's New
    :suppress:
 
     import pyremo
- 
+
 v0.4.0 (Unreleased)
 -------------------
 
@@ -28,7 +28,7 @@ Breaking Changes
 
 - ``map_crs`` switched order of coordinates to `COARDS <https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_ (:pull:`52`).
 
- 
+
 v0.3.2 (30 March 2022)
 ----------------------
 
@@ -98,7 +98,7 @@ New Features
 ~~~~~~~~~~~~
 - Included new sub regions (germany and prudence) for masking and analysis.
 - Included function ``map_crs`` for coordinate transformations using cartopy.
-  
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Tables are removed from the package and stored in an extra github repo.

@@ -17,14 +17,14 @@ Example:
 
 """
 
+from warnings import warn
+
 import numpy as np
 import pandas as pd
 import xarray as xr
-from warnings import warn
 
 from ..tables import domains
-from . import cf
-from . import utils
+from . import cf, utils
 
 
 def domain_names(table_name=None):
@@ -556,7 +556,8 @@ def map_crs(lon, lat, src_crs, trg_crs=None):
         src_crs,
         trg_crs,
         input_core_dims=input_core_dims,  # list with one entry per arg
-        output_core_dims=output_core_dims  # [["rlat", "rlon"], ["rlat", "rlon"]],
+        # [["rlat", "rlon"], ["rlat", "rlon"]],
+        output_core_dims=output_core_dims
         # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
     )
     result[0].name = cf.LON_NAME

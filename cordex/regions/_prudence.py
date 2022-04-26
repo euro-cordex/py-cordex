@@ -1,8 +1,8 @@
 import pandas as pd
 import xarray as xr
 
-from ._resources import fetch_prudence
 from ._regions import WGS84
+from ._resources import fetch_prudence
 
 
 def _create_polygons(df):

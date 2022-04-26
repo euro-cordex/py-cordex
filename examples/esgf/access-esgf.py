@@ -1,4 +1,3 @@
-import pandas as pd
 from cordex import esgf_access
 
 # Euro-Cordex search attributes

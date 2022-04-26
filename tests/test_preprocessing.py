@@ -1,25 +1,24 @@
-import xarray as xr
 import numpy as np
 import pytest
+import xarray as xr
 
-from . import has_xesmf, requires_xesmf
-
+import cordex as cx
+from cordex import cordex_domain
 from cordex.preprocessing.preprocessing import (
-    rename_cordex,
+    attr_to_coord,
     check_domain,
-    get_grid_mapping,
-    replace_coords,
     cordex_dataset_id,
-    promote_empty_dims,
-    remap_lambert_conformal,
-    sort_ds_dict_by_attr,
+    get_grid_mapping,
     get_grid_mapping_name,
     member_id_to_dset_id,
-    attr_to_coord,
+    promote_empty_dims,
+    remap_lambert_conformal,
+    rename_cordex,
+    replace_coords,
+    sort_ds_dict_by_attr,
 )
 
-from cordex import cordex_domain
-import cordex as cx
+from . import requires_xesmf
 
 
 def create_test_ds(
@@ -115,19 +114,6 @@ def test_cordex_dataset_id():
     )
 
 
-def test_cordex_dataset_id():
-    ds = create_test_ds("EUR-11", attrs="CORDEX")
-    ds.attrs["driving_model_id"] = "MY-DRIVE-MODEL"
-    ds.attrs["institute_id"] = "INSTITUTE"
-    ds.attrs["model_id"] = "RCM"
-    ds.attrs["experiment_id"] = "historical"
-    ds.attrs["frequency"] = "mon"
-    assert (
-        cordex_dataset_id(ds, sep=".")
-        == "EUR-11.MY-DRIVE-MODEL.INSTITUTE.RCM.historical.mon"
-    )
-
-
 def test_member_id_to_dset_id():
     ds = create_test_ds("EUR-11", attrs="CORDEX")
     ds.attrs["driving_model_id"] = "MY-DRIVE-MODEL"
@@ -152,11 +138,6 @@ def test_promote_empty_dims():
     ds = ds.drop_vars(["rlon", "rlat"])
     ds_promoted = promote_empty_dims(ds)
     assert set(["rlon", "rlat"]).issubset(set(ds_promoted.coords))
-
-
-def test_sort_ds_dict_by_attr(test_ensemble):
-    ds_dict_sorted = sort_ds_dict_by_attr(test_ensemble, "experiment_id")
-    assert "evaluation" in ds_dict_sorted
 
 
 def test_sort_ds_dict_by_attr(test_ensemble):

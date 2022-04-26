@@ -5,7 +5,7 @@ Examples
 Using the Domain module
 -----------------------
 
-In this example, we want to show how to use the :module:`domain` to 
+In this example, we want to show how to use the :module:`domain` to
 create grid data of the CORDEX-CORE domains.
 
 .. literalinclude:: ../examples/domain/domain.py
