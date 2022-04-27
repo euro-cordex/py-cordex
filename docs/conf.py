@@ -20,10 +20,8 @@ import sys
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
-import cordex
-
 sys.path.insert(0, os.path.abspath(".."))
-
+import cordex
 
 # -- General configuration ---------------------------------------------
 
