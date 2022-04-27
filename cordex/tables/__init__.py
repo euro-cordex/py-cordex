@@ -1,14 +1,21 @@
 import pandas as pd
 
 from ._resources import (
-    read_cordex_domain_tables,
+    cmor_tables_inpath,
     ecmwf_tables,
-    fetch_cordex_cmor_table,
     fetch_cmip6_cmor_table,
-    cmor_tables_inpath
+    fetch_cordex_cmor_table,
+    read_cordex_domain_tables,
 )
 
-#__cmor_table_version__ = cmor_table_version
+# __cmor_table_version__ = cmor_table_version
+__all__ = [
+    "cmor_tables_inpath",
+    "ecmwf_tables",
+    "fetch_cmpi6_cmor_table",
+    "fetch_cordex_cmor_table",
+    "read_cordex_domain_tables",
+]
 
 
 class read_cls:

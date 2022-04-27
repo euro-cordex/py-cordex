@@ -1,8 +1,8 @@
 import os
-import pandas as pd
-import pooch
 from pathlib import Path
 
+import pandas as pd
+import pooch
 
 base_url = "https://raw.githubusercontent.com/euro-cordex/tables/main/"
 
@@ -20,7 +20,6 @@ def _construct_cache_dir(path):
         path = pooch.os_cache(_default_cache_dir_name)
 
     return path
-
 
 
 DOMAIN_RESOURCE = pooch.create(
@@ -62,24 +61,28 @@ ECMWF_RESOURCE = pooch.create(
 
 cmor_tables_inpath = str(pooch.os_cache("cmor-tables"))
 
+
 def fetch_cordex_cmor_table(table):
-    return retrieve_cmor_table(table, 
-                               url="https://github.com/euro-cordex/cordex-cmor-tables/raw/main/Tables")
+    return retrieve_cmor_table(
+        table, url="https://github.com/euro-cordex/cordex-cmor-tables/raw/main/Tables"
+    )
 
 
 def fetch_cmip6_cmor_table(table):
-    return retrieve_cmor_table(table, 
-                               url="https://github.com/PCMDI/cmip6-cmor-tables/raw/master/Tables")
+    return retrieve_cmor_table(
+        table, url="https://github.com/PCMDI/cmip6-cmor-tables/raw/master/Tables"
+    )
 
-    
+
 def retrieve_cmor_table(table, url):
     path = cmor_tables_inpath
     if Path(table).suffix == "":
         fname = "{}.json".format(table)
     else:
         fname = table
-    return pooch.retrieve(os.path.join(url,fname), known_hash=None, 
-                          fname=fname, path=path)
+    return pooch.retrieve(
+        os.path.join(url, fname), known_hash=None, fname=fname, path=path
+    )
 
 
 def fetch_remote_table(name, resource):

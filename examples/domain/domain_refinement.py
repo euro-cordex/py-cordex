@@ -1,6 +1,5 @@
 from cordex import domain as dm
 
-
 eur44 = dm.domain("EUR-44")
 eur22 = dm.domain("EUR-22")
 eur11 = dm.domain("EUR-11")

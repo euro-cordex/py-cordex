@@ -4,6 +4,6 @@ def ALADIN53(ds):
         try:
             if ds[var].units == "K":
                 ds[var] += 273.5
-        except:
+        except Exception:
             pass
     return ds

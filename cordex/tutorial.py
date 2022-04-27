@@ -4,15 +4,11 @@ Useful for:
 * users learning py-cordex
 
 """
-### code stolen from xarray, I am sorry!
+# code stolen from xarray, I am sorry!
 import os
 import pathlib
 
-import numpy as np
-
 from xarray import open_dataset as _open_dataset
-from xarray import DataArray
-from xarray import Dataset
 
 from .preprocessing import cordex_dataset_id
 
@@ -84,7 +80,7 @@ def open_dataset(
     If a local copy is found then always use that to avoid network traffic.
 
     Available datasets:
-    
+
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)
@@ -108,7 +104,8 @@ def open_dataset(
     """
     try:
         import pooch
-        from pooch import HTTPDownloader
+
+        # from pooch import HTTPDownloader
     except ImportError as e:
         raise ImportError(
             "tutorial.open_dataset depends on pooch to download and manage datasets."
@@ -147,15 +144,15 @@ def open_dataset(
 
 def ensemble():
     """Retrieve a mini CORDEX test ensemble.
-    
+
     Available datasets:
-    
+
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012"``: Racmo Output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_RMIB-UGent-ALARO-0_v1_mon_198001-198012"``: Alaro output (lambert conformal)
-    
+
     """
     files = [
         "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",

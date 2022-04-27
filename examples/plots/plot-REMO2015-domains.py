@@ -2,11 +2,10 @@
 """
 
 
-import cordex.plot as crxplt
-
-from pyesgf.search import SearchConnection
 from pyesgf.logon import LogonManager
+from pyesgf.search import SearchConnection
 
+import cordex.plot as crxplt
 
 # logon to ESGF node
 print("logon to ESGF")

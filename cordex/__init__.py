@@ -11,22 +11,32 @@
 #    del get_distribution, DistributionNotFound
 
 
-from . import core, regions#, cmor, preprocessing
+from . import core, regions, tables, tutorial  # , cmor, preprocessing
 from .core.domain import (
     cordex_domain,
     create_dataset,
+    domain_info,
     rotated_coord_transform,
     vertices,
-    domain_info,
 )
-
 from .core.utils import map_crs
-
-from . import tutorial
-
 from .tables import domains, ecmwf
-from . import tables
-
 from .version import version
 
 __version__ = version
+
+
+__all__ = [
+    "core",
+    "regions",
+    "tables",
+    "tutorial",
+    "cordex_domain",
+    "create_dataset",
+    "domain_info",
+    "rotated_coord_transform",
+    "vertices",
+    "map_crs",
+    "domains",
+    "ecmwf",
+]

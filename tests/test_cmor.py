@@ -1,7 +1,9 @@
-import pytest
-from cordex import cmor
-import cftime as cfdt
 import datetime as dt
+
+import cftime as cfdt
+import pytest
+
+from cordex import cmor
 
 
 def test_cftime():

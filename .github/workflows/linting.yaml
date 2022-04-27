@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: github CI
+name: linting
 on:
   push:
     branches:
@@ -10,9 +7,13 @@ on:
     branches:
       - "*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    name: py${{ matrix.python-version }}
+    name: linting
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -22,7 +23,7 @@ jobs:
       matrix:
         os: ["ubuntu-latest"]
         # Bookend python versions
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -35,8 +36,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{
-            hashFiles('ci/requirements/**.yml') }}
+          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ hashFiles('ci/requirements/**.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
+            ${{ runner.os }}-
       - uses: conda-incubator/setup-miniconda@v2
         with:
           channels: conda-forge
@@ -50,6 +53,7 @@ jobs:
       - name: Install conda dependencies
         run: |
           mamba env update -f $CONDA_ENV_FILE
+          mamba install black isort flake8
       - name: Install py-cordex
         run: |
           python -m pip install --no-deps -e .
@@ -57,27 +61,14 @@ jobs:
         run: |
           conda info -a
           conda list
-      - name: Import cordex
+      - name: Import py-cordex
         run: |
           python -c "import cordex"
-      - name: Run tests
-        run: python -m pytest
-          --cov=cordex
-          --cov-report=xml
-          --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
-
-      - name: Upload test results
+      - name: isort
+        run: isort --check .
+      - name: black
         if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results for ${{ runner.os }}-${{ matrix.python-version }}
-          path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
-
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          env_vars: RUNNER_OS,PYTHON_VERSION
-          name: codecov-umbrella
-          fail_ci_if_error: false
+        run: black --check .
+      - name: flake8
+        if: always()
+        run: flake8 .

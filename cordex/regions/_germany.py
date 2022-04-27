@@ -1,5 +1,5 @@
-from ._resources import fetch_vg2500
 from . import _regions
+from ._resources import fetch_vg2500
 
 
 class Germany:

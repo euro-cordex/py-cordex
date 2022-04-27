@@ -1,9 +1,9 @@
 import tempfile
 import warnings
-from . import cf
 
 import xarray as xr
-import numpy as np
+
+from . import cf
 
 
 def get_tempfile():
@@ -80,7 +80,8 @@ def map_crs(x, y, src_crs, trg_crs=None):
         src_crs,
         trg_crs,
         input_core_dims=input_core_dims,  # list with one entry per arg
-        output_core_dims=output_core_dims  # [["rlat", "rlon"], ["rlat", "rlon"]],
+        # [["rlat", "rlon"], ["rlat", "rlon"]],
+        output_core_dims=output_core_dims
         # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
     )
     result[0].name = "x_map"

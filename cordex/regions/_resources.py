@@ -1,6 +1,4 @@
 from pooch import retrieve
-import pandas
-import pooch
 
 cache_url = "~/.py-cordex"
 
