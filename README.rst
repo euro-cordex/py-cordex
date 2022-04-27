@@ -21,7 +21,7 @@ py-cordex: create cordex grids and meta data
 .. image:: https://pyup.io/repos/github/euro-cordex/py-cordex/shield.svg
     :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
     :alt: Updates
-    
+
 .. image:: https://results.pre-commit.ci/badge/github/euro-cordex/py-cordex/master.svg
    :target: https://results.pre-commit.ci/latest/github/euro-cordex/py-cordex/master
    :alt: pre-commit.ci status
