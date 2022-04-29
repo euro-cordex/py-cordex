@@ -20,6 +20,7 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Updated documentation including contribution guide, switch to ``sphinx-book-theme`` (:pull:`57`).
 - Introduced ``linting.yaml`` test and ``pre-commit`` hook (:pull:`56`).
 - Updated external resource from pooch to ignore hashes and use main branch from `tables <https://github.com/euro-cordex/tables>`_ repository (:pull:`53`). This should protect earlier version from breaking if the tables change.
 - Changed ``pooch`` resource for CMOR table fetching. The test workflow now uses original `CMIP6 cmor tables <https://github.com/PCMDI/cmip6-cmor-tables>`_ in a combination with an updated controlled vocabulary for `CORDEX_CV.json <https://github.com/euro-cordex/cordex-cmor-tables>`_. Because there are no official CORDEX CMIP6 CMOR tables yet, we ignore hash checking for now. This will change in the future (:pull:`55`).
