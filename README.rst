@@ -68,7 +68,7 @@ Installation from source
 
 We don't recommend to pip install py-cordex because some of the dependencies require pre-compiled packages
 that won't work with pip. For instructions to install py-cordex from source, please have a look
-at the `contributing guide <https://py-cordex.readthedocs.io/en/stable/contributing.html>`_. 
+at the `contributing guide <https://py-cordex.readthedocs.io/en/stable/contributing.html>`_.
 If you want to contribute, please get in contact as early as possible, e.g.,  using `draft pull requests <https://github.blog/2019-02-14-introducing-draft-pull-requests>`_.
 
 
