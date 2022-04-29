@@ -110,7 +110,7 @@ built version:
    >>> cordex.__version__
 
 The nice thing about the *editable* mode (that's the ``-e`` flag in the pip install command) is
-that you can not edit the code directly in the package and use it without having to reinstall
+that you can edit the code directly in the package and use it without having to reinstall
 the package. If you work a lot in Jupyter notebooks for development, you should check out
 the autoreload magic, e.g., add a cell in the top of your notebook containing:
 
