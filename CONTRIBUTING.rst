@@ -107,7 +107,7 @@ built version:
 
    $ python  # start an interpreter
    >>> import cordex
-   >>> xarray.__version__
+   >>> cordex.__version__
 
 The nice thing about the *editable* mode (that's the ``-e`` flag in the pip install command) is
 that you can not edit the code directly in the package and use it without having to reinstall
