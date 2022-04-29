@@ -14,7 +14,7 @@ v0.4.0 (29 April 2022)
 This version introduces CORDEX regular grids, they are denoted with an i in the end, e.g., ``EUR-11i``. The cmor tables have also been
 updated to allow for a preliminary cmorization of CORDEX data using CMIP6 cmor tables. However, this is still only used for
 development since there is no official data request yet for downscaling CMIP6 models. There are also some internal changes,
-mainly to improve code quality for easier contributions. 
+mainly to improve code quality for easier contributions.
 
 New Features
 ~~~~~~~~~~~~
