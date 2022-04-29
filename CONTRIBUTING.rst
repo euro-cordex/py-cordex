@@ -59,39 +59,71 @@ Get Started!
 
 Ready to contribute? Here's how to set up `cordex` for local development.
 
-1. Fork the `cordex` repo on GitHub.
-2. Clone your fork locally::
+Forking
+~~~~~~~
 
-    $ git clone git@github.com:your_name_here/py-cordex.git
+You will need create your own fork of the project. This is really easy using the github
+interface, just go to the `py-cordex project page <https://github.com/euro-cordex/py-cordex>`_ and hit the ``Fork`` button.
+From your fork, you then clone the repository to your machine::
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+    git clone https://github.com/your-user-name/py-cordex.git
+    cd py-cordex
+    git remote add upstream https://github.com/euro-cordex/py-cordex.git
 
-    $ mkvirtualenv cordex
-    $ cd py-cordex/
-    $ python setup.py develop
 
-4. Create a branch for local development::
+Creating a Python Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    $ git checkout -b name-of-your-bugfix-or-feature
+For the development environment, we recommend to use the conda package manager.
 
-   Now you can make your changes locally.
+- Install either `Anaconda <https://www.anaconda.com/download/>`_ or `miniconda
+  <https://conda.io/miniconda.html>`_
+- Make sure your conda is up to date (``conda update conda``)
+- ``cd`` to the *py-cordex* source directory
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+We don't recommend to use pip installation for development since some
+depdencenies (like ``cartopy`` or ``xesmf``) require pre-compiled libraries
+in the backend. So the safest way to go is:
 
-    $ flake8 cordex tests
-    $ python setup.py test or pytest
-    $ tox
+1. Install the build dependencies
+2. Build and install py-cordex from source
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+.. code-block:: sh
 
-6. Commit your changes and push your branch to GitHub::
+   # Create and activate the build environment
+   conda create -c conda-forge -n py-cordex-tests python=3.9
 
-    $ git add .
-    $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+   conda env update -f ci/requirements/environment.yml
 
-7. Submit a pull request through the GitHub website.
+   conda activate py-cordex-tests
+
+   # Build and install py-cordex in editable mode
+   pip install -e .
+
+At this point you should be able to import *py-cordex* from your locally
+built version:
+
+.. code-block:: sh
+
+   $ python  # start an interpreter
+   >>> import cordex
+   >>> xarray.__version__
+
+The nice thing about the *editable* mode (that's the ``-e`` flag in the pip install command) is
+that you can not edit the code directly in the package and use it without having to reinstall
+the package. If you work a lot in Jupyter notebooks for development, you should check out
+the autoreload magic, e.g., add a cell in the top of your notebook containing:
+
+.. code-block:: sh
+
+   %load_ext autoreload
+   %autoreload 2
+
+This will allow you to edit the *py-cordex* source code and use it directly in the notebook
+without having to restart the kernel.
+
+See the full conda docs `here <http://conda.pydata.org/docs>`__.
+
 
 Pull Request Guidelines
 -----------------------
