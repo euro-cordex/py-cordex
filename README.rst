@@ -50,7 +50,7 @@ For planned features, please have a look at the `issues <https://github.com/euro
 
 Meta data
 ^^^^^^^^^
-Access to meta data should be automatic and machine readable to avoid humans to do boring, repetitiv tasks that are error prone. 
+Access to meta data should be automatic and machine readable to avoid humans to do boring, repetitiv tasks that are error prone.
 For that purpose, easy access to meta information should be guaranteed by tables collected `here <https://github.com/euro-cordex/tables>`_.
 
 Installation
