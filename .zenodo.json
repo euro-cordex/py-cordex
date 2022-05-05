@@ -1,0 +1,19 @@
+{
+  "creators": [
+    {
+      "affiliation": "Helmholtz-Zentrum Hereon",
+      "name": "Lars Buntemeyer",
+      "orcid": "0000-0002-0849-2404"
+    }
+  ],
+  "keywords": [
+    "py-cordex",
+    "cordex",
+    "xarray",
+    "rcm",
+    "analysis"
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open"
+}
