@@ -8,6 +8,16 @@ What's New
 
     import pyremo
 
+
+v0.4.1 (Unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+-  Added pre-commit hooks for Jupyter notebooks (including reformatting), added ``.zenodo.json`` (:pull:`59`).
+
+
 v0.4.0 (29 April 2022)
 ----------------------
 
