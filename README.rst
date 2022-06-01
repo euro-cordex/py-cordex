@@ -27,6 +27,10 @@ py-cordex: create cordex grids and meta data
 
 .. image:: https://zenodo.org/badge/304687410.svg
    :target: https://zenodo.org/badge/latestdoi/304687410
+   
+.. image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
+   :target: https://fair-software.eu
+
 
 This package offers python tools for the `CORDEX <https://cordex.org/>`_ community and should make your work with CORDEX grids and meta data easy.
 Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the
