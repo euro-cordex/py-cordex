@@ -27,7 +27,7 @@ py-cordex: create cordex grids and meta data
 
 .. image:: https://zenodo.org/badge/304687410.svg
    :target: https://zenodo.org/badge/latestdoi/304687410
-   
+
 .. image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
    :target: https://fair-software.eu
 
