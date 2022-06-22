@@ -26,6 +26,8 @@ import xarray as xr
 from ..tables import domains
 from . import cf, utils
 
+nround = 7
+
 
 def domain_names(table_name=None):
     """Returns a list of short names of all availabe Cordex domains
@@ -377,8 +379,12 @@ def _grid_mapping(pollon, pollat, mapping_name=None):
 
 def _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat):
     """create coordinate arrays from lower left longitude and latitude"""
-    rlon = np.array([ll_lon + i * dlon for i in range(0, nlon)], dtype=np.float64)
-    rlat = np.array([ll_lat + i * dlat for i in range(0, nlat)], dtype=np.float64)
+    rlon = np.array(
+        [round(ll_lon + i * dlon, nround) for i in range(0, nlon)], dtype=np.float64
+    )
+    rlat = np.array(
+        [round(ll_lat + i * dlat, nround) for i in range(0, nlat)], dtype=np.float64
+    )
     return rlon, rlat
 
 
