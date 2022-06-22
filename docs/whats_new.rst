@@ -20,7 +20,7 @@ Internal Changes
 Bug Fixes
 ~~~~~~~~~
 
-- Fixed rounding errors for grid coordinates (:pull:`61`). This might have some influences on results, since coordinate values change up to single precision (which is irrelevant for CORDEX domains).
+- Fixed rounding errors for grid coordinates (:pull:`61`). This might have some influence on results, since coordinate values might change to more exact values.
 
 
 
