@@ -16,6 +16,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Added pre-commit hooks for Jupyter notebooks (including reformatting), added ``.zenodo.json`` (:pull:`59`).
+- Added ``publish-pypi.yaml`` workflow (:pull:`63`).
 
 Bug Fixes
 ~~~~~~~~~
