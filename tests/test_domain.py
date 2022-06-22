@@ -26,6 +26,9 @@ def test_domain_basic():
     assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
     assert "rotated_latitude_longitude" not in cx.cordex_domain("EUR-11i").data_vars
 
+    # ensure rounding errors fixed
+    assert np.float64(eur11.rlon.isel(rlon=34).data) == -24.635
+
 
 def test_cordex_regular():
     eur11i = cx.cordex_domain("EUR-11i")
