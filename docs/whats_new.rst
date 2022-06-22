@@ -15,7 +15,13 @@ v0.4.1 (Unreleased)
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
--  Added pre-commit hooks for Jupyter notebooks (including reformatting), added ``.zenodo.json`` (:pull:`59`).
+- Added pre-commit hooks for Jupyter notebooks (including reformatting), added ``.zenodo.json`` (:pull:`59`).
+
+Bug Fixes
+~~~~~~~~~
+
+- Fixed rounding errors for grid coordinates (:pull:`61`). This might have some influences on results, since coordinate values change up to single precision (which is irrelevant for CORDEX domains).
+
 
 
 v0.4.0 (29 April 2022)
