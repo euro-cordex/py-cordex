@@ -16,6 +16,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Added pre-commit hooks for Jupyter notebooks (including reformatting), added ``.zenodo.json`` (:pull:`59`).
+- Switched to automatic version numbering using ``setuptools_scm`` (:pull:`61`).
 
 Bug Fixes
 ~~~~~~~~~
