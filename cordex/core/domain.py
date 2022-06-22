@@ -25,8 +25,7 @@ import xarray as xr
 
 from ..tables import domains
 from . import cf, utils
-
-nround = 7
+from .config import nround
 
 
 def domain_names(table_name=None):
