@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
-# from pkg_resources import get_distribution, DistributionNotFound
-#
-# try:
-#    # Change here if project is renamed and does not equal the package name
-#    dist_name = "py-cordex"
-#    __version__ = get_distribution(dist_name).version
-# except DistributionNotFound:
-#    __version__ = "unknown"
-# finally:
-#    del get_distribution, DistributionNotFound
 
+import pkg_resources
 
 from . import core, regions, tables, tutorial  # , cmor, preprocessing
 from .core.domain import (
@@ -21,9 +12,17 @@ from .core.domain import (
 )
 from .core.utils import map_crs
 from .tables import domains, ecmwf
-from .version import version
 
-__version__ = version
+# from .version import version
+
+# __version__ = version
+
+try:
+    __version__ = pkg_resources.get_distribution("py-cordex").version
+except Exception:
+    # Local copy or not installed with setuptools.
+    # Disable minimum version checks on downstream libraries.
+    __version__ = "999"
 
 
 __all__ = [
