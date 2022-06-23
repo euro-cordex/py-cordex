@@ -9,8 +9,10 @@ What's New
     import pyremo
 
 
-v0.4.1 (Unreleased)
--------------------
+v0.4.1 (23 June 2022)
+---------------------
+
+Patch release to fix coordinate precisions, also includes some maintenance updates.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
