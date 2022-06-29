@@ -13,7 +13,7 @@ dependencies:
   - cftime
   - netCDF4
   - xesmf
-  - cdo #==1.9.9 # python-cdo fails with cdo2
+  - cdo
   - python-cdo
   - pip:
     - git+https://github.com/euro-cordex/py-cordex.git  # latest py-cordex version
