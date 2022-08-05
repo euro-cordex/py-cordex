@@ -366,16 +366,17 @@ def cmorize_variable(
     Parameters
     ----------
     ds : xr.Dataset
-        REMO Dataset containing at least the variable that should be cmorized.
-    varname: str
-        CF name of the variable that should be cmorized. The corresponding REMO variable
-        will be looked up from the code table.
+        Dataset containing at least the variable that should be cmorized.
+    out_name: str
+        CF out_name of the variable that should be cmorized. The corresponding variable name
+        in the dataset is looked up from the mapping_table if provided.
     cmor_table : str
         Filepath to cmor table.
     dataset_table: str
         Filepath to dataset cmor table.
     mapping_table: dict
-        Mapping of input variable names and meta data to CF out_name.
+        Mapping of input variable names and meta data to CF out_name. Required if
+        the variable name in the input dataset is not equal to out_name.
     grids_table: str
         Filepath to cmor grids table.
     inpath: str
