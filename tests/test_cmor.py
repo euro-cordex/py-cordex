@@ -8,6 +8,11 @@ from cordex import cmor
 
 def test_cftime():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
+    assert cmor.to_cftime(dt.date(2000, 1, 1)) == cfdt.datetime(2000, 1, 1)
+    assert cmor.to_cftime("2000-01-01T01:00:00") == cfdt.datetime(2000, 1, 1, 1)
+    assert cmor.to_cftime("2000-02-30T00:00:00", calendar="360_day") == cfdt.datetime(
+        2000, 2, 30, calendar="360_day"
+    )
 
 
 @pytest.mark.parametrize("dt", [dt, cfdt])

@@ -4,7 +4,6 @@ import os
 from warnings import warn
 
 import cf_xarray as cfxr
-import cftime as cfdt
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -14,13 +13,12 @@ import cordex as cx
 # trigger download of cmor tables
 from cordex import cmor as cxcmor
 
-from .derived import derivator
+# from .derived import derivator
 from .utils import (
     _encode_time,
     _get_cfvarinfo,
     _get_cordex_pole,
     _get_pole,
-    _get_varinfo,
     _strip_time_cell_method,
 )
 
@@ -72,31 +70,6 @@ def _resample_op(ds, hfreq, op, **kwargs):
     rolling = getattr(ds.rolling(time=hfreq + 1, center=True), op)()
     freq = "{}H".format(hfreq)
     return rolling.resample(time=freq, loffset=0.5 * pd.Timedelta(hfreq, "H")).nearest()
-
-
-# def ensure_cftime(func):
-#    def wrapper(date, **kwargs):
-#        return func(_to_cftime(date), **kwargs)
-#
-#    return wrapper
-
-
-def to_cftime(date, calendar="proleptic_gregorian"):
-    if type(date) == dt.date:
-        date = dt.datetime.combine(date, dt.time())
-    elif isinstance(date, cfdt.datetime):
-        # do nothing
-        return date
-    return cfdt.datetime(
-        date.year,
-        date.month,
-        date.day,
-        date.hour,
-        date.minute,
-        date.second,
-        date.microsecond,
-        calendar=calendar,
-    )
 
 
 def _get_loffset(time):
@@ -315,7 +288,8 @@ def _set_time_encoding(ds, units, orig):
 
 def prepare_variable(
     ds,
-    varname,
+    out_name,
+    mapping_table=None,
     CORDEX_domain=None,
     time_range=None,
     squeeze=True,
@@ -324,28 +298,22 @@ def prepare_variable(
     """prepares a variable for cmorization."""
     is_ds = isinstance(ds, xr.Dataset)
 
-    # pole = _get_pole(ds)
-    # if pole is None:
-    #    pole = _get_cordex_pole(CORDEX_domain)
-    varinfo = _get_varinfo(varname)
-    if varinfo is not None:
-        remo_name = varinfo["variable"]
-        cf_name = varinfo["cf_name"]
+    # no mapping table provided, we assume datasets has already correct out_names and units.
+    if mapping_table is None:
+        try:
+            var_ds = ds[[out_name]]
+        except Exception:
+            raise Exception(
+                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
+            )
+    else:
+        varname = mapping_table[out_name]["varname"]
+        # cf_name = varinfo["cf_name"]
         if is_ds is True:
-            var_ds = ds[[remo_name]]  # .to_dataset()
+            var_ds = ds[[varname]]  # .to_dataset()
         else:
             var_ds = ds.to_dataset()
-        var_ds = var_ds.rename({remo_name: cf_name})
-    elif allow_derive is True:
-        # try:
-        # assume it's a dataset with input variables for derivation.
-        var_ds = derivator.derive(ds, varname)
-        # except:
-        #    raise Exception("could not find or derive variable: {}".format(varname))
-    else:
-        raise Exception(
-            "could not find {} in remo table, try allow_derive=True".format(varname)
-        )
+        var_ds = var_ds.rename({varname: out_name})
     # remove point coordinates, e.g, height2m
     if squeeze is True:
         var_ds = var_ds.squeeze(drop=True)
@@ -379,9 +347,10 @@ def adjust_frequency(ds, cfvarinfo, input_freq=None):
 
 def cmorize_variable(
     ds,
-    varname,
+    out_name,
     cmor_table,
     dataset_table,
+    mapping_table=None,
     grids_table=None,
     inpath=".",
     allow_units_convert=False,
@@ -390,7 +359,7 @@ def cmorize_variable(
     CORDEX_domain=None,
     vertices=None,
     time_units=None,
-    **kwargs
+    **kwargs,
 ):
     """Cmorizes a variable.
 
@@ -405,6 +374,8 @@ def cmorize_variable(
         Filepath to cmor table.
     dataset_table: str
         Filepath to dataset cmor table.
+    mapping_table: dict
+        Mapping of input variable names and meta data to CF out_name.
     grids_table: str
         Filepath to cmor grids table.
     inpath: str
@@ -474,12 +445,14 @@ def cmorize_variable(
     if inpath == ".":
         inpath = os.path.dirname(cmor_table)
 
-    ds_prep = prepare_variable(ds, varname, CORDEX_domain=CORDEX_domain, **kwargs)
+    ds_prep = prepare_variable(
+        ds, out_name, CORDEX_domain=CORDEX_domain, mapping_table=mapping_table, **kwargs
+    )
 
-    cfvarinfo = _get_cfvarinfo(varname, cmor_table)
+    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
     if cfvarinfo is None:
-        raise Exception("{} not found in {}".format(varname, cmor_table))
+        raise Exception("{} not found in {}".format(out_name, cmor_table))
     if "time" in ds:
         if allow_resample is True:
             ds_prep = adjust_frequency(ds_prep, cfvarinfo, input_freq)
@@ -496,7 +469,7 @@ def cmorize_variable(
     ds_prep = xr.merge([ds_prep, pole])
 
     if allow_units_convert is True:
-        ds_prep[varname] = _units_convert(ds_prep[varname], cmor_table)
+        ds_prep[out_name] = _units_convert(ds_prep[out_name], cmor_table)
 
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
@@ -504,4 +477,4 @@ def cmorize_variable(
     time_cell_method = _strip_time_cell_method(cfvarinfo)
     cmorTime, cmorGrid = _define_grid(ds_prep, table_ids, time_cell_method)
 
-    return _cmor_write(ds_prep[varname], table_ids[1], cmorTime, cmorGrid)
+    return _cmor_write(ds_prep[out_name], table_ids[1], cmorTime, cmorGrid)

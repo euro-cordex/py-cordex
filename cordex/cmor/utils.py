@@ -2,10 +2,10 @@
 """
 import datetime as dt
 import json
+from warnings import warn
 
 import cftime as cfdt
 import xarray as xr
-from warn import warn
 
 from .. import cordex_domain
 
@@ -25,20 +25,56 @@ def _get_loffset(time):
 #    return wrapper
 
 
-def to_cftime(date, calendar="gregorian"):
-    """Convert datetime object to cftime object.
+# def to_cftime(date, calendar="gregorian"):
+#     """Convert datetime object to cftime object.
+
+#     Parameters
+#     ----------
+#     date : datetime object
+#         Datetime object.
+#     calendar : str
+#         Calendar of the cftime object.
+
+#     Returns
+#     -------
+#     cftime : cftime object
+#         Cftime ojbect.
+
+#     """
+#     if type(date) == dt.date:
+#         date = dt.datetime.combine(date, dt.time())
+#     elif isinstance(date, cfdt.datetime):
+#         # do nothing
+#         return date
+#     return cfdt.datetime(
+#         date.year,
+#         date.month,
+#         date.day,
+#         date.hour,
+#         date.minute,
+#         date.second,
+#         date.microsecond,
+#         calendar=calendar,
+#     )
+
+
+def to_cftime(date, calendar="standard"):
+    """Convert date to cftime object
+
+    Can handle all CMIP6 calendars.
 
     Parameters
     ----------
-    date : datetime object
-        Datetime object.
+    date : datetime object, str
+        Input date.
     calendar : str
         Calendar of the cftime object.
 
     Returns
     -------
     cftime : cftime object
-        Cftime ojbect.
+    Cftime ojbect.
+
 
     """
     if type(date) == dt.date:
@@ -46,6 +82,10 @@ def to_cftime(date, calendar="gregorian"):
     elif isinstance(date, cfdt.datetime):
         # do nothing
         return date
+    elif isinstance(date, str):
+        # xarray hack for cftime.strptime
+        return xr.cftime_range(start=date, end=date, calendar=calendar)[0]
+        # date = pd.to_datetime(date)
     return cfdt.datetime(
         date.year,
         date.month,
