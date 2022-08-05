@@ -8,6 +8,11 @@ What's New
 
     import pyremo
 
+v0.5.0 (Unrelease)
+------------------
+
+- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorizazion function ``cordex.cmor.cmorize_variable`` now allows for easy cmorization using the archive specifications includex in ``py-cordex`` (:pull:`68`).
+
 
 v0.4.1 (23 June 2022)
 ---------------------
