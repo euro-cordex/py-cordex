@@ -2,10 +2,11 @@ import datetime as dt
 
 import cftime as cfdt
 import pytest
-
-from cordex import cmor
-import cordex as cx
 import xarray as xr
+
+import cordex as cx
+from cordex import cmor
+
 
 def test_cftime():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
@@ -68,7 +69,7 @@ def test_cmorizer_fx():
     filename = cmor.cmorize_variable(
         ds,
         "orog",
-        mapping_table = {"orog": {"varname":"topo"}},
+        mapping_table={"orog": {"varname": "topo"}},
         cmor_table=cx.tables.cmip6_cmor_table("CMIP6_fx"),
         dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
         grids_table=cx.tables.cmip6_cmor_table("CMIP6_grids"),
