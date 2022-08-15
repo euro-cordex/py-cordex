@@ -16,6 +16,7 @@ dependencies:
   - dask
   - cdo # python-cdo fails with cdo2
   - python-cdo
+  - cmor
 # for testing
   - pytest
   - pytest-cov

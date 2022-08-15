@@ -8,6 +8,11 @@ What's New
 
     import pyremo
 
+v0.5.0 (Unreleased)
+-------------------
+
+- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`).
+
 
 v0.4.1 (23 June 2022)
 ---------------------
@@ -39,7 +44,7 @@ mainly to improve code quality for easier contributions.
 New Features
 ~~~~~~~~~~~~
 
-- Updated ``map_crs`` to work for arbitray transformations (:pull:`52`).
+- Updated :py:meth:`map_crs` to work for arbitray transformations (:pull:`52`).
 - Added ``cordex-regular`` table and options to create regular cordex domains (:pull:`53`, :pull:`54`).
 
 Internal Changes
@@ -53,7 +58,7 @@ Internal Changes
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- ``map_crs`` switched order of coordinates to `COARDS <https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_ (:pull:`52`).
+- :py:meth:`map_crs` switched order of coordinates to `COARDS <https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_ (:pull:`52`).
 
 
 v0.3.2 (30 March 2022)

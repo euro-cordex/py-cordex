@@ -53,11 +53,12 @@ Cmorization
 .. autosummary::
    :toctree: generated/
 
+   cmor.cmorize_variable
+   cmor.to_cftime
    cmor.season
    cmor.season_bounds
    cmor.mid_of_month
    cmor.month_bounds
-   cmor.to_cftime
 
 CMOR Tables
 -----------

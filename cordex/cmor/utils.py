@@ -1,9 +1,13 @@
 """CORDEX Cmorization utilities.
 """
 import datetime as dt
+import json
+from warnings import warn
 
 import cftime as cfdt
 import xarray as xr
+
+from .. import cordex_domain
 
 xr.set_options(keep_attrs=True)
 
@@ -21,20 +25,56 @@ def _get_loffset(time):
 #    return wrapper
 
 
-def to_cftime(date, calendar="gregorian"):
-    """Convert datetime object to cftime object.
+# def to_cftime(date, calendar="gregorian"):
+#     """Convert datetime object to cftime object.
+
+#     Parameters
+#     ----------
+#     date : datetime object
+#         Datetime object.
+#     calendar : str
+#         Calendar of the cftime object.
+
+#     Returns
+#     -------
+#     cftime : cftime object
+#         Cftime ojbect.
+
+#     """
+#     if type(date) == dt.date:
+#         date = dt.datetime.combine(date, dt.time())
+#     elif isinstance(date, cfdt.datetime):
+#         # do nothing
+#         return date
+#     return cfdt.datetime(
+#         date.year,
+#         date.month,
+#         date.day,
+#         date.hour,
+#         date.minute,
+#         date.second,
+#         date.microsecond,
+#         calendar=calendar,
+#     )
+
+
+def to_cftime(date, calendar="standard"):
+    """Convert date to cftime object
+
+    Can handle all CMIP6 calendars.
 
     Parameters
     ----------
-    date : datetime object
-        Datetime object.
+    date : datetime object, str
+        Input date.
     calendar : str
         Calendar of the cftime object.
 
     Returns
     -------
     cftime : cftime object
-        Cftime ojbect.
+    Cftime ojbect.
+
 
     """
     if type(date) == dt.date:
@@ -42,6 +82,10 @@ def to_cftime(date, calendar="gregorian"):
     elif isinstance(date, cfdt.datetime):
         # do nothing
         return date
+    elif isinstance(date, str):
+        # xarray hack for cftime.strptime
+        return xr.cftime_range(start=date, end=date, calendar=calendar)[0]
+        # date = pd.to_datetime(date)
     return cfdt.datetime(
         date.year,
         date.month,
@@ -196,3 +240,56 @@ def mid_of_month(date):
     """
     bounds = month_bounds(date)
     return bounds[0] + 0.5 * (bounds[1] - bounds[0])
+
+
+def _get_pole(ds):
+    """returns the first pole we find in the dataset"""
+    pol_names = ["rotated_latitude_longitude", "rotated_pole"]
+    for pol in pol_names:
+        if pol in ds:
+            return ds[pol]
+    warn("no grid_mapping found in dataset, tried: {}".format(pol_names))
+    return None
+
+
+def _get_grid_definitions(CORDEX_domain, **kwargs):
+    return cordex_domain(CORDEX_domain, add_vertices=True, **kwargs)
+
+
+def _get_cordex_pole(CORDEX_domain):
+    return cordex_domain(CORDEX_domain).rotated_latitude_longitude
+
+
+def _encode_time(time):
+    """encode xarray time axis into cf values
+
+    see https://github.com/pydata/xarray/issues/4412
+
+    """
+    return xr.conventions.encode_cf_variable(time)
+
+
+def _read_cmor_table(table):
+    return _read_json_file(table)
+
+
+def _read_json_file(filename):
+    with open(filename) as f:
+        data = json.load(f)
+    return data
+
+
+def _get_cfvarinfo(cf_varname, table):
+    data = _read_cmor_table(table)
+    return data["variable_entry"].get(cf_varname, None)
+
+
+def _get_time_cell_method(cf_varname, table):
+    return _strip_time_cell_method(_get_cfvarinfo(cf_varname, table))
+
+
+def _strip_time_cell_method(cfvarinfo):
+    try:
+        return cfvarinfo["cell_methods"].split("time:")[1].strip()
+    except Exception:
+        return None
