@@ -4,7 +4,8 @@ import cftime as cfdt
 import pytest
 
 from cordex import cmor
-
+import cordex as cx
+import xarray as xr
 
 def test_cftime():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
@@ -60,3 +61,20 @@ def test_cfmonth():
     assert cmor.mid_of_month(
         cfdt.datetime(2001, 2, 1, calendar="360_day")
     ) == cfdt.datetime(2001, 2, 16, calendar="360_day")
+
+
+def test_cmorizer_fx():
+    ds = cx.cordex_domain("EUR-11", dummy="topo")
+    filename = cmor.cmorize_variable(
+        ds,
+        "orog",
+        mapping_table = {"orog": {"varname":"topo"}},
+        cmor_table=cx.tables.cmip6_cmor_table("CMIP6_fx"),
+        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
+        grids_table=cx.tables.cmip6_cmor_table("CMIP6_grids"),
+        CORDEX_domain="EUR-11",
+        time_units=None,
+        allow_units_convert=True,
+    )
+    output = xr.open_dataset(filename)
+    assert "orog" in output
