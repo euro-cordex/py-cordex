@@ -19,6 +19,7 @@ Example:
 
 from warnings import warn
 
+import cf_xarray as cfxr
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -267,7 +268,7 @@ def _get_regular_dataset(
             ds[mapping_name].grid_north_pole_longitude,
             ds[mapping_name].grid_north_pole_latitude,
         )
-        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
+        v = vertices(ds, ccrs.RotatedPole(*pole))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
@@ -333,7 +334,7 @@ def _get_rotated_dataset(
             ds[mapping_name].grid_north_pole_longitude,
             ds[mapping_name].grid_north_pole_latitude,
         )
-        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
+        v = vertices(ds, ccrs.RotatedPole(*pole))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
@@ -609,7 +610,7 @@ def bounds(coords):
     # return xr.merge([_bounds(coord).left.rename({"left": coord.name+"bounds"}) for coord in coords])
 
 
-def vertices(rlon, rlat, src_crs, trg_crs=None):
+def vertices(ds, src_crs, trg_crs=None):
     """Compute lon and lat vertices.
 
     Transformation of rlon vertices and rlat vertices
@@ -632,14 +633,15 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     warn(
         "Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34"
     )
-    rlon_bounds = _bounds(rlon)
-    rlat_bounds = _bounds(rlat)
+    # ds = xr.merge([rlon_bounds, rlat_bounds])
+    rlon_bounds = ds.cf.add_bounds("rlon").rlon_bounds  # _bounds(ds.rlon)
+    rlat_bounds = ds.cf.add_bounds("rlat").rlat_bounds  # _bounds(ds.rlat)
     # maps each vertex to lat lon coordinates
     # order is counterclockwise starting from lower left vertex
-    v1 = map_crs(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
-    v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
-    v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
-    v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
+    v1 = map_crs(rlon_bounds[:-1], rlat_bounds[:-1], src_crs, trg_crs)
+    v2 = map_crs(rlon_bounds[1:], rlat_bounds[:-1], src_crs, trg_crs)
+    v3 = map_crs(rlon_bounds[1:], rlat_bounds[1:], src_crs, trg_crs)
+    v4 = map_crs(rlon_bounds[:-1], rlat_bounds[1:], src_crs, trg_crs)
     lon_vertices = xr.concat(
         [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
     ).transpose()
