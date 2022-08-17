@@ -638,10 +638,18 @@ def vertices(ds, src_crs, trg_crs=None):
     rlat_bounds = ds.cf.add_bounds("rlat").rlat_bounds  # _bounds(ds.rlat)
     # maps each vertex to lat lon coordinates
     # order is counterclockwise starting from lower left vertex
-    v1 = map_crs(rlon_bounds[:-1], rlat_bounds[:-1], src_crs, trg_crs)
-    v2 = map_crs(rlon_bounds[1:], rlat_bounds[:-1], src_crs, trg_crs)
-    v3 = map_crs(rlon_bounds[1:], rlat_bounds[1:], src_crs, trg_crs)
-    v4 = map_crs(rlon_bounds[:-1], rlat_bounds[1:], src_crs, trg_crs)
+    v1 = map_crs(
+        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=0), src_crs, trg_crs
+    )
+    v2 = map_crs(
+        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=0), src_crs, trg_crs
+    )
+    v3 = map_crs(
+        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=1), src_crs, trg_crs
+    )
+    v4 = map_crs(
+        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
+    )
     lon_vertices = xr.concat(
         [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
     ).transpose()
