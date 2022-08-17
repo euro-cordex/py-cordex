@@ -525,6 +525,18 @@ def _map_crs(lon, lat, src_crs, trg_crs=None):
     return result[:, :, 0], result[:, :, 1]
 
 
+def _transform(x, y, src_crs, trg_crs=None):
+    from pyproj import CRS, Transformer
+
+    if trg_crs is None:
+        trg_crs = CRS("EPSG:4326")
+    x_stack = np.broadcast_to(x, (y.shape[0], x.shape[0])).T
+    y_stack = np.broadcast_to(y, (x.shape[0], y.shape[0]))
+    transformer = Transformer.from_crs(src_crs, trg_crs)
+    y_transform, x_transform = transformer.transform(x_stack, y_stack)
+    return x_transform, y_transform
+
+
 # wrapper function for xarray.apply_ufunc
 def map_crs(lon, lat, src_crs, trg_crs=None):
     """coordinate transformation of longitude and latitude
@@ -556,7 +568,7 @@ def map_crs(lon, lat, src_crs, trg_crs=None):
     input_core_dims = [[lon.dims[0]], [lat.dims[0]]] + [[], []]
     output_core_dims = 2 * [[lon.dims[0], lat.dims[0]]]
     result = xr.apply_ufunc(
-        _map_crs,  # first the function
+        _transform,  # first the function
         lon,  # now arguments in the order expected by 'interp1_np'
         lat,
         src_crs,
@@ -634,8 +646,12 @@ def vertices(ds, src_crs, trg_crs=None):
         "Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34"
     )
     # ds = xr.merge([rlon_bounds, rlat_bounds])
-    rlon_bounds = ds.cf.add_bounds("rlon").rlon_bounds  # _bounds(ds.rlon)
-    rlat_bounds = ds.cf.add_bounds("rlat").rlat_bounds  # _bounds(ds.rlat)
+    rlon_bounds = ds.cf.add_bounds("rlon").rlon_bounds.drop(
+        "rlon_bounds"
+    )  # _bounds(ds.rlon)
+    rlat_bounds = ds.cf.add_bounds("rlat").rlat_bounds.drop(
+        "rlat_bounds"
+    )  # _bounds(ds.rlat)
     # maps each vertex to lat lon coordinates
     # order is counterclockwise starting from lower left vertex
     v1 = map_crs(
