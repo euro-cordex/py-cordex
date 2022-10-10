@@ -148,7 +148,16 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names[time_cell_method]
 
 
-def _define_axes(ds, table_id, lat_vertices=None, lon_vertices=None):
+def _define_axes(ds, table_id):
+
+    if "CORDEX_domain" in ds.attrs:
+        grid = cx.cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
+        lon_vertices = grid.lon_vertices.to_numpy()
+        lat_vertices = grid.lat_vertices.to_numpy()
+    else:
+        lon_vertices = None
+        lat_vertices = None
+
     cmor.set_table(table_id)
     cmorLat = cmor.axis(
         table_entry="grid_latitude",
@@ -467,6 +476,7 @@ def cmorize_variable(
     if pole is None:
         warn("adding pole from archive specs: {}".format(CORDEX_domain))
         pole = _get_cordex_pole(CORDEX_domain)
+
     ds_prep = xr.merge([ds_prep, pole])
 
     if allow_units_convert is True:
@@ -476,6 +486,8 @@ def cmorize_variable(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
     )
     time_cell_method = _strip_time_cell_method(cfvarinfo)
-    cmorTime, cmorGrid = _define_grid(ds_prep, table_ids, time_cell_method)
+    cmorTime, cmorGrid = _define_grid(
+        ds_prep, table_ids, time_cell_method=time_cell_method
+    )
 
     return _cmor_write(ds_prep[out_name], table_ids[1], cmorTime, cmorGrid)
