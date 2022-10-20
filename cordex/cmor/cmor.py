@@ -25,7 +25,7 @@ from .utils import (
 __all__ = ["cxcmor"]
 # from dateutil import relativedelta as reld
 
-config = {"table_prefix": "CORDEX-CMIP6"}
+options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
 
 try:
     import cmor
@@ -63,8 +63,8 @@ units_convert_rules = {
 
 def set_options(**kwargs):
     for k, v in kwargs.items():
-        if k in config:
-            config[k] = v
+        if k in options:
+            options[k] = v
         else:
             raise Exception(f"unkown config option: {k}")
 
@@ -137,12 +137,12 @@ def _load_table(table):
 
 def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
     if grids_table is None:
-        grids_table = f'{config["table_prefix"]}_grids.json'
+        grids_table = f'{options["table_prefix"]}_grids.json'
     cmor.setup(
         inpath,
         set_verbosity=cmor.CMOR_NORMAL,
         netcdf_file_action=cmor.CMOR_REPLACE,
-        exit_control=cmor.CMOR_NORMAL,
+        exit_control=getattr(cmor, options["exit_control"]),
         logfile=None,
     )
     cmor.dataset_json(dataset_table)
