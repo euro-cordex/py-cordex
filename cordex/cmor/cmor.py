@@ -8,6 +8,11 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+try:
+    import cmor
+except Exception:
+    warn("no python cmor package available, consider installing it")
+
 import cordex as cx
 
 # trigger download of cmor tables
@@ -27,10 +32,6 @@ __all__ = ["cxcmor"]
 
 options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
 
-try:
-    import cmor
-except Exception:
-    warn("no python cmor package available, consider installing it")
 
 # from ..core import codes
 
@@ -461,6 +462,9 @@ def cmorize_variable(
             warn(
                 "could not identify CORDEX domain, try to set the 'CORDEX_domain' argument"
             )
+    elif "CORDEX_domain" not in ds.attrs:
+        ds.attrs["CORDEX_domain"] = CORDEX_domain
+
     if inpath == ".":
         inpath = os.path.dirname(cmor_table)
 
