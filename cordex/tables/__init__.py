@@ -15,6 +15,7 @@ __all__ = [
     "fetch_cmpi6_cmor_table",
     "fetch_cordex_cmor_table",
     "read_cordex_domain_tables",
+    "cmor_tables_inpath",
 ]
 
 

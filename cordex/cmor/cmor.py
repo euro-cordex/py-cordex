@@ -8,6 +8,11 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+try:
+    import cmor
+except Exception:
+    warn("no python cmor package available, consider installing it")
+
 import cordex as cx
 
 # trigger download of cmor tables
@@ -25,11 +30,8 @@ from .utils import (
 __all__ = ["cxcmor"]
 # from dateutil import relativedelta as reld
 
+options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
 
-try:
-    import cmor
-except Exception:
-    warn("no python cmor package available, consider installing it")
 
 # from ..core import codes
 
@@ -58,6 +60,14 @@ units_convert_rules = {
     "mm": (lambda x: x * 1.0 / 86400.0, "kg m-2 s-1"),
     "kg/kg": (lambda x: x, "1"),
 }
+
+
+def set_options(**kwargs):
+    for k, v in kwargs.items():
+        if k in options:
+            options[k] = v
+        else:
+            raise Exception(f"unkown config option: {k}")
 
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
@@ -128,12 +138,12 @@ def _load_table(table):
 
 def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
     if grids_table is None:
-        grids_table = "CORDEX-CMIP6_grids.json"
+        grids_table = f'{options["table_prefix"]}_grids.json'
     cmor.setup(
         inpath,
         set_verbosity=cmor.CMOR_NORMAL,
         netcdf_file_action=cmor.CMOR_REPLACE,
-        exit_control=cmor.CMOR_EXIT_ON_MAJOR,
+        exit_control=getattr(cmor, options["exit_control"]),
         logfile=None,
     )
     cmor.dataset_json(dataset_table)
@@ -452,6 +462,9 @@ def cmorize_variable(
             warn(
                 "could not identify CORDEX domain, try to set the 'CORDEX_domain' argument"
             )
+    elif "CORDEX_domain" not in ds.attrs:
+        ds.attrs["CORDEX_domain"] = CORDEX_domain
+
     if inpath == ".":
         inpath = os.path.dirname(cmor_table)
 
