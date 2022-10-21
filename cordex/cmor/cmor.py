@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+# import cf_xarray.units
+# import pint_xarray
+
 try:
     import cmor
 except Exception:
@@ -265,7 +268,7 @@ def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
     return cmor.close(cmor_var, file_name=file_name)
 
 
-def _units_convert(da, table_file):
+def _units_convert(da, table_file, mapping_table={}):
     """Convert units.
 
     Convert units according to the rules in units_convert_rules dict.
@@ -274,13 +277,31 @@ def _units_convert(da, table_file):
     """
     with open(table_file) as f:
         table = json.load(f)
-    units = da.units
+    if da.name in mapping_table:
+        map_units = mapping_table[da.name].get("units")
+        atr_units = da.attrs.get("units")
+        if map_units is not None and atr_units is not None and atr_units != map_units:
+            warn(
+                f"unit [{map_units}] from mapping table differs from units attribute [{da}], assuming [{map_units}] is correct"
+            )
+            units = map_units
+        elif map_units is not None:
+            units = map_units
+        else:
+            units = atr_units
+    else:
+        units = da.units
+    da.attrs["units"] = units
+    # da = da.pint.quantify()
     cf_units = table["variable_entry"][da.name]["units"]
     if units != cf_units:
-        warn("converting units {} to {}".format(units, cf_units))
+        warn(
+            "converting units {} from input data to CF units {}".format(units, cf_units)
+        )
         rule = units_convert_rules[units]
         da = rule[0](da)
         da.attrs["units"] = rule[1]
+        # da = da.pint.to(cf_units)
     return da
 
 
@@ -504,7 +525,7 @@ def cmorize_variable(
     ds_prep = xr.merge([ds_prep, pole])
 
     if allow_units_convert is True:
-        ds_prep[out_name] = _units_convert(ds_prep[out_name], cmor_table)
+        ds_prep[out_name] = _units_convert(ds_prep[out_name], cmor_table, mapping_table)
 
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
