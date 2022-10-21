@@ -46,10 +46,21 @@ loffsets = {
 }
 
 
+mapping_table_default = {"time": "time", "X": "rlon", "Y": "rlat"}
+
+
 time_axis_names = {"point": "time1", "mean": "time"}
 
+
 # map mip frequencies to pandas frequencies
-freq_map = {"1hr": "H", "3hr": "3H", "3hrPt": "3H", "6hr": "6H", "day": "D"}
+freq_map = {
+    "1hr": "H",
+    "1hrPt": "H",
+    "3hr": "3H",
+    "3hrPt": "3H",
+    "6hr": "6H",
+    "day": "D",
+}
 
 time_units_default = "days since 1949-12-01T00:00:00"
 time_dtype = np.double
