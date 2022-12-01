@@ -10,7 +10,7 @@ py-cordex: create cordex grids and meta data
 .. image:: https://img.shields.io/pypi/v/py-cordex.svg
     :target: https://pypi.python.org/pypi/py-cordex
 
-.. image:: https://anaconda.org/conda-forge/py-cordex/badges/version.svg   
+.. image:: https://anaconda.org/conda-forge/py-cordex/badges/version.svg
     :target: https://anaconda.org/conda-forge/py-cordex
 
 .. image:: https://readthedocs.org/projects/py-cordex/badge/?version=latest
@@ -30,7 +30,7 @@ py-cordex: create cordex grids and meta data
 
 .. image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
    :target: https://fair-software.eu
-   
+
 .. image:: https://img.shields.io/badge/Powered%20by-ExaESM-blue.svg
    :target: https://www.exaesm.de/
 
