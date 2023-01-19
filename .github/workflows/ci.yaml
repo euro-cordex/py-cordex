@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         timeout-minutes: 5
         run: python -u -m pytest
-          --cov=regionmask
+          --cov=cordex
           --cov-report=xml
           --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
 
