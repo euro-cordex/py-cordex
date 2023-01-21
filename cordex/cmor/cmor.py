@@ -461,29 +461,6 @@ def cmorize_variable(
     filename
         Filepath to cmorized file.
 
-
-    Example
-    -------
-    Example for cmorization of a dataset that contains REMO output::
-
-        $ import pyremo as pr
-        $ import cordex as cx
-        $ from cordex.tables import cordex_cmor_table, cmip6_cmor_table
-        $ from pyremo import cmor as prcmor
-        $
-        $ ds = pr.tutorial.open_dataset("remo_EUR-11_TEMP2_1hr")
-        $ eur11 = cx.cordex_domain("EUR-11")
-        $ ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-        $ filename = prcmor.cmorize_variable(
-            ds,
-            "tas",
-            cmor_table=cmip6_cmor_table("CMIP6_3hr"),
-            dataset_table=cordex_cmor_table("CORDEX_remo_example"),
-            CORDEX_domain="EUR-11",
-            time_units=None,
-            allow_units_convert=True,
-            )
-
     """
     ds = ds.copy()
 
