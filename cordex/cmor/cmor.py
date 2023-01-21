@@ -16,10 +16,11 @@ try:
 except Exception:
     warn("no python cmor package available, consider installing it")
 
-import cordex as cx
-
 # trigger download of cmor tables
 from cordex import cmor as cxcmor
+
+# import cordex as cx
+from .. import cordex_domain
 
 # from .derived import derivator
 from .utils import (
@@ -138,7 +139,7 @@ def _get_bnds(values):
 
 
 def _crop_to_cordex_domain(ds, domain):
-    domain = cx.cordex_domain(domain)
+    domain = cordex_domain(domain)
     # the method=='nearest' approach does not work well with dask
     return ds.sel(
         rlon=slice(domain.rlon.min(), domain.rlon.max()),
@@ -175,7 +176,7 @@ def _get_time_axis_name(time_cell_method):
 def _define_axes(ds, table_id):
 
     if "CORDEX_domain" in ds.attrs:
-        grid = cx.cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
+        grid = cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
         lon_vertices = grid.lon_vertices.to_numpy()
         lat_vertices = grid.lat_vertices.to_numpy()
     else:
@@ -343,8 +344,8 @@ def prepare_variable(
     mapping_table=None,
     CORDEX_domain=None,
     time_range=None,
+    replace_coords=False,
     squeeze=True,
-    allow_derive=False,
 ):
     """prepares a variable for cmorization."""
     is_ds = isinstance(ds, xr.Dataset)
@@ -370,6 +371,10 @@ def prepare_variable(
         var_ds = var_ds.squeeze(drop=True)
     if CORDEX_domain is not None:
         var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
+    if replace_coords is True:
+        grid = cordex_domain(CORDEX_domain)
+        var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
+        var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
     # var_ds.attrs = ds.attrs
     return var_ds
 
@@ -404,6 +409,7 @@ def cmorize_variable(
     mapping_table=None,
     grids_table=None,
     inpath=".",
+    replace_coords=False,
     allow_units_convert=False,
     allow_resample=False,
     input_freq=None,
@@ -434,6 +440,9 @@ def cmorize_variable(
         Path to cmor tables, if ``inpath == "."``, inpath is the path
         to ``cmor_table``. This is required to find additional cmor tables,
         like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
+    replace_coords: bool
+        Replace coordinates from input file and create them from archive
+        specifications.
     allow_units_convert: bool
         Allow units to be converted if they do not agree with the
         units in the cmor table. Defaults to ``False`` to make the user aware of having
@@ -478,7 +487,12 @@ def cmorize_variable(
         inpath = os.path.dirname(cmor_table)
 
     ds_prep = prepare_variable(
-        ds, out_name, CORDEX_domain=CORDEX_domain, mapping_table=mapping_table, **kwargs
+        ds,
+        out_name,
+        CORDEX_domain=CORDEX_domain,
+        mapping_table=mapping_table,
+        replace_coords=replace_coords,
+        **kwargs,
     )
 
     cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
