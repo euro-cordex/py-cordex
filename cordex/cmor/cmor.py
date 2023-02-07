@@ -170,7 +170,6 @@ def _get_time_axis_name(time_cell_method):
 
 
 def _define_axes(ds, table_id):
-
     if "CORDEX_domain" in ds.attrs:
         grid = cx.cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
         lon_vertices = grid.lon_vertices.to_numpy()
@@ -244,7 +243,6 @@ def _define_time(ds, table_id, time_cell_method=None):
 
 
 def _define_grid(ds, table_ids, time_cell_method="point"):
-
     cmorGrid = _define_axes(ds, table_ids[0])
     if "time" in ds:
         cmorTime = _define_time(ds, table_ids[1], time_cell_method)
