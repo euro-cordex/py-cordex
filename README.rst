@@ -78,14 +78,6 @@ at the `contributing guide <https://py-cordex.readthedocs.io/en/stable/contribut
 If you want to contribute, please get in contact as early as possible, e.g.,  using `draft pull requests <https://github.blog/2019-02-14-introducing-draft-pull-requests>`_.
 
 
-Requirements
-------------
-
-* python3.7 or higher
-* numpy
-* pandas
-* xarray
-
 Credits
 -------
 
