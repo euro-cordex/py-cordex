@@ -4,12 +4,12 @@ import os
 from warnings import warn
 
 import cf_xarray as cfxr
+import cf_xarray.units
 import numpy as np
 import pandas as pd
+import pint_xarray  # noqa
 import xarray as xr
-
-# import cf_xarray.units
-# import pint_xarray
+from cf_xarray.units import units
 
 try:
     import cmor
@@ -55,6 +55,8 @@ mapping_table_default = {"time": "time", "X": "rlon", "Y": "rlat"}
 
 time_axis_names = {"point": "time1", "mean": "time"}
 
+units_format = "cf"  # "~P"
+units.define("deg = degree")
 
 # map mip frequencies to pandas frequencies
 freq_map = {
@@ -66,7 +68,7 @@ freq_map = {
     "day": "D",
 }
 
-time_units_default = "days since 1949-12-01T00:00:00"
+time_units_default = "days since 1950-01-01T00:00:00"
 time_dtype = np.double
 
 # Y=2000
@@ -164,8 +166,8 @@ def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
     cmor.dataset_json(dataset_table)
     grid_id = cmor.load_table(grids_table)
     table_id = cmor.load_table(mip_table)
-    cmor.set_table(grid_id)
-    return (grid_id, table_id)
+    cmor.set_table(table_id)
+    return {"grid": grid_id, "mip": table_id}
 
 
 def _get_time_axis_name(time_cell_method):
@@ -194,7 +196,6 @@ def _define_axes(ds, table_id):
         coord_vals=ds.rlon.to_numpy(),
         units=ds.rlon.units,
     )
-
     cmorGrid = cmor.grid(
         [cmorLat, cmorLon],
         latitude=ds.lat.to_numpy(),
@@ -202,7 +203,6 @@ def _define_axes(ds, table_id):
         latitude_vertices=lat_vertices,
         longitude_vertices=lon_vertices,
     )
-
     pole = _get_pole(ds)
     pole_dict = {
         "grid_north_pole_latitude": pole.grid_north_pole_latitude,
@@ -248,10 +248,9 @@ def _define_time(ds, table_id, time_cell_method=None):
 
 
 def _define_grid(ds, table_ids, time_cell_method="point"):
-
-    cmorGrid = _define_axes(ds, table_ids[0])
+    cmorGrid = _define_axes(ds, table_ids["grid"])
     if "time" in ds:
-        cmorTime = _define_time(ds, table_ids[1], time_cell_method)
+        cmorTime = _define_time(ds, table_ids["mip"], time_cell_method)
     else:
         cmorTime = None
 
@@ -269,7 +268,21 @@ def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
     return cmor.close(cmor_var, file_name=file_name)
 
 
-def _units_convert(da, table_file, mapping_table={}):
+def _units_convert(da, units, format=None):
+    # rule = units_convert_rules[units]
+    # da = rule[0](da)
+    # da.attrs["units"] = rule[1]
+    if format is None:
+        format = units_format
+    da_quant = da.pint.quantify()  # ({d:None for d in da.coords})
+    da = da_quant.pint.to(units).pint.dequantify(format=units_format)
+    # https://github.com/xarray-contrib/cf-xarray/pull/390
+    da["rlon"].attrs["units"] = "degrees"
+    da["rlat"].attrs["units"] = "degrees"
+    return da
+
+
+def _cf_units_convert(da, table_file, mapping_table={}):
     """Convert units.
 
     Convert units according to the rules in units_convert_rules dict.
@@ -293,15 +306,12 @@ def _units_convert(da, table_file, mapping_table={}):
     else:
         units = da.units
     da.attrs["units"] = units
-    # da = da.pint.quantify()
     cf_units = table["variable_entry"][da.name]["units"]
     if units != cf_units:
         warn(
             "converting units {} from input data to CF units {}".format(units, cf_units)
         )
-        rule = units_convert_rules[units]
-        da = rule[0](da)
-        da.attrs["units"] = rule[1]
+        da = _units_convert(da, cf_units)
         # da = da.pint.to(cf_units)
     return da
 
@@ -416,6 +426,7 @@ def cmorize_variable(
     CORDEX_domain=None,
     vertices=None,
     time_units=None,
+    outpath=None,
     **kwargs,
 ):
     """Cmorizes a variable.
@@ -460,8 +471,11 @@ def cmorize_variable(
         global attribute if available.
     time_units: str
         Time units of the cmorized dataset (``ISO 8601``).
-        If ``None``, time units will be set to default (``"days since 1949-12-01T00:00:00"``).
+        If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
         If ``time_units='input'``, the original time units of the input dataset are used.
+    outpath: str
+        Root directory for output (can be either a relative or full path). This will override
+        the outpath defined in the dataset cmor input table.
     **kwargs:
         Argumets passed to prepare_variable.
 
@@ -514,16 +528,22 @@ def cmorize_variable(
         pole = _get_cordex_pole(CORDEX_domain)
 
     ds_prep = xr.merge([ds_prep, pole])
-
+    # return ds_prep
     if allow_units_convert is True:
-        ds_prep[out_name] = _units_convert(ds_prep[out_name], cmor_table, mapping_table)
+        ds_prep[out_name] = _cf_units_convert(
+            ds_prep[out_name], cmor_table, mapping_table
+        )
 
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
     )
     time_cell_method = _strip_time_cell_method(cfvarinfo)
+
     cmorTime, cmorGrid = _define_grid(
         ds_prep, table_ids, time_cell_method=time_cell_method
     )
 
-    return _cmor_write(ds_prep[out_name], table_ids[1], cmorTime, cmorGrid)
+    print(cmor.get_cur_dataset_attribute("outpath"))
+    cmor.set_cur_dataset_attribute("source_id", "REMO2020")
+    cmor.set_cur_dataset_attribute("outpath", "/scratch/g/g300046/CMOR3")
+    return _cmor_write(ds_prep[out_name], table_ids["mip"], cmorTime, cmorGrid)
