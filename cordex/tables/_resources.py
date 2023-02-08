@@ -95,19 +95,16 @@ def fetch_remote_table(name, resource):
 
 
 def read_remote_table(name, resource, index_col=None):
-
     fname = fetch_remote_table(name, resource)
 
     return pd.read_csv(fname, index_col=index_col)
 
 
 def read_region_table(name):
-
     return read_remote_table(name, resource=REGION_RESOURCE, index_col="area")
 
 
 def read_cordex_domain_tables():
-
     resource = DOMAIN_RESOURCE
     return {
         table.split(".")[0]: read_remote_table(table, resource, index_col="short_name")
@@ -116,7 +113,6 @@ def read_cordex_domain_tables():
 
 
 def region_tables():
-
     return {
         table.split(".")[0]: read_region_table(table)
         for table in REGION_RESOURCE.registry.keys()
@@ -124,7 +120,6 @@ def region_tables():
 
 
 def ecmwf_tables():
-
     resource = ECMWF_RESOURCE
     return {
         table.split(".")[0]: read_remote_table(table, resource, index_col="code")
