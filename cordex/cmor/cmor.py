@@ -543,7 +543,4 @@ def cmorize_variable(
         ds_prep, table_ids, time_cell_method=time_cell_method
     )
 
-    print(cmor.get_cur_dataset_attribute("outpath"))
-    cmor.set_cur_dataset_attribute("source_id", "REMO2020")
-    cmor.set_cur_dataset_attribute("outpath", "/scratch/g/g300046/CMOR3")
     return _cmor_write(ds_prep[out_name], table_ids["mip"], cmorTime, cmorGrid)
