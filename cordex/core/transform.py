@@ -43,7 +43,11 @@ def map_crs(x, y, src_crs, trg_crs=None):
         Projected y coordinate.
 
     """
-    warn("map_crs is deprecated, please use transform instead", DeprecationWarning)
+    warn(
+        "map_crs is deprecated, please use transform instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     y_stack, x_stack = xr.broadcast(y, x)
     input_core_dims = 2 * [list(x_stack.dims)] + [[], []]
     output_core_dims = 2 * [list(x_stack.dims)]
