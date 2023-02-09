@@ -10,7 +10,7 @@ from .core.domain import (
     rotated_coord_transform,
     vertices,
 )
-from .core.utils import map_crs
+from .core.transform import map_crs, transform
 from .tables import domains, ecmwf
 
 # from .version import version
@@ -36,6 +36,7 @@ __all__ = [
     "rotated_coord_transform",
     "vertices",
     "map_crs",
+    "transform",
     "domains",
     "ecmwf",
 ]

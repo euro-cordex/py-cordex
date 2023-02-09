@@ -17,8 +17,9 @@ Top-level functions
    domain_info
    create_dataset
    rotated_coord_transform
-   map_crs
    vertices
+   map_crs
+   transform
 
 Tutorial
 ========

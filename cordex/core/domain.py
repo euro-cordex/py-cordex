@@ -27,6 +27,7 @@ import xarray as xr
 from ..tables import domains
 from . import cf, utils
 from .config import nround
+from .transform import map_crs
 
 
 def domain_names(table_name=None):
@@ -268,7 +269,8 @@ def _get_regular_dataset(
             ds[mapping_name].grid_north_pole_longitude,
             ds[mapping_name].grid_north_pole_latitude,
         )
-        v = vertices(ds, ccrs.RotatedPole(*pole))
+        # v = vertices(ds, ccrs.RotatedPole(*pole))
+        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
@@ -334,7 +336,8 @@ def _get_rotated_dataset(
             ds[mapping_name].grid_north_pole_longitude,
             ds[mapping_name].grid_north_pole_latitude,
         )
-        v = vertices(ds, ccrs.RotatedPole(*pole))
+        # v = vertices(ds, ccrs.RotatedPole(*pole))
+        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
@@ -485,104 +488,6 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     return lon_new, lat_new
 
 
-def _map_crs(lon, lat, src_crs, trg_crs=None):
-    """coordinate transformation of longitude and latitude
-
-    Transforms the coordinates lat, lon from the transform crs
-    into the projection crs using cartopy.crs.
-
-    Parameters
-    ----------
-    lon : float array like
-        Longitude coordinate.
-    lat : float array like
-        Latitude coordinate.
-    src_crs : cartopy.crs
-        Source coordinate reference system into which lat and lon
-        should are defined.
-    trg_crs : cartopy.crs
-        Target coordinate reference system in which lat and lon
-        should be transformed. If `None`, `PlateCarree` is used.
-
-    Returns
-    -------
-    lon : array like
-        Projected longitude coordinate.
-    lat : array like
-        Projected latitude coordinate.
-
-    """
-
-    from cartopy import crs as ccrs
-
-    if trg_crs is None:
-        trg_crs = ccrs.PlateCarree()
-    # latlon = ccrs.PlateCarree()
-    # lon_stack, lat_stack = xr.broadcast(lon, lat)
-    lon_stack = np.broadcast_to(lon, (lat.shape[0], lon.shape[0])).T
-    lat_stack = np.broadcast_to(lat, (lon.shape[0], lat.shape[0]))
-    result = trg_crs.transform_points(src_crs, lon_stack, lat_stack)
-    return result[:, :, 0], result[:, :, 1]
-
-
-def _transform(x, y, src_crs, trg_crs=None):
-    from pyproj import CRS, Transformer
-
-    if trg_crs is None:
-        trg_crs = CRS("EPSG:4326")
-    x_stack = np.broadcast_to(x, (y.shape[0], x.shape[0])).T
-    y_stack = np.broadcast_to(y, (x.shape[0], y.shape[0]))
-    transformer = Transformer.from_crs(src_crs, trg_crs)
-    y_transform, x_transform = transformer.transform(x_stack, y_stack)
-    return x_transform, y_transform
-
-
-# wrapper function for xarray.apply_ufunc
-def map_crs(lon, lat, src_crs, trg_crs=None):
-    """coordinate transformation of longitude and latitude
-
-    Transforms the coordinates lat, lon from the transform crs
-    into the projection crs using cartopy.crs.
-
-    Parameters
-    ----------
-    lon : float array like
-        Longitude coordinate.
-    lat : float array like
-        Latitude coordinate.
-    src_crs : cartopy.crs
-        Source coordinate reference system into which lat and lon
-        should are defined.
-    trg_crs : cartopy.crs
-        Target coordinate reference system in which lat and lon
-        should be transformed. If `None`, `PlateCarree` is used.
-
-    Returns
-    -------
-    lon : xr.DataArray
-        Projected longitude coordinate with dims (lat, lon).
-    lat : xr.DataArray
-        Projected latitude coordinate with dims (lat, lon).
-
-    """
-    input_core_dims = [[lon.dims[0]], [lat.dims[0]]] + [[], []]
-    output_core_dims = 2 * [[lon.dims[0], lat.dims[0]]]
-    result = xr.apply_ufunc(
-        _transform,  # first the function
-        lon,  # now arguments in the order expected by 'interp1_np'
-        lat,
-        src_crs,
-        trg_crs,
-        input_core_dims=input_core_dims,  # list with one entry per arg
-        # [["rlat", "rlon"], ["rlat", "rlon"]],
-        output_core_dims=output_core_dims
-        # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
-    )
-    result[0].name = cf.LON_NAME
-    result[1].name = cf.LAT_NAME
-    return result
-
-
 def _dcoord(coord, include="left"):
     dcoord = coord.values[1:] - coord.values[:-1]
     if include in ["left", "both"]:
@@ -622,7 +527,7 @@ def bounds(coords):
     # return xr.merge([_bounds(coord).left.rename({"left": coord.name+"bounds"}) for coord in coords])
 
 
-def vertices(ds, src_crs, trg_crs=None):
+def vertices_new(ds, src_crs, trg_crs=None):
     """Compute lon and lat vertices.
 
     Transformation of rlon vertices and rlat vertices
@@ -666,6 +571,51 @@ def vertices(ds, src_crs, trg_crs=None):
     v4 = map_crs(
         rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
     )
+    lon_vertices = xr.concat(
+        [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
+    ).transpose()
+    #    ..., "vertices"
+    # )
+    lat_vertices = xr.concat(
+        [v1[1], v2[1], v3[1], v4[1]], dim=cf.BOUNDS_DIM
+    ).transpose()
+    #    ..., "vertices"
+    # )
+    lon_vertices.name = cf.LON_BOUNDS
+    lat_vertices.name = cf.LAT_BOUNDS
+    lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
+    lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
+    return xr.merge([lat_vertices, lon_vertices])
+
+
+def vertices(rlon, rlat, src_crs, trg_crs=None):
+    """Compute lon and lat vertices.
+
+    Transformation of rlon vertices and rlat vertices
+    into the target crs according to
+    https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+
+    Parameters
+    ----------
+    rlon : xr.DataArray
+        Longitude in rotated pole grid.
+    rlat : xr.DataArray
+        Latitude in rotated pole grid.
+
+    Returns
+    -------
+    vertices : xr.Dataset
+        lon_vertices and lat_vertices in target crs.
+
+    """
+    rlon_bounds = _bounds(rlon)
+    rlat_bounds = _bounds(rlat)
+    # maps each vertex to lat lon coordinates
+    # order is counterclockwise starting from lower left vertex
+    v1 = map_crs(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
+    v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
+    v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
+    v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
     lon_vertices = xr.concat(
         [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
     ).transpose()
