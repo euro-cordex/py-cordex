@@ -95,9 +95,9 @@ def transform(x, y, src_crs, trg_crs=None):
     Returns
     -------
     xt : DataArray
-        Projected x coordinate.
+        Transformed x coordinate.
     yt : DataArray
-        Projected y coordinate.
+        Transformed y coordinate.
 
     """
     if trg_crs is None:
