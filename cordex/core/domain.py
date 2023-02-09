@@ -511,12 +511,12 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     v3 = transform(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
     v4 = transform(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
     lon_vertices = xr.concat(
-        [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
+        [v1[0].T, v2[0].T, v3[0].T, v4[0].T], dim=cf.BOUNDS_DIM
     ).transpose()
     #    ..., "vertices"
     # )
     lat_vertices = xr.concat(
-        [v1[1], v2[1], v3[1], v4[1]], dim=cf.BOUNDS_DIM
+        [v1[1].T, v2[1].T, v3[1].T, v4[1].T], dim=cf.BOUNDS_DIM
     ).transpose()
     #    ..., "vertices"
     # )
