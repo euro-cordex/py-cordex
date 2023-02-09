@@ -20,6 +20,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Updated CI pipeline (:pull:`83`).
+- Refactored transformation functions (:pull:`71`).
 
 
 v0.4.1 (23 June 2022)
