@@ -5,7 +5,7 @@ channels:
 dependencies:
   - cartopy
   - matplotlib-base
-  - numpy
+  - numpy<1.24 # fixed until next cmor release
   - pooch
   - regionmask
   - setuptools

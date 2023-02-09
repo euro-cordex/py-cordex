@@ -245,7 +245,6 @@ def _get_regular_dataset(
     dummy=None,
     attrs=None,
 ):
-
     ds = xr.Dataset(
         data_vars=None,
         coords=dict(
@@ -446,7 +445,6 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
 
     # Regular -> Rotated
     if direction == "geo2rot":
-
         x_new = (
             np.cos(theta) * np.cos(phi) * x
             + np.cos(theta) * np.sin(phi) * y
@@ -461,7 +459,6 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
 
     # Rotated -> Regular
     elif direction == "rot2geo":
-
         phi = -phi
         theta = -theta
 

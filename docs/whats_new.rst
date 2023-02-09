@@ -11,7 +11,15 @@ What's New
 v0.5.0 (Unreleased)
 -------------------
 
-- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`).
+New Features
+~~~~~~~~~~~~
+
+- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`, :pull:`74`, :pull:`76`, :pull:`77`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Updated CI pipeline (:pull:`83`).
 
 
 v0.4.1 (23 June 2022)
@@ -30,7 +38,6 @@ Bug Fixes
 ~~~~~~~~~
 
 - Fixed rounding errors for grid coordinates (:pull:`61`). This might have some influence on results, since coordinate values might change to more exact values.
-
 
 
 v0.4.0 (29 April 2022)

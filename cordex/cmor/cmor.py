@@ -8,6 +8,11 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+try:
+    import cmor
+except Exception:
+    warn("no python cmor package available, consider installing it")
+
 import cordex as cx
 
 # trigger download of cmor tables
@@ -25,11 +30,8 @@ from .utils import (
 __all__ = ["cxcmor"]
 # from dateutil import relativedelta as reld
 
+options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
 
-try:
-    import cmor
-except Exception:
-    warn("no python cmor package available, consider installing it")
 
 # from ..core import codes
 
@@ -44,10 +46,21 @@ loffsets = {
 }
 
 
+mapping_table_default = {"time": "time", "X": "rlon", "Y": "rlat"}
+
+
 time_axis_names = {"point": "time1", "mean": "time"}
 
+
 # map mip frequencies to pandas frequencies
-freq_map = {"1hr": "H", "3hr": "3H", "3hrPt": "3H", "6hr": "6H", "day": "D"}
+freq_map = {
+    "1hr": "H",
+    "1hrPt": "H",
+    "3hr": "3H",
+    "3hrPt": "3H",
+    "6hr": "6H",
+    "day": "D",
+}
 
 time_units_default = "days since 1949-12-01T00:00:00"
 time_dtype = np.double
@@ -58,6 +71,14 @@ units_convert_rules = {
     "mm": (lambda x: x * 1.0 / 86400.0, "kg m-2 s-1"),
     "kg/kg": (lambda x: x, "1"),
 }
+
+
+def set_options(**kwargs):
+    for k, v in kwargs.items():
+        if k in options:
+            options[k] = v
+        else:
+            raise Exception(f"unkown config option: {k}")
 
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
@@ -128,12 +149,12 @@ def _load_table(table):
 
 def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
     if grids_table is None:
-        grids_table = "CORDEX-CMIP6_grids.json"
+        grids_table = f'{options["table_prefix"]}_grids.json'
     cmor.setup(
         inpath,
         set_verbosity=cmor.CMOR_NORMAL,
         netcdf_file_action=cmor.CMOR_REPLACE,
-        exit_control=cmor.CMOR_EXIT_ON_MAJOR,
+        exit_control=getattr(cmor, options["exit_control"]),
         logfile=None,
     )
     cmor.dataset_json(dataset_table)
@@ -148,7 +169,15 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names[time_cell_method]
 
 
-def _define_axes(ds, table_id, lat_vertices=None, lon_vertices=None):
+def _define_axes(ds, table_id):
+    if "CORDEX_domain" in ds.attrs:
+        grid = cx.cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
+        lon_vertices = grid.lon_vertices.to_numpy()
+        lat_vertices = grid.lat_vertices.to_numpy()
+    else:
+        lon_vertices = None
+        lat_vertices = None
+
     cmor.set_table(table_id)
     cmorLat = cmor.axis(
         table_entry="grid_latitude",
@@ -214,7 +243,6 @@ def _define_time(ds, table_id, time_cell_method=None):
 
 
 def _define_grid(ds, table_ids, time_cell_method="point"):
-
     cmorGrid = _define_axes(ds, table_ids[0])
     if "time" in ds:
         cmorTime = _define_time(ds, table_ids[1], time_cell_method)
@@ -410,29 +438,6 @@ def cmorize_variable(
     filename
         Filepath to cmorized file.
 
-
-    Example
-    -------
-    Example for cmorization of a dataset that contains REMO output::
-
-        $ import pyremo as pr
-        $ import cordex as cx
-        $ from cordex.tables import cordex_cmor_table, cmip6_cmor_table
-        $ from pyremo import cmor as prcmor
-        $
-        $ ds = pr.tutorial.open_dataset("remo_EUR-11_TEMP2_1hr")
-        $ eur11 = cx.cordex_domain("EUR-11")
-        $ ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-        $ filename = prcmor.cmorize_variable(
-            ds,
-            "tas",
-            cmor_table=cmip6_cmor_table("CMIP6_3hr"),
-            dataset_table=cordex_cmor_table("CORDEX_remo_example"),
-            CORDEX_domain="EUR-11",
-            time_units=None,
-            allow_units_convert=True,
-            )
-
     """
     ds = ds.copy()
 
@@ -443,6 +448,9 @@ def cmorize_variable(
             warn(
                 "could not identify CORDEX domain, try to set the 'CORDEX_domain' argument"
             )
+    elif "CORDEX_domain" not in ds.attrs:
+        ds.attrs["CORDEX_domain"] = CORDEX_domain
+
     if inpath == ".":
         inpath = os.path.dirname(cmor_table)
 
@@ -467,6 +475,7 @@ def cmorize_variable(
     if pole is None:
         warn("adding pole from archive specs: {}".format(CORDEX_domain))
         pole = _get_cordex_pole(CORDEX_domain)
+
     ds_prep = xr.merge([ds_prep, pole])
 
     if allow_units_convert is True:
@@ -476,6 +485,8 @@ def cmorize_variable(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
     )
     time_cell_method = _strip_time_cell_method(cfvarinfo)
-    cmorTime, cmorGrid = _define_grid(ds_prep, table_ids, time_cell_method)
+    cmorTime, cmorGrid = _define_grid(
+        ds_prep, table_ids, time_cell_method=time_cell_method
+    )
 
     return _cmor_write(ds_prep[out_name], table_ids[1], cmorTime, cmorGrid)
