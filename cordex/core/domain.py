@@ -27,7 +27,7 @@ import xarray as xr
 from ..tables import domains
 from . import cf, utils
 from .config import nround
-from .transform import map_crs
+from .transform import transform
 
 
 def domain_names(table_name=None):
@@ -556,16 +556,16 @@ def vertices_new(ds, src_crs, trg_crs=None):
     )  # _bounds(ds.rlat)
     # maps each vertex to lat lon coordinates
     # order is counterclockwise starting from lower left vertex
-    v1 = map_crs(
+    v1 = transform(
         rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=0), src_crs, trg_crs
     )
-    v2 = map_crs(
+    v2 = transform(
         rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=0), src_crs, trg_crs
     )
-    v3 = map_crs(
+    v3 = transform(
         rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=1), src_crs, trg_crs
     )
-    v4 = map_crs(
+    v4 = transform(
         rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
     )
     lon_vertices = xr.concat(
@@ -609,10 +609,10 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     rlat_bounds = _bounds(rlat)
     # maps each vertex to lat lon coordinates
     # order is counterclockwise starting from lower left vertex
-    v1 = map_crs(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
-    v2 = map_crs(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
-    v3 = map_crs(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
-    v4 = map_crs(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
+    v1 = transform(rlon_bounds.left, rlat_bounds.left, src_crs, trg_crs)
+    v2 = transform(rlon_bounds.right, rlat_bounds.left, src_crs, trg_crs)
+    v3 = transform(rlon_bounds.right, rlat_bounds.right, src_crs, trg_crs)
+    v4 = transform(rlon_bounds.left, rlat_bounds.right, src_crs, trg_crs)
     lon_vertices = xr.concat(
         [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
     ).transpose()
@@ -653,7 +653,7 @@ def lon_lat_bounds_coordinates(ds, src_crs=None, trg_crs=None):
     if src_crs is None:
         src_crs = get_pole_crs(ds)
     rot_bounds = bounds_coordinates(ds, ("rlon", "rlat"))
-    lon_bounds, lat_bounds = map_crs(
+    lon_bounds, lat_bounds = transform(
         rot_bounds.coords["rlon_b"], rot_bounds.coords["rlat_b"], src_crs, trg_crs
     )
     return ds.assign_coords(lon_b=lon_bounds.transpose(), lat_b=lat_bounds.transpose())

@@ -71,7 +71,7 @@ def _transform(x, y, src_crs, trg_crs):
 
 
 def transform(x, y, src_crs, trg_crs=None):
-    """coordinate transformation using pyproj.
+    """Coordinate transformation using pyproj.
 
     Transforms the coordinates x, y from the source crs
     into a target crs using pyproj.

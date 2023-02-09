@@ -18,7 +18,6 @@ Top-level functions
    create_dataset
    rotated_coord_transform
    vertices
-   map_crs
    transform
 
 Tutorial
