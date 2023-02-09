@@ -2,20 +2,10 @@
 
 import pkg_resources
 
-from . import core, regions, tables, tutorial  # , cmor, preprocessing
-from .core.domain import (
-    cordex_domain,
-    create_dataset,
-    domain_info,
-    rotated_coord_transform,
-    vertices,
-)
-from .core.transform import map_crs, transform
+from . import core, regions, tables, tutorial
+from .core.domain import cordex_domain, create_dataset, domain_info, vertices
+from .core.transform import map_crs, rotated_coord_transform, transform
 from .tables import domains, ecmwf
-
-# from .version import version
-
-# __version__ = version
 
 try:
     __version__ = pkg_resources.get_distribution("py-cordex").version

@@ -1,7 +1,12 @@
 from warnings import warn
 
+import numpy as np
 import xarray as xr
 from pyproj import CRS, Transformer
+
+from . import cf
+
+xr.set_options(keep_attrs=True)
 
 
 def _map_crs(x_stack, y_stack, src_crs, trg_crs=None):
@@ -118,3 +123,107 @@ def transform(x, y, src_crs, trg_crs=None):
     xt.name = "xt"
     yt.name = "yt"
     return xt, yt
+
+
+def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
+    """Transforms a coordinate into a rotated grid coordinate and vice versa.
+
+    The coordinates have to be given in degree and will be returned in degree.
+
+    Parameters
+    ----------
+    lon : float array like
+        Longitude coordinate.
+    lat : float array like
+        Latitude coordinate.
+    np_lon : float array like
+        Longitude coordinate of the rotated north pole.
+    np_lat : float array like
+        Latitude coordinate of the rotated north pole.
+    direction : str
+        Direction of the rotation.
+        Options are: 'rot2geo' (default) for a transformation to regular
+        coordinates from rotated. 'geo2rot' transforms regular coordinates
+        to rotated.
+
+    Returns
+    -------
+    lon_new : array like
+        New longitude coordinate.
+    lat_new : array like
+        New latitude coordinate.
+    """
+    warn(
+        "rotated_coord_transform is deprecated, please use transform instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    # Convert degrees to radians
+    lon = np.deg2rad(lon)
+    lat = np.deg2rad(lat)
+
+    theta = 90.0 - np_lat  # Rotation around y-axis
+    phi = np_lon + 180.0  # Rotation around z-axis
+
+    # Convert degrees to radians
+    phi = np.deg2rad(phi)
+    theta = np.deg2rad(theta)
+
+    # Convert from spherical to cartesian coordinates
+    x = np.cos(lon) * np.cos(lat)
+    y = np.sin(lon) * np.cos(lat)
+    z = np.sin(lat)
+
+    # Regular -> Rotated
+    if direction == "geo2rot":
+        x_new = (
+            np.cos(theta) * np.cos(phi) * x
+            + np.cos(theta) * np.sin(phi) * y
+            + np.sin(theta) * z
+        )
+        y_new = -np.sin(phi) * x + np.cos(phi) * y
+        z_new = (
+            -np.sin(theta) * np.cos(phi) * x
+            - np.sin(theta) * np.sin(phi) * y
+            + np.cos(theta) * z
+        )
+
+    # Rotated -> Regular
+    elif direction == "rot2geo":
+        phi = -phi
+        theta = -theta
+
+        x_new = (
+            np.cos(theta) * np.cos(phi) * x
+            + np.sin(phi) * y
+            + np.sin(theta) * np.cos(phi) * z
+        )
+        y_new = (
+            -np.cos(theta) * np.sin(phi) * x
+            + np.cos(phi) * y
+            - np.sin(theta) * np.sin(phi) * z
+        )
+        z_new = -np.sin(theta) * x + np.cos(theta) * z
+
+    # Convert cartesian back to spherical coordinates
+    lon_new = np.arctan2(y_new, x_new)
+    lat_new = np.arcsin(z_new)
+
+    # Convert radians back to degrees
+    lon_new = np.rad2deg(lon_new)
+    lat_new = np.rad2deg(lat_new)
+
+    return lon_new, lat_new
+
+
+def grid_mapping(pollon, pollat, mapping_name=None):
+    """creates a grid mapping DataArray object"""
+    if mapping_name is None:
+        mapping_name = cf.DEFAULT_MAPPING_NCVAR
+    da = xr.DataArray(np.zeros((), dtype=np.int32))
+    attrs = cf.mapping.copy()
+    attrs["grid_north_pole_longitude"] = pollon
+    attrs["grid_north_pole_latitude"] = pollat
+    da.attrs = attrs
+    da.name = mapping_name
+    return da
