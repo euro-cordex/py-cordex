@@ -8,7 +8,7 @@ dependencies:
   - matplotlib-base
   - numpy<1.24 # fixed until next cmor release
   - pooch
-  - regionmask
+  - regionmask>=0.9.0
   - setuptools
   - xarray
   - cf_xarray>=0.8.0
