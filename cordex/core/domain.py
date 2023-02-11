@@ -184,7 +184,8 @@ def create_dataset(
     except:
         pass
 
-    x, y = _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat)
+    x, y = _lin_coord(nlon, dlon, ll_lon), _lin_coord(nlat, dlat, ll_lat)
+
     if rotated is True:
         return _get_rotated_dataset(
             x,
@@ -346,15 +347,9 @@ def _add_dummy(ds, name=True):
     return ds
 
 
-def _init_grid(nlon, nlat, dlon, dlat, ll_lon, ll_lat):
+def _lin_coord(nx, dx, x0, dtype=np.float64):
     """create coordinate arrays from lower left longitude and latitude"""
-    rlon = np.array(
-        [round(ll_lon + i * dlon, nround) for i in range(0, nlon)], dtype=np.float64
-    )
-    rlat = np.array(
-        [round(ll_lat + i * dlat, nround) for i in range(0, nlat)], dtype=np.float64
-    )
-    return rlon, rlat
+    return np.round(np.arange(0, nx, dtype=dtype) * dx + x0, nround)
 
 
 def _stack(x, y):
