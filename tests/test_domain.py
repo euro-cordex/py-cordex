@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-# flake8: noqa
-
 import numpy as np
-import pytest
-import xarray as xr
 
 import cordex as cx
 
-from . import has_cartopy, requires_cartopy
+from . import requires_cartopy
 
 
 def test_domain_basic():
@@ -83,3 +78,4 @@ def test_vertices():
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
     vertices = cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
+    return vertices
