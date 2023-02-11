@@ -28,7 +28,7 @@ from pyproj import CRS
 from ..tables import domains
 from . import cf, utils
 from .config import nround
-from .transform import grid_mapping, transform
+from .transform import grid_mapping, transform, transform_coords
 
 
 def domain_names(table_name=None):
@@ -65,7 +65,7 @@ def cordex_domain(
     Parameters
     ----------
     short_name:
-        Name of the Cordex Domain.
+        Domain identifier.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
@@ -272,29 +272,8 @@ def _get_regular_dataset(
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
-    if dummy:
-        if dummy is True:
-            dummy_name = "dummy"
-        else:
-            dummy_name = dummy
-        dummy = xr.DataArray(
-            data=np.zeros((ds.lat.size, ds.lon.size)),
-            coords=(ds.lat, ds.lon),
-        )
-        dummy.attrs = {"coordinates": "lat lon"}
-        ds[dummy_name] = dummy
-        if dummy_name == "topo":
-            # use cdo to create dummy topography data.
-            from cdo import Cdo
-
-            tmp = utils.get_tempfile()
-            ds.to_netcdf(tmp)
-            topo = Cdo().topo(tmp, returnXDataset=True)["topo"]
-            ds[dummy_name] = xr.DataArray(
-                data=topo.values,
-                coords=(ds.lat, ds.lon),
-            )
-            ds[dummy_name].attrs.update(topo.attrs)
+    if dummy is not None:
+        ds = _add_dummy(ds, dummy)
     return ds
 
 
@@ -334,19 +313,25 @@ def _get_rotated_dataset(
         coord.attrs = cf.coords[key]
 
     if dummy is not None:
-        ds = _add_dummy(ds, dummy, mapping)
+        ds = _add_dummy(ds, dummy)
     return ds
 
 
-def _add_dummy(ds, name=True, mapping=None):
+def _add_dummy(ds, name=True):
     if name is True:
         name = "dummy"
-    dummy = xr.DataArray(
-        data=np.zeros((ds.rlat.size, ds.rlon.size)),
-        coords=(ds.rlat, ds.rlon),
+
+    attrs = {"coordinates": "lat lon"}
+    try:
+        attrs["grid_mapping"] = ds.cf["grid_mapping"].name
+    except KeyError:
+        pass
+    # this is required for CDO to understand coordinates
+    ds[name] = xr.DataArray(
+        data=np.zeros((ds.cf.dims["Y"], ds.cf.dims["X"])),
+        coords=(ds.cf["Y"], ds.cf["X"]),
+        attrs=attrs,
     )
-    dummy.attrs = {"grid_mapping": mapping.name, "coordinates": "lat lon"}
-    ds[name] = dummy
     if name == "topo":
         # use cdo to create dummy topography data.
         from cdo import Cdo
@@ -355,8 +340,7 @@ def _add_dummy(ds, name=True, mapping=None):
         ds.to_netcdf(tmp)
         topo = Cdo().topo(tmp, returnXDataset=True)["topo"]
         ds[name] = xr.DataArray(
-            data=topo.values,
-            coords=(ds.rlat, ds.rlon),
+            data=topo.values, coords=(ds.cf["Y"], ds.cf["X"]), attrs=attrs
         )
         ds[name].attrs.update(topo.attrs)
     return ds
