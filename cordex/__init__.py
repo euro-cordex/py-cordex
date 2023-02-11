@@ -1,10 +1,13 @@
-# -*- coding: utf-8 -*-
-
 import pkg_resources
 
 from . import core, regions, tables, tutorial
 from .core.domain import cordex_domain, create_dataset, domain_info, vertices
-from .core.transform import map_crs, rotated_coord_transform, transform, transform_ds
+from .core.transform import (
+    map_crs,
+    rotated_coord_transform,
+    transform,
+    transform_coords,
+)
 from .tables import domains, ecmwf
 
 try:
@@ -27,7 +30,7 @@ __all__ = [
     "vertices",
     "map_crs",
     "transform",
-    "transform_ds",
+    "transform_coords",
     "domains",
     "ecmwf",
 ]

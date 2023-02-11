@@ -50,3 +50,8 @@ def test_transform():
 
     assert np.allclose(rlon_b, rlon_t)
     assert np.allclose(rlat_b, rlat_t)
+
+    ds1 = cx.transform_coords(ds)
+
+    assert np.allclose(ds1.lon, ds1.xt)
+    assert np.allclose(ds1.lat, ds1.yt)

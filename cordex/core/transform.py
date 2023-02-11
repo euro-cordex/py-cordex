@@ -49,7 +49,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
 
     """
     warn(
-        "map_crs is deprecated, please use transform instead",
+        "map_crs is deprecated, please use transform_xy instead",
         DeprecationWarning,
         stacklevel=2,
     )
@@ -93,14 +93,14 @@ def transform(x, y, src_crs, trg_crs=None):
     Parameters
     ----------
     x : DataArray
-        Longitude coordinate.
+        X coordinate.
     y : DataArray
-        Latitude coordinate.
-    src_crs : pyproj.crs
-        Source coordinate reference system into which x and y are defined.
-    trg_crs : pyproj.crs
+        Y coordinate.
+    src_crs : pyproj.CRS
+        Source coordinate reference system in which x and y are defined.
+    trg_crs : pyproj.CRS
         Target coordinate reference system into which x and y
-        should be transformed. If `None`, `EPSG:4326` is used.
+        should be transformed. If not supplied, ``EPSG:4326`` is the default.
 
     Returns
     -------
@@ -130,20 +130,44 @@ def transform(x, y, src_crs, trg_crs=None):
     xt.name = "xt"
     yt.name = "yt"
     xt.attrs = {"epsg": trg_crs.to_epsg()}
-    xt.attrs = {"epsg": trg_crs.to_epsg()}
+    yt.attrs = {"epsg": trg_crs.to_epsg()}
 
     return xt, yt
 
 
-def transform_ds(ds, trg_crs=None, trg_dims=None):
-    """transform ds"""
-    ds = ds.copy(deep=False)
+def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
+    """Transform X and Y coordinates of a Dataset.
+
+    The transformed coordinates will be added to the Dataset.
+
+    Parameters
+    ----------
+    ds : Dataset or DataArray
+        Dataset with input grid.
+    src_crs : pyproj.CRS
+        Source coordinate reference system in which X and Y are defined.
+        If not supplied, a `grid_mapping` variable should be available
+        to define the source CRS.
+    trg_crs : pyproj.CRS
+        Target coordinate reference system into which x and y
+        should be transformed. If not supplied, ``EPSG:4326`` is the default.
+    trg_dims: list or set
+        Names of the output coordinates.
+
+    Returns
+    -------
+    ds : Dataset or DataArray
+        Dataset with transformed coordinates.
+
+    """
+
     if trg_crs is None:
         # default target crs
         trg_crs = CRS("EPSG:4326")
     if trg_dims is None:
-        trg_dims = ("lon", "lat")
-    src_crs = CRS.from_cf(ds.cf["grid_mapping"].attrs)
+        trg_dims = ("xt", "yt")
+    if src_crs is None:
+        src_crs = CRS.from_cf(ds.cf["grid_mapping"].attrs)
     x, y = ds.cf["X"], ds.cf["Y"]
     xt, yt = transform(x, y, src_crs, trg_crs)
 
@@ -179,7 +203,7 @@ def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
         New latitude coordinate.
     """
     warn(
-        "rotated_coord_transform is deprecated, please use transform instead",
+        "rotated_coord_transform is deprecated, please use transform_xy instead",
         DeprecationWarning,
         stacklevel=2,
     )

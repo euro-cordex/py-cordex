@@ -18,6 +18,7 @@ Top-level functions
    create_dataset
    vertices
    transform
+   transform_coords
 
 Tutorial
 ========
