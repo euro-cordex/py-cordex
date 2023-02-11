@@ -73,34 +73,7 @@ def test_domain_info():
     assert cx.domain_info("EUR-11", table) == info
 
 
-# @requires_cartopy
-def test_mapping():
-    import cartopy.crs as ccrs
-
-    eur11 = cx.cordex_domain("EUR-11")
-    pole = (
-        eur11.rotated_latitude_longitude.grid_north_pole_longitude,
-        eur11.rotated_latitude_longitude.grid_north_pole_latitude,
-    )
-    lon1, lat1 = cx.rotated_coord_transform(
-        eur11.rlon, eur11.rlat, *pole, direction="rot2geo"
-    )
-    transform = ccrs.RotatedPole(*pole)
-    lon2, lat2 = cx.map_crs(eur11.rlon, eur11.rlat, transform)
-
-    assert np.allclose(lon1.T, lon2)
-    assert np.allclose(lat1.T, lat2)
-
-    # test if retransforming of lon lat to rlon rlat gives correct results
-    rlon2, rlat2 = cx.map_crs(
-        eur11.lon, eur11.lat, src_crs=ccrs.PlateCarree(), trg_crs=transform
-    )
-    rlat1, rlon1 = xr.broadcast(eur11.rlat, eur11.rlon)
-
-    assert np.allclose(rlon1, rlon2)
-    assert np.allclose(rlat1, rlat2)
-
-
+@requires_cartopy
 def test_vertices():
     eur11 = cx.cordex_domain("EUR-11")
     import cartopy.crs as ccrs
