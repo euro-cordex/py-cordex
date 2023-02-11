@@ -1,21 +1,14 @@
-# -*- coding: utf-8 -*-
-
 import pkg_resources
 
-from . import core, regions, tables, tutorial  # , cmor, preprocessing
-from .core.domain import (
-    cordex_domain,
-    create_dataset,
-    domain_info,
+from . import core, regions, tables, tutorial
+from .core.domain import cordex_domain, create_dataset, domain_info, vertices
+from .core.transform import (
+    map_crs,
     rotated_coord_transform,
-    vertices,
+    transform,
+    transform_coords,
 )
-from .core.utils import map_crs
 from .tables import domains, ecmwf
-
-# from .version import version
-
-# __version__ = version
 
 try:
     __version__ = pkg_resources.get_distribution("py-cordex").version
@@ -36,6 +29,8 @@ __all__ = [
     "rotated_coord_transform",
     "vertices",
     "map_crs",
+    "transform",
+    "transform_coords",
     "domains",
     "ecmwf",
 ]
