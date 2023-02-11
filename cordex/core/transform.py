@@ -56,6 +56,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
     y_stack, x_stack = xr.broadcast(y, x)
     input_core_dims = 2 * [list(x_stack.dims)] + [[], []]
     output_core_dims = 2 * [list(x_stack.dims)]
+
     result = xr.apply_ufunc(
         _map_crs,  # first the function
         x_stack,  # now arguments in the order expected by 'interp1_np'
@@ -67,15 +68,19 @@ def map_crs(x, y, src_crs, trg_crs=None):
         output_core_dims=output_core_dims
         # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
     )
+
     result[0].name = "x_map"
     result[1].name = "y_map"
+
     return result
 
 
 def _transform(x, y, src_crs, trg_crs):
     """helper function for transforming coordinates"""
-    transformer = Transformer.from_crs(src_crs, trg_crs)
-    yt, xt = transformer.transform(x, y)
+    # always_xy=True
+    # https://proj.org/faq.html#why-is-the-axis-ordering-in-proj-not-consistent
+    transformer = Transformer.from_crs(src_crs, trg_crs, always_xy=True)
+    xt, yt = transformer.transform(x, y)
     return xt, yt
 
 
@@ -111,6 +116,7 @@ def transform(x, y, src_crs, trg_crs=None):
     y_stack, x_stack = xr.broadcast(y, x)
     input_core_dims = [x_stack.dims, y_stack.dims] + [[], []]
     output_core_dims = [x_stack.dims, y_stack.dims]
+
     xt, yt = xr.apply_ufunc(
         _transform,
         x_stack,
@@ -120,9 +126,28 @@ def transform(x, y, src_crs, trg_crs=None):
         input_core_dims=input_core_dims,
         output_core_dims=output_core_dims,
     )
+
     xt.name = "xt"
     yt.name = "yt"
+    xt.attrs = {"epsg": trg_crs.to_epsg()}
+    xt.attrs = {"epsg": trg_crs.to_epsg()}
+
     return xt, yt
+
+
+def transform_ds(ds, trg_crs=None, trg_dims=None):
+    """transform ds"""
+    ds = ds.copy(deep=False)
+    if trg_crs is None:
+        # default target crs
+        trg_crs = CRS("EPSG:4326")
+    if trg_dims is None:
+        trg_dims = ("lon", "lat")
+    src_crs = CRS.from_cf(ds.cf["grid_mapping"].attrs)
+    x, y = ds.cf["X"], ds.cf["Y"]
+    xt, yt = transform(x, y, src_crs, trg_crs)
+
+    return ds.assign_coords({trg_dims[0]: xt, trg_dims[1]: yt})
 
 
 def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
