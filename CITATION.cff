@@ -1,0 +1,33 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: py-cordex
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Lars
+    family-names: Buntemeyer
+    email: lars.buntemeyer@hereon.de
+    affiliation: Helmholtz-Zentrum Hereon
+    orcid: 'https://orcid.org/0000-0002-0849-2404'
+  - {}
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.6702853
+    description: zenodo
+repository-code: 'https://github.com/euro-cordex/py-cordex'
+url: 'https://py-cordex.readthedocs.io'
+abstract: >-
+  py-cordex offers python tools for the CORDEX community and
+  should make your work with CORDEX grids and meta data
+  easy. Most of the tools leverage the xarray API to create
+  grid and coordinate informations and data of CORDEX
+  domains directly from the official CORDEX archive
+  specifications.
+keywords:
+  - cordex
+  - xarray
+license: MIT
