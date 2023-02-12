@@ -6,7 +6,7 @@ What's New
 .. ipython:: python
    :suppress:
 
-    import pyremo
+    import cordex
 
 v0.5.0 (Unreleased)
 -------------------
