@@ -12,15 +12,15 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
-import sys
+# import os
+# import sys
 
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
-sys.path.insert(0, os.path.abspath(".."))
+# sys.path.insert(0, os.path.abspath(".."))
 import cordex
 
 # -- General configuration ---------------------------------------------
@@ -42,13 +42,14 @@ extensions = [
     "numpydoc",
     "nbsphinx",
     "nbsphinx_link",
+    "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 
 extlinks = {
-    "issue": ("https://github.com/euro-cordex/py-cordex/issues/%s", "GH"),
-    "pull": ("https://github.com/euro-cordex/py-cordex/pull/%s", "PR"),
+    "issue": ("https://github.com/euro-cordex/py-cordex/issues/%s", "#%s"),
+    "pull": ("https://github.com/euro-cordex/py-cordex/pull/%s", "#%s"),
 }
 
 autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
