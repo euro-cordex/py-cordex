@@ -25,6 +25,7 @@ Internal Changes
 - Refactored transformation functions (:pull:`71`).
 - Pinned ``pyproj>=3.3.0`` and ``cf_xarray>=0.8.0`` (Dropped python 3.7 support).
 - Moved core modules (:pull:`87`).
+- Added ``CITATION.cff`` (:pull:`87`).
 
 
 v0.4.1 (23 June 2022)
