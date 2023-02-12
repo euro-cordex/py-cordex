@@ -8,7 +8,6 @@ dependencies:
   - python=3.7
   - xarray
   - pint-xarray
-  - pint
   - cf_xarray
   - docutils==0.16
   - nbconvert
