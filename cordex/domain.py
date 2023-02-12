@@ -25,10 +25,11 @@ import pandas as pd
 import xarray as xr
 from pyproj import CRS
 
-from . import cf, utils
+from . import cf
 from .config import nround
 from .tables import domains
 from .transform import grid_mapping, transform, transform_coords
+from .utils import get_tempfile
 
 
 def domain_names(table_name=None):
@@ -337,7 +338,7 @@ def _add_dummy(ds, name=True):
         # use cdo to create dummy topography data.
         from cdo import Cdo
 
-        tmp = utils.get_tempfile()
+        tmp = get_tempfile()
         ds.to_netcdf(tmp)
         topo = Cdo().topo(tmp, returnXDataset=True)["topo"]
         ds[name] = xr.DataArray(
