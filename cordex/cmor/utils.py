@@ -211,7 +211,7 @@ def month_bounds(date):
     if type(date) == dt.date:
         date = dt.datetime.combine(date, dt.time())
     month = date.month
-    begin = date.replace(day=1, hour=0, minute=0, second=0)
+    begin = date.replace(day=1)
     # this does not work with cftime
     # end = (date + reld.relativedelta(months=1)).replace(day=1)
     if month == 12:
@@ -220,7 +220,7 @@ def month_bounds(date):
     else:
         year = date.year
         month = date.month + 1
-    end = date.replace(day=1, year=year, month=month, hour=0, minute=0, second=0)
+    end = date.replace(day=1, year=year, month=month)
     return (begin, end)
 
 

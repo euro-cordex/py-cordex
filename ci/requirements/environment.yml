@@ -19,7 +19,6 @@ dependencies:
   - cdo # python-cdo fails with cdo2
   - python-cdo
   - cmor
-  - pint-xarray
 # for testing
   - pytest
   - pytest-cov
