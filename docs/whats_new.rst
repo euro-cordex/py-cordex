@@ -6,7 +6,7 @@ What's New
 .. ipython:: python
    :suppress:
 
-    import pyremo
+    import cordex
 
 v0.5.0 (Unreleased)
 -------------------
@@ -26,6 +26,7 @@ Internal Changes
 - Pinned ``pyproj>=3.3.0`` and ``cf_xarray>=0.8.0`` (Dropped python 3.7 support).
 - Moved core modules (:pull:`87`).
 - Added ``CITATION.cff`` (:pull:`87`).
+- Updated documentation environment for python 3.10 (:pull:`89`).
 
 
 v0.4.1 (23 June 2022)

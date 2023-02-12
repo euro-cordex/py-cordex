@@ -9,7 +9,6 @@ dependencies:
   - pint-xarray
   - xarray
   - cf_xarray
-  - docutils==0.16
   - nbconvert
   - numpydoc
   - pillow
@@ -21,6 +20,7 @@ dependencies:
   - pooch
   - pyproj
   - sphinx
-  - sphinx-book-theme
+  - pydata-sphinx-theme==0.8.1 # https://github.com/pydata/pydata-sphinx-theme/issues/1098
+  - sphinx-book-theme==0.3.3
   - pip:
     - sphinxcontrib-mockautodoc
