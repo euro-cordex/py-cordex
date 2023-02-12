@@ -7,7 +7,6 @@ channels:
 dependencies:
   - python=3.7
   - xarray
-  - pint-xarray
   - cf_xarray
   - docutils==0.16
   - nbconvert
