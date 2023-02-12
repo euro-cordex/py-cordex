@@ -39,9 +39,6 @@ py-cordex: create cordex grids and meta data
    :target: https://app.fossa.com/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex?ref=badge_shield
 
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex?ref=badge_shield)
-
-
 This package offers python tools for the `CORDEX <https://cordex.org/>`_ community and should make your work with CORDEX grids and meta data easy.
 Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the
 form of an ``xarray.Dataset`` directly from the official `CORDEX archive specifications <https://cordex.org/experiment-guidelines/experiment-protocol-rcms/>`_.
