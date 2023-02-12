@@ -20,9 +20,7 @@ dependencies:
   - cftime
   - pooch
   - pyproj
-  - sphinx==4.2.0
-  - sphinx_rtd_theme==1.0.0
+  - sphinx
   - sphinx-book-theme
-  - jinja2==3.0.0
   - pip:
     - sphinxcontrib-mockautodoc
