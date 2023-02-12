@@ -271,7 +271,7 @@ def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
 
 def _units_convert(da, units, format=None):
     import pint_xarray  # noqa
-    
+
     # rule = units_convert_rules[units]
     # da = rule[0](da)
     # da.attrs["units"] = rule[1]
