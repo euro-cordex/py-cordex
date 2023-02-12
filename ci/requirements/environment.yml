@@ -4,12 +4,14 @@ channels:
   - nodefaults
 dependencies:
   - cartopy
+  - pyproj>=3.3.0 # rotated pole bug: https://github.com/pyproj4/pyproj/issues/948
   - matplotlib-base
   - numpy<1.24 # fixed until next cmor release
   - pooch
-  - regionmask
+  - regionmask>=0.9.0
   - setuptools
   - xarray
+  - cf_xarray>=0.8.0
   - cftime
   - netCDF4
   - xesmf

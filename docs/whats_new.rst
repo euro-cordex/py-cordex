@@ -16,10 +16,14 @@ New Features
 
 - Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`, :pull:`74`, :pull:`76`, :pull:`77`, :pull:`78`).
 
+- Added :py:meth:`transform` in favour of deprecated :py:meth:`map_crs` and :py:meth:`rotated_coord_transform`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Updated CI pipeline (:pull:`83`).
+- Refactored transformation functions (:pull:`71`).
+- Pinned ``pyproj>=3.3.0`` and ``cf_xarray>=0.8.0`` (Dropped python 3.7 support).
 
 
 v0.4.1 (23 June 2022)

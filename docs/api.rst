@@ -16,9 +16,9 @@ Top-level functions
    cordex_domain
    domain_info
    create_dataset
-   rotated_coord_transform
-   map_crs
    vertices
+   transform
+   transform_coords
 
 Tutorial
 ========

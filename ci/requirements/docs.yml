@@ -18,6 +18,7 @@ dependencies:
   - ipython
   - cftime
   - pooch
+  - pyproj
   - sphinx==4.2.0
   - sphinx_rtd_theme==1.0.0
   - sphinx-book-theme
