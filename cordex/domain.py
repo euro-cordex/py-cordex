@@ -25,9 +25,9 @@ import pandas as pd
 import xarray as xr
 from pyproj import CRS
 
-from ..tables import domains
 from . import cf, utils
 from .config import nround
+from .tables import domains
 from .transform import grid_mapping, transform, transform_coords
 
 

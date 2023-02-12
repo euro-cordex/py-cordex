@@ -8,7 +8,7 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 import numpy as np
 import xarray as xr
 
-from ..core.domain import cordex_domain
+from ..domain import cordex_domain
 from . import known_issues as fixes
 
 regridder = None
