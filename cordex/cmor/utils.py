@@ -281,13 +281,13 @@ def _mid_of_month(date):
     return mid
 
 
-def mid_of_month(ds, add_bounds=False):
+def mid_of_month(ds):
     """Determine the mid of the current month.
 
     Parameters
     ----------
     ds : Dataset or DataArray
-        Date in the current month.
+        Dataset with time axis.
 
     Returns
     -------
