@@ -5,8 +5,8 @@ import json
 from warnings import warn
 
 import cftime as cfdt
-import numpy as np
 import xarray as xr
+from xarray import DataArray, Dataset
 
 from .. import cordex_domain
 
@@ -225,7 +225,44 @@ def _month_bounds(date):
     return begin, end
 
 
-def _mid_of_month(date, return_bounds=False):
+def month_bounds(ds, bounds_dim="bnds"):
+    """Determine the bounds of the current month.
+
+    Parameters
+    ----------
+    ds : Dataset
+        Dataset with time coordinate.
+    bounds_dim: str
+        Name of the bounds dimension. If not supplied,
+        the default is ``time_bnds``.
+
+    Returns
+    -------
+    ds : Dataset
+        Added monthly time bounds.
+
+    """
+    if not isinstance(ds, (Dataset, DataArray)):
+        warn(
+            "using month_bounds without xarray object is deprecated and will be removed in the future.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _month_bounds(ds)
+    ds = ds.copy(deep=False)
+    bounds = xr.apply_ufunc(
+        _month_bounds,
+        ds.time,
+        output_core_dims=[[], []],
+        vectorize=True,
+        keep_attrs=True,
+    )
+    bounds = xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
+    ds.time.attrs["bounds"] = bounds.name
+    return ds.assign_coords(time_bnds=bounds)
+
+
+def _mid_of_month(date):
     """Determine the mid of the current month.
 
     Parameters
@@ -241,38 +278,7 @@ def _mid_of_month(date, return_bounds=False):
     """
     bounds = _month_bounds(date)
     mid = bounds[0] + 0.5 * (bounds[1] - bounds[0])
-    if return_bounds is True:
-        return bounds
     return mid
-
-
-def _helper(date):
-    """Determine the mid of the current month.
-
-    Parameters
-    ----------
-    date : datetime object
-        Date in the current month.
-
-    Returns
-    -------
-    mid_of_month : datetime object
-        Mid date of the current month.
-
-    """
-    return np.array([_month_bounds(d) for d in date], dtype="o,o")
-
-
-def month_bounds(ds):
-    return xr.apply_ufunc(
-        _helper,
-        ds.time,
-        # input_core_dims=[["time"]],
-        # output_core_dims=[[],[]],
-        # input_core_dims=[[]],
-        # output_core_dims=[[]],
-        vectorize=False,
-    )
 
 
 def mid_of_month(ds, add_bounds=False):
@@ -285,22 +291,21 @@ def mid_of_month(ds, add_bounds=False):
 
     Returns
     -------
-    mid_of_month : datetime object
-        Mid date of the current month.
+    da : DataArray
+        The mid date of the month.
 
     """
-    ds = ds.copy(deep=False)
-    if add_bounds is True:
-        return xr.apply_ufunc(
-            _mid_of_month,
-            ds.time,
-            True,
-            input_core_dims=[[], []],
-            output_core_dims=[[], []],
-            vectorize=True,
+    if not isinstance(ds, (Dataset, DataArray)):
+        warn(
+            "using mid_of_month without xarray object is deprecated and will be removed in the future.",
+            DeprecationWarning,
+            stacklevel=2,
         )
-        # output_core_dims=[[ds.time.dims],[ds.time.dims]],vectorize=True)
-    return xr.apply_ufunc(_mid_of_month, ds.time, False, vectorize=True)
+        return _mid_of_month(ds)
+
+    ds = ds.copy(deep=False)
+    time = xr.apply_ufunc(_mid_of_month, ds.time, vectorize=True, keep_attrs=True)
+    return time
 
 
 def _get_pole(ds):
