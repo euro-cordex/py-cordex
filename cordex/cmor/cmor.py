@@ -67,6 +67,7 @@ freq_map = {
     "3hrPt": "3H",
     "6hr": "6H",
     "day": "D",
+    "mon": "MS",
 }
 
 time_units_default = "days since 1950-01-01T00:00:00"
@@ -392,13 +393,31 @@ def prepare_variable(
     return var_ds
 
 
+def _rewrite_time_axis(ds, freq=None, calendar=None):
+    # pd_freq = freq_map[freq]
+    if freq is None:
+        freq = xr.infer_freq(ds.time)
+    print(freq)
+    if calendar is None:
+        calendar = ds.time.dt.calendar
+    start = ds.time.data[0]
+    if "M" in freq:
+        replace = {"day": 1}
+        start = start.replace(**replace)
+    date_range = xr.cftime_range(
+        start, periods=ds.time.size, freq=freq, calendar=calendar, inclusive="left"
+    )
+
+    return date_range
+
+
 def _add_time_bounds(ds):
     ds = ds.cf.add_bounds("time")
     ds["time_bounds"].encoding = ds.time.encoding
     return ds
 
 
-def adjust_frequency(ds, cfvarinfo, input_freq=None):
+def _adjust_frequency(ds, cfvarinfo, input_freq=None):
     if input_freq is None and "time" in ds.coords:
         input_freq = xr.infer_freq(ds.time)
     if input_freq is None:
@@ -517,8 +536,12 @@ def cmorize_variable(
     if cfvarinfo is None:
         raise Exception("{} not found in {}".format(out_name, cmor_table))
     if "time" in ds:
+        # ensure cftime
+        ds_prep = ds_prep.assign_coords(
+            time=ds_prep.time.convert_calendar(ds.time.dt.calendar, use_cftime=True)
+        )
         if allow_resample is True:
-            ds_prep = adjust_frequency(ds_prep, cfvarinfo, input_freq)
+            ds_prep = _adjust_frequency(ds_prep, cfvarinfo, input_freq)
         ds_prep = _set_time_encoding(ds_prep, time_units, ds)
         if "time" not in ds.cf.bounds:
             warn("adding time bounds")
