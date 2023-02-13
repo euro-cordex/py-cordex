@@ -405,7 +405,10 @@ def _rewrite_time_axis(ds, freq=None, calendar=None):
         replace = {"day": 1}
         start = start.replace(**replace)
     date_range = xr.cftime_range(
-        start, periods=ds.time.size, freq=freq, calendar=calendar, inclusive="left"
+        start,
+        periods=ds.time.size,
+        freq=freq,
+        calendar=calendar,  # inclusive="left"
     )
 
     return date_range
