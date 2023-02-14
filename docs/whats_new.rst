@@ -14,7 +14,7 @@ v0.5.0 (Unreleased)
 New Features
 ~~~~~~~~~~~~
 
-- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`, :pull:`74`, :pull:`76`, :pull:`77`, :pull:`78`).
+- Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`, :pull:`74`, :pull:`76`, :pull:`77`, :pull:`78`, :pull:`92`).
 
 - Added :py:meth:`transform` and :py:meth:`transform_coords` in favour of deprecated :py:meth:`map_crs` and :py:meth:`rotated_coord_transform`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`).
 
