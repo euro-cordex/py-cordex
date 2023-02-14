@@ -303,7 +303,6 @@ def mid_of_month(ds):
         )
         return _mid_of_month(ds)
 
-    ds = ds.copy(deep=False)
     time = xr.apply_ufunc(_mid_of_month, ds.time, vectorize=True, keep_attrs=True)
     return time
 

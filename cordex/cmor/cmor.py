@@ -30,6 +30,7 @@ from .utils import (
     _get_cordex_pole,
     _get_pole,
     _strip_time_cell_method,
+    mid_of_month,
 )
 
 __all__ = ["cxcmor"]
@@ -394,24 +395,34 @@ def prepare_variable(
 
 
 def _rewrite_time_axis(ds, freq=None, calendar=None):
-    # pd_freq = freq_map[freq]
+    """rewrite time axis to ensure correct timestamps
+
+    For monthly frequencies, the timestamp will be mid of month.
+
+    """
+    ds = ds.copy(deep=False)
+    pd_freq = freq_map.get(freq, None)
     if freq is None:
-        freq = xr.infer_freq(ds.time)
-    print(freq)
+        pd_freq = xr.infer_freq(ds.time)
     if calendar is None:
         calendar = ds.time.dt.calendar
     start = ds.time.data[0]
-    if "M" in freq:
-        replace = {"day": 1}
-        start = start.replace(**replace)
+    if freq == "mon":
+        ds["time"] = mid_of_month(ds)
+        return ds
+
     date_range = xr.cftime_range(
         start,
         periods=ds.time.size,
-        freq=freq,
+        freq=pd_freq,
         calendar=calendar,  # inclusive="left"
     )
 
-    return date_range
+    return ds.assign_coords(time=date_range)
+
+
+def _add_month_bounds(ds):
+    pass
 
 
 def _add_time_bounds(ds):
