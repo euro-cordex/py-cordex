@@ -373,62 +373,6 @@ def _update_time_axis(ds, freq=None, time_cell_method=None):
     return time_bounds_encode
 
 
-def prepare_variable(
-    ds,
-    out_name,
-    mapping_table=None,
-    CORDEX_domain=None,
-    time_range=None,
-    replace_coords=False,
-    squeeze=True,
-    cf_freq=None,
-    input_freq=None,
-    time_cell_method=None,
-    rewrite_time_axis=False,
-    allow_resample=False,
-    time_units=None,
-):
-    """prepares a variable for cmorization."""
-    if isinstance(ds, xr.DataArray):
-        ds = ds.to_dataset()
-
-    # no mapping table provided, we assume datasets has already correct out_names and units.
-    if mapping_table is None:
-        try:
-            var_ds = ds[[out_name]]
-        except Exception:
-            raise Exception(
-                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
-            )
-    else:
-        varname = mapping_table[out_name]["varname"]
-        # cf_name = varinfo["cf_name"]
-        var_ds = ds[[varname]]  # .to_dataset()
-        var_ds = var_ds.rename({varname: out_name})
-    # remove point coordinates, e.g, height2m
-    if squeeze is True:
-        var_ds = var_ds.squeeze(drop=True)
-    if CORDEX_domain is not None:
-        var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
-    if replace_coords is True:
-        grid = cordex_domain(CORDEX_domain)
-        var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
-        var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
-
-    if "time" in var_ds:
-        # ensure cftime
-        var_ds = var_ds.convert_calendar(ds.time.dt.calendar, use_cftime=True)
-        if allow_resample is True:
-            var_ds = _adjust_frequency(var_ds, cf_freq, input_freq)
-        var_ds = _set_time_encoding(var_ds, time_units, ds)
-        if rewrite_time_axis is True:
-            var_ds = _rewrite_time_axis(var_ds, cf_freq)
-        if "time" not in ds.cf.bounds and time_cell_method == "mean":
-            warn("adding time bounds")
-            var_ds = _add_time_bounds(var_ds, cf_freq)
-    return var_ds
-
-
 def _rewrite_time_axis(ds, freq=None, calendar=None):
     """rewrite time axis to ensure correct timestamps
 
@@ -491,6 +435,62 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
         resample = _resample(ds, pd_freq, time_cell_method=time_cell_method)
         return resample
     return ds
+
+
+def prepare_variable(
+    ds,
+    out_name,
+    mapping_table=None,
+    CORDEX_domain=None,
+    time_range=None,
+    replace_coords=False,
+    squeeze=True,
+    cf_freq=None,
+    input_freq=None,
+    time_cell_method=None,
+    rewrite_time_axis=False,
+    allow_resample=False,
+    time_units=None,
+):
+    """prepares a variable for cmorization."""
+    if isinstance(ds, xr.DataArray):
+        ds = ds.to_dataset()
+
+    # no mapping table provided, we assume datasets has already correct out_names and units.
+    if mapping_table is None:
+        try:
+            var_ds = ds[[out_name]]
+        except Exception:
+            raise Exception(
+                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
+            )
+    else:
+        varname = mapping_table[out_name]["varname"]
+        # cf_name = varinfo["cf_name"]
+        var_ds = ds[[varname]]  # .to_dataset()
+        var_ds = var_ds.rename({varname: out_name})
+    # remove point coordinates, e.g, height2m
+    if squeeze is True:
+        var_ds = var_ds.squeeze(drop=True)
+    if CORDEX_domain is not None:
+        var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
+    if replace_coords is True:
+        grid = cordex_domain(CORDEX_domain)
+        var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
+        var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
+
+    if "time" in var_ds:
+        # ensure cftime
+        var_ds = var_ds.convert_calendar(ds.time.dt.calendar, use_cftime=True)
+        if allow_resample is True:
+            var_ds = _adjust_frequency(var_ds, cf_freq, input_freq)
+        var_ds = _set_time_encoding(var_ds, time_units, ds)
+        if rewrite_time_axis is True:
+            var_ds = _rewrite_time_axis(var_ds, cf_freq)
+        if "time" not in ds.cf.bounds and time_cell_method == "mean":
+            warn("adding time bounds")
+            var_ds = _add_time_bounds(var_ds, cf_freq)
+    return var_ds
 
 
 def cmorize_variable(
