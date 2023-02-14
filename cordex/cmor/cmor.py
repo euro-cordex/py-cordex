@@ -31,6 +31,7 @@ from .utils import (
     _get_pole,
     _strip_time_cell_method,
     mid_of_month,
+    month_bounds,
 )
 
 __all__ = ["cxcmor"]
@@ -222,6 +223,10 @@ def _define_axes(ds, table_id):
     return cmorGrid
 
 
+def _time_bounds(ds, freq=None):
+    return cfxr.bounds_to_vertices(ds.cf.get_bounds("time"), "bounds")
+
+
 def _define_time(ds, table_id, time_cell_method=None):
     cmor.set_table(table_id)
 
@@ -230,12 +235,13 @@ def _define_time(ds, table_id, time_cell_method=None):
         time_cell_method = "point"
 
     # encode time and time bounds
-    time_bounds = cfxr.bounds_to_vertices(ds.cf.get_bounds("time"), "bounds")
-    time_bounds.encoding = ds.time.encoding
+
     time_axis_encode = _encode_time(ds.time).to_numpy()
     time_axis_name = _get_time_axis_name(time_cell_method)
 
     if time_cell_method == "mean":
+        time_bounds = _time_bounds(ds)
+        time_bounds.encoding = ds.time.encoding
         time_bounds_encode = _encode_time(time_bounds).to_numpy()
     else:
         time_bounds_encode = None
@@ -353,6 +359,20 @@ def _set_time_encoding(ds, units, orig):
     return ds
 
 
+def _update_time_axis(ds, freq=None, time_cell_method=None):
+    if time_cell_method is None:
+        warn("no time_cell_method given, assuming: point")
+        time_cell_method = "point"
+
+    if time_cell_method == "mean":
+        time_bounds = _time_bounds(ds)
+        time_bounds.encoding = ds.time.encoding
+        time_bounds_encode = _encode_time(time_bounds).to_numpy()
+    else:
+        time_bounds_encode = None
+    return time_bounds_encode
+
+
 def prepare_variable(
     ds,
     out_name,
@@ -361,9 +381,16 @@ def prepare_variable(
     time_range=None,
     replace_coords=False,
     squeeze=True,
+    cf_freq=None,
+    input_freq=None,
+    time_cell_method=None,
+    rewrite_time_axis=False,
+    allow_resample=False,
+    time_units=None,
 ):
     """prepares a variable for cmorization."""
-    is_ds = isinstance(ds, xr.Dataset)
+    if isinstance(ds, xr.DataArray):
+        ds = ds.to_dataset()
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
     if mapping_table is None:
@@ -376,10 +403,7 @@ def prepare_variable(
     else:
         varname = mapping_table[out_name]["varname"]
         # cf_name = varinfo["cf_name"]
-        if is_ds is True:
-            var_ds = ds[[varname]]  # .to_dataset()
-        else:
-            var_ds = ds.to_dataset()
+        var_ds = ds[[varname]]  # .to_dataset()
         var_ds = var_ds.rename({varname: out_name})
     # remove point coordinates, e.g, height2m
     if squeeze is True:
@@ -390,7 +414,18 @@ def prepare_variable(
         grid = cordex_domain(CORDEX_domain)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
-    # var_ds.attrs = ds.attrs
+
+    if "time" in var_ds:
+        # ensure cftime
+        var_ds = var_ds.convert_calendar(ds.time.dt.calendar, use_cftime=True)
+        if allow_resample is True:
+            var_ds = _adjust_frequency(var_ds, cf_freq, input_freq)
+        var_ds = _set_time_encoding(var_ds, time_units, ds)
+        if rewrite_time_axis is True:
+            var_ds = _rewrite_time_axis(var_ds, cf_freq)
+        if "time" not in ds.cf.bounds and time_cell_method == "mean":
+            warn("adding time bounds")
+            var_ds = _add_time_bounds(var_ds, cf_freq)
     return var_ds
 
 
@@ -422,27 +457,38 @@ def _rewrite_time_axis(ds, freq=None, calendar=None):
 
 
 def _add_month_bounds(ds):
-    pass
-
-
-def _add_time_bounds(ds):
-    ds = ds.cf.add_bounds("time")
-    ds["time_bounds"].encoding = ds.time.encoding
+    ds["time_bnds"] = month_bounds(ds)
     return ds
 
 
-def _adjust_frequency(ds, cfvarinfo, input_freq=None):
+def _add_time_bounds(ds, cf_freq):
+    """add time bounds
+
+    Take special care of monthly frequencies.
+
+    """
+    if cf_freq == "mon":
+        ds = month_bounds(ds)
+    else:
+        try:
+            ds = ds.convert_calendar(ds.time.dt.calendar).cf.add_bounds("time")
+        except Exception:
+            warn("could not add time bounds.")
+    ds["time_bnds"].encoding = ds.time.encoding
+    ds.time.attrs.update({"bounds": "time_bnds"})
+    return ds
+
+
+def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     if input_freq is None and "time" in ds.coords:
         input_freq = xr.infer_freq(ds.time)
     if input_freq is None:
-        warn("could not determine frequency of input data, will assume it is correct.")
+        warn("Could not determine frequency of input data, will assume it is correct.")
         return ds
-    freq = freq_map[cfvarinfo["frequency"]]
-    if freq != input_freq:
-        warn("resampling input data from {} to {}".format(input_freq, freq))
-        resample = _resample(
-            ds, freq, time_cell_method=_strip_time_cell_method(cfvarinfo)
-        )
+    pd_freq = freq_map[cf_freq]
+    if pd_freq != input_freq:
+        warn("resampling input data from {} to {}".format(input_freq, pd_freq))
+        resample = _resample(ds, pd_freq, time_cell_method=time_cell_method)
         return resample
     return ds
 
@@ -462,6 +508,7 @@ def cmorize_variable(
     CORDEX_domain=None,
     vertices=None,
     time_units=None,
+    rewrite_time_axis=False,
     outpath=None,
     **kwargs,
 ):
@@ -509,6 +556,8 @@ def cmorize_variable(
         Time units of the cmorized dataset (``ISO 8601``).
         If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
         If ``time_units='input'``, the original time units of the input dataset are used.
+    rewrite_time_axis: bool
+        Rewrite the time axis to CF compliant timestamps.
     outpath: str
         Root directory for output (can be either a relative or full path). This will override
         the outpath defined in the dataset cmor input table.
@@ -536,48 +585,47 @@ def cmorize_variable(
     if inpath == ".":
         inpath = os.path.dirname(cmor_table)
 
+    # get meta info from cmor table
+    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
+
+    if cfvarinfo is None:
+        raise Exception("{} not found in {}".format(out_name, cmor_table))
+
+    cf_freq = cfvarinfo["frequency"]
+    time_cell_method = _strip_time_cell_method(cfvarinfo)
+
     ds_prep = prepare_variable(
         ds,
         out_name,
         CORDEX_domain=CORDEX_domain,
         mapping_table=mapping_table,
         replace_coords=replace_coords,
+        input_freq=input_freq,
+        cf_freq=cf_freq,
+        time_cell_method=time_cell_method,
+        rewrite_time_axis=rewrite_time_axis,
+        time_units=time_units,
         **kwargs,
     )
-
-    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
-
-    if cfvarinfo is None:
-        raise Exception("{} not found in {}".format(out_name, cmor_table))
-    if "time" in ds:
-        # ensure cftime
-        ds_prep = ds_prep.assign_coords(
-            time=ds_prep.time.convert_calendar(ds.time.dt.calendar, use_cftime=True)
-        )
-        if allow_resample is True:
-            ds_prep = _adjust_frequency(ds_prep, cfvarinfo, input_freq)
-        ds_prep = _set_time_encoding(ds_prep, time_units, ds)
-        if "time" not in ds.cf.bounds:
-            warn("adding time bounds")
-            ds_prep = _add_time_bounds(ds_prep)
     # return ds_prep
-    pole = _get_pole(ds)
 
-    if pole is None:
+    try:
+        mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
+    except KeyError:
         warn("adding pole from archive specs: {}".format(CORDEX_domain))
-        pole = _get_cordex_pole(CORDEX_domain)
+        mapping = _get_cordex_pole(CORDEX_domain)
 
-    ds_prep = xr.merge([ds_prep, pole])
+    ds_prep = xr.merge([ds_prep, mapping])
+    # return ds_prep
     # return ds_prep
     if allow_units_convert is True:
         ds_prep[out_name] = _cf_units_convert(
             ds_prep[out_name], cmor_table, mapping_table
         )
-
+    return ds_prep
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
     )
-    time_cell_method = _strip_time_cell_method(cfvarinfo)
 
     cmorTime, cmorGrid = _define_grid(
         ds_prep, table_ids, time_cell_method=time_cell_method

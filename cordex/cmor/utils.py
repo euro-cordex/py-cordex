@@ -257,8 +257,9 @@ def month_bounds(ds, bounds_dim="bnds"):
         vectorize=True,
         keep_attrs=True,
     )
+
     bounds = xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
-    ds.time.attrs["bounds"] = bounds.name
+    ds.time.attrs["bounds"] = "time_bnds"
     return ds.assign_coords(time_bnds=bounds)
 
 
