@@ -32,6 +32,7 @@ from .utils import (
     _strip_time_cell_method,
     mid_of_month,
     month_bounds,
+    time_bounds_name,
 )
 
 __all__ = ["cxcmor"]
@@ -401,7 +402,7 @@ def _rewrite_time_axis(ds, freq=None, calendar=None):
 
 
 def _add_month_bounds(ds):
-    ds["time_bnds"] = month_bounds(ds)
+    ds[time_bounds_name] = month_bounds(ds)
     return ds
 
 
@@ -418,8 +419,8 @@ def _add_time_bounds(ds, cf_freq):
             ds = ds.convert_calendar(ds.time.dt.calendar).cf.add_bounds("time")
         except Exception:
             warn("could not add time bounds.")
-    ds["time_bnds"].encoding = ds.time.encoding
-    ds.time.attrs.update({"bounds": "time_bnds"})
+    ds[time_bounds_name].encoding = ds.time.encoding
+    ds.time.attrs.update({"bounds": time_bounds_name})
     return ds
 
 
@@ -441,16 +442,16 @@ def prepare_variable(
     ds,
     out_name,
     mapping_table=None,
-    CORDEX_domain=None,
-    time_range=None,
     replace_coords=False,
-    squeeze=True,
-    cf_freq=None,
-    input_freq=None,
-    time_cell_method=None,
-    rewrite_time_axis=False,
+    allow_units_convert=False,
     allow_resample=False,
+    input_freq=None,
+    CORDEX_domain=None,
     time_units=None,
+    time_cell_method=None,
+    cf_freq=None,
+    rewrite_time_axis=False,
+    squeeze=True,
 ):
     """prepares a variable for cmorization."""
     if isinstance(ds, xr.DataArray):
@@ -483,13 +484,22 @@ def prepare_variable(
         # ensure cftime
         var_ds = var_ds.convert_calendar(ds.time.dt.calendar, use_cftime=True)
         if allow_resample is True:
-            var_ds = _adjust_frequency(var_ds, cf_freq, input_freq)
-        var_ds = _set_time_encoding(var_ds, time_units, ds)
+            var_ds = _adjust_frequency(var_ds, cf_freq, input_freq, time_cell_method)
         if rewrite_time_axis is True:
             var_ds = _rewrite_time_axis(var_ds, cf_freq)
         if "time" not in ds.cf.bounds and time_cell_method == "mean":
             warn("adding time bounds")
             var_ds = _add_time_bounds(var_ds, cf_freq)
+        var_ds = _set_time_encoding(var_ds, time_units, ds)
+
+    try:
+        mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
+    except KeyError:
+        warn("adding pole from archive specs: {}".format(CORDEX_domain))
+        mapping = _get_cordex_pole(CORDEX_domain)
+
+    var_ds = xr.merge([var_ds, mapping])
+
     return var_ds
 
 
@@ -506,7 +516,6 @@ def cmorize_variable(
     allow_resample=False,
     input_freq=None,
     CORDEX_domain=None,
-    vertices=None,
     time_units=None,
     rewrite_time_axis=False,
     outpath=None,
@@ -605,24 +614,15 @@ def cmorize_variable(
         time_cell_method=time_cell_method,
         rewrite_time_axis=rewrite_time_axis,
         time_units=time_units,
+        allow_resample=allow_resample,
         **kwargs,
     )
-    # return ds_prep
 
-    try:
-        mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
-    except KeyError:
-        warn("adding pole from archive specs: {}".format(CORDEX_domain))
-        mapping = _get_cordex_pole(CORDEX_domain)
-
-    ds_prep = xr.merge([ds_prep, mapping])
-    # return ds_prep
-    # return ds_prep
     if allow_units_convert is True:
         ds_prep[out_name] = _cf_units_convert(
             ds_prep[out_name], cmor_table, mapping_table
         )
-    return ds_prep
+
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
     )

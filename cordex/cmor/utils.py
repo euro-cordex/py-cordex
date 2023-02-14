@@ -14,6 +14,8 @@ xr.set_options(keep_attrs=True)
 
 loffsets = {"3H": dt.timedelta(hours=1, minutes=30), "6H": dt.timedelta(hours=3)}
 
+time_bounds_name = "time_bounds"
+
 
 def _get_loffset(time):
     return loffsets.get(time, None)
@@ -225,7 +227,7 @@ def _month_bounds(date):
     return begin, end
 
 
-def month_bounds(ds, bounds_dim="bnds"):
+def month_bounds(ds, bounds_dim="bounds"):
     """Determine the bounds of the current month.
 
     Parameters
@@ -234,7 +236,7 @@ def month_bounds(ds, bounds_dim="bnds"):
         Dataset with time coordinate.
     bounds_dim: str
         Name of the bounds dimension. If not supplied,
-        the default is ``time_bnds``.
+        the default is ``bounds``.
 
     Returns
     -------
@@ -259,8 +261,8 @@ def month_bounds(ds, bounds_dim="bnds"):
     )
 
     bounds = xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
-    ds.time.attrs["bounds"] = "time_bnds"
-    return ds.assign_coords(time_bnds=bounds)
+    ds.time.attrs["bounds"] = time_bounds_name
+    return ds.assign_coords({time_bounds_name: bounds})
 
 
 def _mid_of_month(date):
