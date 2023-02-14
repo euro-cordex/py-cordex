@@ -278,8 +278,9 @@ def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
     return cmor.close(cmor_var, file_name=file_name)
 
 
-def _units_convert(da, units, format=None):
+def _units_convert(da, cf_units, format=None):
     import pint_xarray  # noqa
+    from cf_xarray.units import units  # noqa
 
     # rule = units_convert_rules[units]
     # da = rule[0](da)
@@ -287,10 +288,10 @@ def _units_convert(da, units, format=None):
     if format is None:
         format = units_format
     da_quant = da.pint.quantify()  # ({d:None for d in da.coords})
-    da = da_quant.pint.to(units).pint.dequantify(format=units_format)
+    da = da_quant.pint.to(cf_units).pint.dequantify(format=units_format)
     # https://github.com/xarray-contrib/cf-xarray/pull/390
-    da["rlon"].attrs["units"] = "degrees"
-    da["rlat"].attrs["units"] = "degrees"
+    # da["rlon"].attrs["units"] = "degrees"
+    # da["rlat"].attrs["units"] = "degrees"
     return da
 
 
@@ -319,6 +320,7 @@ def _cf_units_convert(da, table_file, mapping_table={}):
         units = da.units
     da.attrs["units"] = units
     cf_units = table["variable_entry"][da.name]["units"]
+
     if units != cf_units:
         warn(
             "converting units {} from input data to CF units {}".format(units, cf_units)
@@ -441,6 +443,7 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
 def prepare_variable(
     ds,
     out_name,
+    cmor_table,
     mapping_table=None,
     replace_coords=False,
     allow_units_convert=False,
@@ -491,6 +494,11 @@ def prepare_variable(
             warn("adding time bounds")
             var_ds = _add_time_bounds(var_ds, cf_freq)
         var_ds = _set_time_encoding(var_ds, time_units, ds)
+
+    if allow_units_convert is True:
+        var_ds[out_name] = _cf_units_convert(
+            var_ds[out_name], cmor_table, mapping_table
+        )
 
     try:
         mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
@@ -606,6 +614,7 @@ def cmorize_variable(
     ds_prep = prepare_variable(
         ds,
         out_name,
+        cmor_table,
         CORDEX_domain=CORDEX_domain,
         mapping_table=mapping_table,
         replace_coords=replace_coords,
@@ -615,13 +624,9 @@ def cmorize_variable(
         rewrite_time_axis=rewrite_time_axis,
         time_units=time_units,
         allow_resample=allow_resample,
+        allow_units_convert=allow_units_convert,
         **kwargs,
     )
-
-    if allow_units_convert is True:
-        ds_prep[out_name] = _cf_units_convert(
-            ds_prep[out_name], cmor_table, mapping_table
-        )
 
     table_ids = _setup(
         dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
