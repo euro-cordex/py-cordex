@@ -440,6 +440,27 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     return ds
 
 
+def cmorize(ds, out_name, cmor_table, dataset_table, grids_table=None, inpath=None):
+    # get meta info from cmor table
+    if inpath is None:
+        inpath = os.path.dirname(cmor_table)
+
+    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
+
+    if cfvarinfo is None:
+        raise Exception("{} not found in {}".format(out_name, cmor_table))
+
+    time_cell_method = _strip_time_cell_method(cfvarinfo)
+
+    table_ids = _setup(
+        dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
+    )
+
+    cmorTime, cmorGrid = _define_grid(ds, table_ids, time_cell_method=time_cell_method)
+
+    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorGrid)
+
+
 def prepare_variable(
     ds,
     out_name,
@@ -518,7 +539,7 @@ def cmorize_variable(
     dataset_table,
     mapping_table=None,
     grids_table=None,
-    inpath=".",
+    inpath=None,
     replace_coords=False,
     allow_units_convert=False,
     allow_resample=False,
@@ -548,7 +569,7 @@ def cmorize_variable(
     grids_table: str
         Filepath to cmor grids table.
     inpath: str
-        Path to cmor tables, if ``inpath == "."``, inpath is the path
+        Path to cmor tables, if ``inpath == None``, inpath is the path
         to ``cmor_table``. This is required to find additional cmor tables,
         like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
     replace_coords: bool
@@ -599,7 +620,7 @@ def cmorize_variable(
     elif "CORDEX_domain" not in ds.attrs:
         ds.attrs["CORDEX_domain"] = CORDEX_domain
 
-    if inpath == ".":
+    if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
     # get meta info from cmor table
@@ -628,12 +649,4 @@ def cmorize_variable(
         **kwargs,
     )
 
-    table_ids = _setup(
-        dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
-    )
-
-    cmorTime, cmorGrid = _define_grid(
-        ds_prep, table_ids, time_cell_method=time_cell_method
-    )
-
-    return _cmor_write(ds_prep[out_name], table_ids["mip"], cmorTime, cmorGrid)
+    return cmorize(ds_prep, out_name, cmor_table, dataset_table, grids_table, inpath)
