@@ -11,10 +11,10 @@ from cordex.cmor import utils
 
 
 def test_cfdt():
-    assert cmor.to_cfdt(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
-    assert cmor.to_cfdt(dt.date(2000, 1, 1)) == cfdt.datetime(2000, 1, 1)
-    assert cmor.to_cfdt("2000-01-01T01:00:00") == cfdt.datetime(2000, 1, 1, 1)
-    assert cmor.to_cfdt("2000-02-30T00:00:00", calendar="360_day") == cfdt.datetime(
+    assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
+    assert cmor.to_cftime(dt.date(2000, 1, 1)) == cfdt.datetime(2000, 1, 1)
+    assert cmor.to_cftime("2000-01-01T01:00:00") == cfdt.datetime(2000, 1, 1, 1)
+    assert cmor.to_cftime("2000-02-30T00:00:00", calendar="360_day") == cfdt.datetime(
         2000, 2, 30, calendar="360_day"
     )
 
@@ -68,7 +68,7 @@ def test_cfmonth():
 
 def test_mid_of_month():
     time_axis = xr.DataArray(
-        xr.cfdt_range("2005-01", periods=12, freq="MS"), dims="time"
+        xr.cftime_range("2005-01", periods=12, freq="MS"), dims="time"
     )
 
     expect = np.array(
