@@ -1,12 +1,8 @@
-import datetime as dt
 import json
 import os
 from warnings import warn
 
 import cf_xarray as cfxr
-
-# import cf_xarray.units
-import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -22,6 +18,15 @@ from cordex import cmor as cxcmor
 
 # import cordex as cx
 from .. import cordex_domain
+from .config import (
+    freq_map,
+    loffsets,
+    options,
+    time_axis_names,
+    time_dtype,
+    time_units_default,
+    units_format,
+)
 
 # from .derived import derivator
 from .utils import (
@@ -38,58 +43,7 @@ from .utils import (
 __all__ = ["cxcmor"]
 # from dateutil import relativedelta as reld
 
-options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
-
-
-# from ..core import codes
-
 xr.set_options(keep_attrs=True)
-
-# time offsets relative to left labeling for resampling.
-# we want the time label to be the center.
-loffsets = {
-    "3H": dt.timedelta(hours=1, minutes=30),
-    "6H": dt.timedelta(hours=3),
-    "D": dt.timedelta(hours=12),
-}
-
-
-mapping_table_default = {"time": "time", "X": "rlon", "Y": "rlat"}
-
-
-time_axis_names = {"point": "time1", "mean": "time"}
-
-units_format = "cf"  # "~P"
-# units.define("deg = degree")
-
-# map mip frequencies to pandas frequencies
-freq_map = {
-    "1hr": "H",
-    "1hrPt": "H",
-    "3hr": "3H",
-    "3hrPt": "3H",
-    "6hr": "6H",
-    "day": "D",
-    "mon": "MS",
-}
-
-time_units_default = "days since 1950-01-01T00:00:00"
-time_dtype = np.double
-
-# Y=2000
-
-units_convert_rules = {
-    "mm": (lambda x: x * 1.0 / 86400.0, "kg m-2 s-1"),
-    "kg/kg": (lambda x: x, "1"),
-}
-
-
-def set_options(**kwargs):
-    for k, v in kwargs.items():
-        if k in options:
-            options[k] = v
-        else:
-            raise Exception(f"unkown config option: {k}")
 
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
@@ -282,16 +236,10 @@ def _units_convert(da, cf_units, format=None):
     import pint_xarray  # noqa
     from cf_xarray.units import units  # noqa
 
-    # rule = units_convert_rules[units]
-    # da = rule[0](da)
-    # da.attrs["units"] = rule[1]
     if format is None:
         format = units_format
-    da_quant = da.pint.quantify()  # ({d:None for d in da.coords})
+    da_quant = da.pint.quantify()
     da = da_quant.pint.to(cf_units).pint.dequantify(format=units_format)
-    # https://github.com/xarray-contrib/cf-xarray/pull/390
-    # da["rlon"].attrs["units"] = "degrees"
-    # da["rlat"].attrs["units"] = "degrees"
     return da
 
 
@@ -440,7 +388,9 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     return ds
 
 
-def cmorize(ds, out_name, cmor_table, dataset_table, grids_table=None, inpath=None):
+def cmorize_cmor(
+    ds, out_name, cmor_table, dataset_table, grids_table=None, inpath=None
+):
     # get meta info from cmor table
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
@@ -649,4 +599,6 @@ def cmorize_variable(
         **kwargs,
     )
 
-    return cmorize(ds_prep, out_name, cmor_table, dataset_table, grids_table, inpath)
+    return cmorize_cmor(
+        ds_prep, out_name, cmor_table, dataset_table, grids_table, inpath
+    )
