@@ -362,12 +362,18 @@ def _add_time_bounds(ds, cf_freq):
     Take special care of monthly frequencies.
 
     """
+    # monthly time bounds are funny in ESGS, it seems that
+    # they should always be the first of each month and first
+    # of second month. This is not really the bounds you would get
+    # from arithmetics but seems fine. We have to take special care
+    # of them here.
     if cf_freq == "mon":
-        ds = month_bounds(ds)
+        ds = _add_month_bounds(ds)
     else:
         try:
             ds = ds.convert_calendar(ds.time.dt.calendar).cf.add_bounds("time")
         except Exception:
+            # wait for cftime arithemtics in xarry here:
             warn("could not add time bounds.")
     ds[time_bounds_name].encoding = ds.time.encoding
     ds.time.attrs.update({"bounds": time_bounds_name})

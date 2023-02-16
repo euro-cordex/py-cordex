@@ -31,7 +31,7 @@ freq_map = {
 
 time_units_default = "days since 1950-01-01T00:00:00"
 time_dtype = np.double
-
+time_bounds_name = "time_bounds"
 # Y=2000
 
 units_convert_rules = {

@@ -9,56 +9,9 @@ import xarray as xr
 from xarray import DataArray, Dataset
 
 from .. import cordex_domain
+from .config import time_bounds_name
 
 xr.set_options(keep_attrs=True)
-
-loffsets = {"3H": dt.timedelta(hours=1, minutes=30), "6H": dt.timedelta(hours=3)}
-
-time_bounds_name = "time_bounds"
-
-
-def _get_loffset(time):
-    return loffsets.get(time, None)
-
-
-# def ensure_cftime(func):
-#    def wrapper(date, **kwargs):
-#        return func(_to_cftime(date), **kwargs)
-#
-#    return wrapper
-
-
-# def to_cftime(date, calendar="gregorian"):
-#     """Convert datetime object to cftime object.
-
-#     Parameters
-#     ----------
-#     date : datetime object
-#         Datetime object.
-#     calendar : str
-#         Calendar of the cftime object.
-
-#     Returns
-#     -------
-#     cftime : cftime object
-#         Cftime ojbect.
-
-#     """
-#     if type(date) == dt.date:
-#         date = dt.datetime.combine(date, dt.time())
-#     elif isinstance(date, cfdt.datetime):
-#         # do nothing
-#         return date
-#     return cfdt.datetime(
-#         date.year,
-#         date.month,
-#         date.day,
-#         date.hour,
-#         date.minute,
-#         date.second,
-#         date.microsecond,
-#         calendar=calendar,
-#     )
 
 
 def to_cftime(date, calendar="standard"):
@@ -228,20 +181,20 @@ def _month_bounds(date):
 
 
 def month_bounds(ds, bounds_dim="bounds"):
-    """Determine the bounds of the current month.
+    """Returns the bounds of the current month.
 
     Parameters
     ----------
     ds : Dataset
-        Dataset with time coordinate.
+        Dataset with cf time coordinate.
     bounds_dim: str
         Name of the bounds dimension. If not supplied,
         the default is ``bounds``.
 
     Returns
     -------
-    ds : Dataset
-        Added monthly time bounds.
+    ds : DataArray
+        Monthly time bounds.
 
     """
     if not isinstance(ds, (Dataset, DataArray)):
@@ -260,7 +213,7 @@ def month_bounds(ds, bounds_dim="bounds"):
         keep_attrs=True,
     )
 
-    bounds = xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
+    return xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
     ds.time.attrs["bounds"] = time_bounds_name
     return ds.assign_coords({time_bounds_name: bounds})
 
