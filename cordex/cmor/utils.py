@@ -6,56 +6,12 @@ from warnings import warn
 
 import cftime as cfdt
 import xarray as xr
+from xarray import DataArray, Dataset
 
 from .. import cordex_domain
+from .config import time_bounds_name
 
 xr.set_options(keep_attrs=True)
-
-loffsets = {"3H": dt.timedelta(hours=1, minutes=30), "6H": dt.timedelta(hours=3)}
-
-
-def _get_loffset(time):
-    return loffsets.get(time, None)
-
-
-# def ensure_cftime(func):
-#    def wrapper(date, **kwargs):
-#        return func(_to_cftime(date), **kwargs)
-#
-#    return wrapper
-
-
-# def to_cftime(date, calendar="gregorian"):
-#     """Convert datetime object to cftime object.
-
-#     Parameters
-#     ----------
-#     date : datetime object
-#         Datetime object.
-#     calendar : str
-#         Calendar of the cftime object.
-
-#     Returns
-#     -------
-#     cftime : cftime object
-#         Cftime ojbect.
-
-#     """
-#     if type(date) == dt.date:
-#         date = dt.datetime.combine(date, dt.time())
-#     elif isinstance(date, cfdt.datetime):
-#         # do nothing
-#         return date
-#     return cfdt.datetime(
-#         date.year,
-#         date.month,
-#         date.day,
-#         date.hour,
-#         date.minute,
-#         date.second,
-#         date.microsecond,
-#         calendar=calendar,
-#     )
 
 
 def to_cftime(date, calendar="standard"):
@@ -194,8 +150,8 @@ def mid_of_season(date):
     return bounds[0] + 0.5 * (bounds[1] - bounds[0])
 
 
-def month_bounds(date):
-    """Determine the mid of the current month.
+def _month_bounds(date):
+    """Determine the bounds of the current month.
 
     Parameters
     ----------
@@ -221,10 +177,48 @@ def month_bounds(date):
         year = date.year
         month = date.month + 1
     end = date.replace(day=1, year=year, month=month, hour=0, minute=0, second=0)
-    return (begin, end)
+    return begin, end
 
 
-def mid_of_month(date):
+def month_bounds(ds, bounds_dim="bounds"):
+    """Returns the bounds of the current month.
+
+    Parameters
+    ----------
+    ds : Dataset
+        Dataset with cf time coordinate.
+    bounds_dim: str
+        Name of the bounds dimension. If not supplied,
+        the default is ``bounds``.
+
+    Returns
+    -------
+    ds : DataArray
+        Monthly time bounds.
+
+    """
+    if not isinstance(ds, (Dataset, DataArray)):
+        warn(
+            "using month_bounds without xarray object is deprecated and will be removed in the future.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _month_bounds(ds)
+    ds = ds.copy(deep=False)
+    bounds = xr.apply_ufunc(
+        _month_bounds,
+        ds.time,
+        output_core_dims=[[], []],
+        vectorize=True,
+        keep_attrs=True,
+    )
+
+    return xr.concat(bounds, dim=bounds_dim).transpose(..., bounds_dim)
+    ds.time.attrs["bounds"] = time_bounds_name
+    return ds.assign_coords({time_bounds_name: bounds})
+
+
+def _mid_of_month(date):
     """Determine the mid of the current month.
 
     Parameters
@@ -238,8 +232,35 @@ def mid_of_month(date):
         Mid date of the current month.
 
     """
-    bounds = month_bounds(date)
-    return bounds[0] + 0.5 * (bounds[1] - bounds[0])
+    bounds = _month_bounds(date)
+    mid = bounds[0] + 0.5 * (bounds[1] - bounds[0])
+    return mid
+
+
+def mid_of_month(ds):
+    """Determine the mid of the current month.
+
+    Parameters
+    ----------
+    ds : Dataset or DataArray
+        Dataset with time axis.
+
+    Returns
+    -------
+    da : DataArray
+        The mid date of the month.
+
+    """
+    if not isinstance(ds, (Dataset, DataArray)):
+        warn(
+            "using mid_of_month without xarray object is deprecated and will be removed in the future.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _mid_of_month(ds)
+
+    time = xr.apply_ufunc(_mid_of_month, ds.time, vectorize=True, keep_attrs=True)
+    return time
 
 
 def _get_pole(ds):

@@ -80,7 +80,9 @@ def open_dataset(
     If a local copy is found then always use that to avoid network traffic.
 
     Available datasets:
-
+    * ``remo_EUR-11_TEMP2_1hr``: Remo hourly output
+    * ``remo_EUR-11_TEMP2_mon``: Remo monthly output
+    * ``remo_EUR-44.nc``: Remo 3D output on model levels
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012"``: Remo output (rotated pole)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_DHMZ-RegCM4-2_v1_mon_198901-199012"``: RegCM4 output (lambert conformal)
     * ``"tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_CNRM-ALADIN53_v1_mon_197901-198012"``: Aladin Output (lambert conformal)

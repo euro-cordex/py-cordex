@@ -1,14 +1,17 @@
 import datetime as dt
 
+import cftime
 import cftime as cfdt
+import numpy as np
 import pytest
 import xarray as xr
 
 import cordex as cx
 from cordex import cmor
+from cordex.cmor import utils
 
 
-def test_cftime():
+def test_cfdt():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
     assert cmor.to_cftime(dt.date(2000, 1, 1)) == cfdt.datetime(2000, 1, 1)
     assert cmor.to_cftime("2000-01-01T01:00:00") == cfdt.datetime(2000, 1, 1, 1)
@@ -62,6 +65,99 @@ def test_cfmonth():
     assert cmor.mid_of_month(
         cfdt.datetime(2001, 2, 1, calendar="360_day")
     ) == cfdt.datetime(2001, 2, 16, calendar="360_day")
+
+
+def test_mid_of_month():
+    time_axis = xr.DataArray(
+        xr.cftime_range("2005-01", periods=12, freq="MS"), dims="time"
+    )
+
+    expect = np.array(
+        [
+            cfdt.DatetimeGregorian(2005, 1, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 2, 15, 0, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 3, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 4, 16, 0, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 5, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 6, 16, 0, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 7, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 8, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 9, 16, 0, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 10, 16, 12, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 11, 16, 0, 0, 0, 0, has_year_zero=False),
+            cfdt.DatetimeGregorian(2005, 12, 16, 12, 0, 0, 0, has_year_zero=False),
+        ]
+    )
+
+    expect = xr.DataArray(expect, dims="time")
+
+    mid = utils.mid_of_month(time_axis)
+
+    assert np.array_equal(mid, expect)
+
+
+def test_month_bounds():
+    time_axis = xr.DataArray(
+        xr.cftime_range("2005-01", periods=12, freq="MS"), dims="time"
+    )
+
+    expect = np.array(
+        [
+            [
+                cftime.DatetimeGregorian(2005, 1, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 2, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 2, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 3, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 3, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 4, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 4, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 5, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 5, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 6, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 6, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 7, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 7, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 8, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 8, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 9, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 9, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 10, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 10, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 11, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 11, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2005, 12, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+            [
+                cftime.DatetimeGregorian(2005, 12, 1, 0, 0, 0, 0, has_year_zero=False),
+                cftime.DatetimeGregorian(2006, 1, 1, 0, 0, 0, 0, has_year_zero=False),
+            ],
+        ],
+        dtype=object,
+    )
+
+    mid = utils.month_bounds(time_axis)
+
+    assert np.array_equal(mid, expect)
 
 
 def test_cmorizer_fx():

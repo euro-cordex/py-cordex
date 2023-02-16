@@ -1,5 +1,6 @@
 from .. import tables
-from .cmor import cmorize_variable, set_options
+from .cmor import cmorize_variable, prepare_variable
+from .config import set_options
 from .utils import (
     mid_of_month,
     mid_of_season,
@@ -23,6 +24,7 @@ fetch_basic_tables()
 
 __all__ = [
     "cmorize_variable",
+    "prepare_variable",
     "mid_of_month",
     "mid_of_season",
     "month_bounds",
