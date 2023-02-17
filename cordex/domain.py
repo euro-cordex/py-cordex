@@ -28,7 +28,7 @@ from pyproj import CRS
 from . import cf
 from .config import nround
 from .tables import domains
-from .transform import grid_mapping, transform, transform_coords
+from .transform import grid_mapping, transform, transform_bounds, transform_coords
 from .utils import get_tempfile
 
 
@@ -98,6 +98,10 @@ def cordex_domain(
     -------
     Grid : xr.Dataset
         Dataset containing a CORDEX grid.
+
+    References
+    ----------
+    Please refer to the CF conventions document : https://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html#grid-mappings-and-projections
 
     Example
     -------
@@ -344,8 +348,8 @@ def _get_rotated_dataset(
         coord.attrs = cf.coords[key]
 
     if bounds is True:
-        v = vertices(ds.rlon, ds.rlat, CRS.from_cf(mapping.attrs))
-        ds = xr.merge([ds, v])
+        ds = transform_bounds(ds)
+        # ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
@@ -434,67 +438,6 @@ def bounds(coords):
     # return xr.merge([_bounds(coord).left.rename({"left": coord.name+"bounds"}) for coord in coords])
 
 
-def vertices_new(ds, src_crs, trg_crs=None):
-    """Compute lon and lat vertices.
-
-    Transformation of rlon vertices and rlat vertices
-    into the target crs according to
-    https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
-
-    Parameters
-    ----------
-    rlon : xr.DataArray
-        Longitude in rotated pole grid.
-    rlat : xr.DataArray
-        Latitude in rotated pole grid.
-
-    Returns
-    -------
-    vertices : xr.Dataset
-        lon_vertices and lat_vertices in target crs.
-
-    """
-    warn(
-        "Order of vertices has changed since v0.3.2 to CF Conventions, see https://github.com/euro-cordex/py-cordex/issues/34"
-    )
-    # ds = xr.merge([rlon_bounds, rlat_bounds])
-    rlon_bounds = ds.cf.add_bounds("rlon").rlon_bounds.drop(
-        "rlon_bounds"
-    )  # _bounds(ds.rlon)
-    rlat_bounds = ds.cf.add_bounds("rlat").rlat_bounds.drop(
-        "rlat_bounds"
-    )  # _bounds(ds.rlat)
-    # maps each vertex to lat lon coordinates
-    # order is counterclockwise starting from lower left vertex
-    v1 = transform(
-        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=0), src_crs, trg_crs
-    )
-    v2 = transform(
-        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=0), src_crs, trg_crs
-    )
-    v3 = transform(
-        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=1), src_crs, trg_crs
-    )
-    v4 = transform(
-        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
-    )
-    lon_vertices = xr.concat(
-        [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
-    ).transpose()
-    #    ..., "vertices"
-    # )
-    lat_vertices = xr.concat(
-        [v1[1], v2[1], v3[1], v4[1]], dim=cf.BOUNDS_DIM
-    ).transpose()
-    #    ..., "vertices"
-    # )
-    lon_vertices.name = cf.LON_BOUNDS
-    lat_vertices.name = cf.LAT_BOUNDS
-    lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
-    lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
-    return xr.merge([lat_vertices, lon_vertices])
-
-
 def vertices(rlon, rlat, src_crs, trg_crs=None):
     """Compute lon and lat vertices.
 
@@ -515,6 +458,11 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
         lon_vertices and lat_vertices in target crs.
 
     """
+    warn(
+        "vertices is deprecated, please use transform_bounds instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     rlon_bounds = _bounds(rlon)
     rlat_bounds = _bounds(rlat)
     # maps each vertex to lat lon coordinates

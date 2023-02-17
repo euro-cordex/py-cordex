@@ -22,10 +22,10 @@ from . import requires_xesmf
 
 
 def create_test_ds(
-    name, pol_name="rotated_latitude_longitude", dummy=True, add_vertices=True, **kwargs
+    name, pol_name="rotated_latitude_longitude", dummy=True, bounds=True, **kwargs
 ):
     domain = cordex_domain(
-        name, mapping_name=pol_name, dummy=dummy, add_vertices=add_vertices, **kwargs
+        name, mapping_name=pol_name, dummy=dummy, bounds=bounds, **kwargs
     )
     return domain
 
@@ -65,8 +65,10 @@ def create_wrf_test(name):
 
 def test_wrf_case():
     """Test the wrf exception"""
-    ds = create_wrf_test("EUR-11")
-    assert rename_cordex(ds).equals(create_test_ds("EUR-11"))
+    ds = xr.decode_cf(rename_cordex(create_wrf_test("EUR-11")), decode_coords="all")
+    xr.testing.assert_equal(
+        ds, xr.decode_cf(create_test_ds("EUR-11"), decode_coords="all")
+    )
 
 
 @pytest.mark.parametrize("lon_name", ["longitude"])
@@ -84,7 +86,11 @@ def test_rename_cordex(lon_name, lat_name, pol_name, lon_vertices, lat_vertices)
             "lat_vertices": lat_vertices,
         }
     )
-    assert rename_cordex(dm).equals(create_test_ds("EUR-11"))
+    # assert rename_cordex(dm).equals(create_test_ds("EUR-11"))
+    xr.testing.assert_equal(
+        xr.decode_cf(rename_cordex(dm), decode_coords="all"),
+        xr.decode_cf(create_test_ds("EUR-11"), decode_coords="all"),
+    )
 
 
 def test_grid_mapping():

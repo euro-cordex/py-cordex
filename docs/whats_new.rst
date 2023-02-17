@@ -16,7 +16,14 @@ New Features
 
 - Cmorization module from ``pyremo.cmor`` has been moved upstream into ``cordex.cmor``. A new cmorization funcion :py:meth:`cmor.cmorize_variable` now allows for easy cmorization using the archive specifications included in ``py-cordex`` (:pull:`68`, :pull:`74`, :pull:`76`, :pull:`77`, :pull:`78`, :pull:`92`).
 
-- Added :py:meth:`transform` and :py:meth:`transform_coords` in favour of deprecated :py:meth:`map_crs` and :py:meth:`rotated_coord_transform`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`).
+- Added :py:meth:`transform`, :py:meth:`transform_coords` and :py:meth:`transform_bounds` in favour of deprecated :py:meth:`map_crs`, :py:meth:`rotated_coord_transform` and :py:meth:`vertices`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`, :pull:`102`).
+
+Deprecations
+~~~~~~~~~~~~
+
+- ``add_vertices`` keyword is deprecated in favour of ``bounds`` keyword in :py:meth:`cordex_domain` and :py:meth:`create_dataset`. Note that the 2D longitude and latitude bounds (``lon_vertices``, ``lat_vertices``) will now appear as coordinates in the domain dataset by default and not as data variables (:pull:`101`).
+- :py:meth:`map_crs` and :py:meth:`rotated_coord_transform` are deprecated and will be removed in the future (:pull:`71`).
+- :py:meth:`vertices` is deprecated, please use :py:meth:`transform_bounds` instead (:pull:`102`).
 
 Deprecations
 ~~~~~~~~~~~~
