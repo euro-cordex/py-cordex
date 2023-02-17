@@ -3,7 +3,13 @@ import pkg_resources
 from . import regions, tables, tutorial
 from .domain import cordex_domain, create_dataset, domain_info, vertices
 from .tables import domains, ecmwf
-from .transform import map_crs, rotated_coord_transform, transform, transform_coords
+from .transform import (
+    map_crs,
+    rotated_coord_transform,
+    transform,
+    transform_bounds,
+    transform_coords,
+)
 
 try:
     __version__ = pkg_resources.get_distribution("py-cordex").version
@@ -26,6 +32,7 @@ __all__ = [
     "map_crs",
     "transform",
     "transform_coords",
+    "transform_bounds",
     "domains",
     "ecmwf",
 ]
