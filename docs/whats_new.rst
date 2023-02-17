@@ -27,6 +27,7 @@ Internal Changes
 - Moved core modules (:pull:`87`).
 - Added ``CITATION.cff`` (:pull:`87`).
 - Updated documentation environment for python 3.10 (:pull:`89`).
+- ``add_vertices`` keyword is deprecated in favour of ``bounds`` keyword in :py:meth:`cordex_domain` and :py:meth:`create_dataset` (:pull:`101`).
 
 
 v0.4.1 (23 June 2022)
