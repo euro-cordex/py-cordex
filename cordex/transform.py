@@ -160,6 +160,7 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
         Dataset with transformed coordinates.
 
     """
+    ds = ds.copy(deep=False)
 
     if trg_crs is None:
         # default target crs
@@ -203,6 +204,8 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
     Please refer to the CF conventions document : https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
 
     """
+    ds = ds.copy(deep=False)
+
     if src_crs is None:
         src_crs = CRS.from_cf(ds.cf["grid_mapping"].attrs)
     if trg_crs is None:
@@ -247,14 +250,23 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
     lat_vertices.name = cf.LAT_BOUNDS
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
+
     bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], cf.BOUNDS_DIM
     )
+
     ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
     ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
     return ds.assign_coords(
-        {trg_dims[0]: bounds.lon_vertices, trg_dims[1]: bounds.lat_vertices}
+        {
+            trg_dims[0]: bounds.lon_vertices.drop_vars(
+                (ds.cf["X"].name, ds.cf["Y"].name)
+            ),
+            trg_dims[1]: bounds.lat_vertices.drop_vars(
+                (ds.cf["X"].name, ds.cf["Y"].name)
+            ),
+        }
     )
 
 
