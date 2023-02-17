@@ -18,6 +18,11 @@ New Features
 
 - Added :py:meth:`transform` and :py:meth:`transform_coords` in favour of deprecated :py:meth:`map_crs` and :py:meth:`rotated_coord_transform`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`).
 
+Deprecations
+~~~~~~~~~~~~
+
+- ``add_vertices`` keyword is deprecated in favour of ``bounds`` keyword in :py:meth:`cordex_domain` and :py:meth:`create_dataset` (:pull:`101`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
@@ -27,6 +32,8 @@ Internal Changes
 - Moved core modules (:pull:`87`).
 - Added ``CITATION.cff`` (:pull:`87`).
 - Updated documentation environment for python 3.10 (:pull:`89`).
+- Use ``cf-xarray`` for adding bounds to regular datasets (:pull:`101`).
+
 
 
 v0.4.1 (23 June 2022)

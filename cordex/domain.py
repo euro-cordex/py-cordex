@@ -59,7 +59,7 @@ def cordex_domain(
     tables=None,
     attrs=None,
     mapping_name=None,
-    bounds=None,
+    bounds=False,
 ):
     """Creates an xarray dataset containg the domain grid definitions.
 
@@ -73,6 +73,12 @@ def cordex_domain(
         looking at the domain with ncview.
     add_vertices : bool
         Add grid boundaries in the gloabl coordinates (lon_vertices and lat_vertices).
+
+        .. deprecated:: v0.5.0
+            The ``add_vertices`` parameter is deprecated in favor
+            of the ``bounds`` parameter, and will be removed in a future
+            version.
+
     tables: dataframe or list of dataframes, default: cordex_tables
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
@@ -83,13 +89,15 @@ def cordex_domain(
     mapping_name: str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
-    bounds: str
-        Add spatial bounds.
+    bounds: bool
+        Add spatial bounds to longitude and latitude coordinates.
+
+        .. versionadded:: v0.5.0
 
     Returns
     -------
-    Dataset : xarray.core.Dataset
-        Dataset containing the coordinates.
+    Grid : xr.Dataset
+        Dataset containing a CORDEX grid.
 
     Example
     -------
@@ -101,6 +109,14 @@ def cordex_domain(
         eur11 = cx.cordex_domain('EUR-11')
 
     """
+    if add_vertices is True:
+        warn(
+            "add_vertices keyword is deprecated, please use the bounds keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bounds = True
+
     if attrs is None:
         attrs = {}
     if tables is None:
@@ -111,9 +127,9 @@ def cordex_domain(
         config = tables.loc[short_name]
     return create_dataset(
         **config,
-        name=short_name,
+        short_name=short_name,
         dummy=dummy,
-        add_vertices=add_vertices,
+        add_vertices=False,
         attrs=attrs,
         mapping_name=mapping_name,
         bounds=bounds
@@ -130,11 +146,12 @@ def create_dataset(
     pollon=None,
     pollat=None,
     name=None,
+    short_name=None,
     dummy=False,
     add_vertices=False,
     attrs=None,
     mapping_name=None,
-    bounds=None,
+    bounds=False,
     **kwargs
 ):
     """Create domain dataset from grid information.
@@ -157,19 +174,45 @@ def create_dataset(
         pol longitude (degrees)
     pollat : float
         pol latitude (degrees)
+    short_name : str
+        CORDEX domain identifier, goes into the ``CORDEX_domain`` global attribute.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
     add_vertices : bool
         Add grid boundaries in the global coordinates (lon_vertices and lat_vertices).
+
+        .. deprecated:: v0.5.0
+            The ``add_vertices`` parameter is deprecated in favor
+            of the ``bounds`` parameter, and will be removed in a future
+            version.
+
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
     mapping_name: str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
+    bounds: bool
+        Add spatial bounds to longitude and latitude coordinates.
+
+        .. versionadded:: v0.5.0
+
+    Returns
+    -------
+    Grid : Dataset
+        Dataset containing a CORDEX grid.
+
     """
+    if add_vertices is True:
+        warn(
+            "add_vertices keyword is deprecated, please use the bounds keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bounds = True
+
     rotated = True
     if attrs == "CORDEX":
         attrs = cf.DEFAULT_CORDEX_ATTRS
@@ -177,6 +220,9 @@ def create_dataset(
         attrs = {}
     if name:
         attrs["CORDEX_domain"] = name
+    # remove inconsistencies in keyword names
+    if short_name:
+        attrs["CORDEX_domain"] = short_name
     if pollon is None or pollat is None:
         rotated = False
     try:
@@ -188,26 +234,29 @@ def create_dataset(
     x, y = _lin_coord(nlon, dlon, ll_lon), _lin_coord(nlat, dlat, ll_lat)
 
     if rotated is True:
-        return _get_rotated_dataset(
+        ds = _get_rotated_dataset(
             x,
             y,
             #  lon,
             #  lat,
             pollon,
             pollat,
-            add_vertices=add_vertices,
-            dummy=dummy,
+            bounds=bounds,
             mapping_name=mapping_name,
             attrs=attrs,
         )
     else:
-        return _get_regular_dataset(
+        ds = _get_regular_dataset(
             x,
             y,
-            add_vertices=add_vertices,
-            dummy=dummy,
+            bounds=bounds,
             attrs=attrs,
         )
+
+    if dummy:
+        ds = _add_dummy(ds, dummy)
+
+    return ds
 
 
 def domain_info(short_name, tables=None):
@@ -241,8 +290,7 @@ def domain_info(short_name, tables=None):
 def _get_regular_dataset(
     lon,
     lat,
-    add_vertices=False,
-    dummy=None,
+    bounds=False,
     attrs=None,
 ):
     ds = xr.Dataset(
@@ -261,21 +309,9 @@ def _get_regular_dataset(
     ds.lon.attrs["axis"] = "X"
     ds.lat.attrs["axis"] = "Y"
 
-    if add_vertices is True:
-        from cartopy import crs as ccrs
+    if bounds is True:
+        ds = ds.cf.add_bounds(("lon", "lat"))
 
-        pole = (
-            ds[mapping_name].grid_north_pole_longitude,
-            ds[mapping_name].grid_north_pole_latitude,
-        )
-        # v = vertices(ds, ccrs.RotatedPole(*pole))
-        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
-        ds = xr.merge([ds, v])
-        ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
-        ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
-
-    if dummy is not None:
-        ds = _add_dummy(ds, dummy)
     return ds
 
 
@@ -284,8 +320,7 @@ def _get_rotated_dataset(
     rlat,
     pollon,
     pollat,
-    add_vertices=False,
-    dummy=None,
+    bounds=False,
     mapping_name=None,
     attrs=None,
 ):
@@ -304,18 +339,16 @@ def _get_rotated_dataset(
     lon, lat = transform(ds.rlon, ds.rlat, src_crs=CRS.from_cf(mapping.attrs))
     ds = ds.assign_coords(lon=lon, lat=lat)
 
-    if add_vertices is True:
+    for key, coord in ds.coords.items():
+        coord.encoding["_FillValue"] = None
+        coord.attrs = cf.coords[key]
+
+    if bounds is True:
         v = vertices(ds.rlon, ds.rlat, CRS.from_cf(mapping.attrs))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
-    for key, coord in ds.coords.items():
-        coord.encoding["_FillValue"] = None
-        coord.attrs = cf.coords[key]
-
-    if dummy is not None:
-        ds = _add_dummy(ds, dummy)
     return ds
 
 

@@ -84,3 +84,5 @@ DEFAULT_CORDEX_ATTRS = {
     "realization": 0,
     "cmor_version": "",
 }
+
+grid_mapping_dtype = np.int32
