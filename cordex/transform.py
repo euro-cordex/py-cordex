@@ -174,6 +174,88 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
     return ds.assign_coords({trg_dims[0]: xt, trg_dims[1]: yt})
 
 
+def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
+    """Transform X and Y bounds of a Dataset.
+
+    Transformation of linear X and Y coordinates
+    into the target crs according to
+    https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset containing linear X and Y coordinates, e.g., `rlon` and `rlat`
+    src_crs : pyproj.CRS
+        Source coordinate reference system in which X and Y are defined.
+        If not supplied, a `grid_mapping` variable should be available
+        to define the source CRS.
+    trg_crs : pyproj.CRS
+        Target coordinate reference system into which bounds
+        should be transformed. If not supplied, ``EPSG:4326`` is the default.
+
+    Returns
+    -------
+    bounds : xr.Dataset
+        Dataset with X and Y bounds in target crs. Probably some 2D coordinates.
+
+    References
+    ----------
+    Please refer to the CF conventions document : https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+
+    """
+    if src_crs is None:
+        src_crs = CRS.from_cf(ds.cf["grid_mapping"].attrs)
+    if trg_crs is None:
+        # default target crs
+        trg_crs = CRS("EPSG:4326")
+    if trg_dims is None:
+        trg_dims = (
+            ds.cf["longitude"].name + "_vertices",
+            ds.cf["latitude"].name + "_vertices",
+        )
+    # ds = xr.merge([rlon_bounds, rlat_bounds])
+    rlon_bounds = (
+        ds.cf.add_bounds(ds.cf["X"].dims).cf.get_bounds("X").drop("rlon_bounds")
+    )
+    rlat_bounds = (
+        ds.cf.add_bounds(ds.cf["Y"].dims).cf.get_bounds("Y").drop("rlat_bounds")
+    )
+
+    # order is counterclockwise starting from lower left vertex
+    v1 = transform(
+        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=0), src_crs, trg_crs
+    )
+    v2 = transform(
+        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=0), src_crs, trg_crs
+    )
+    v3 = transform(
+        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=1), src_crs, trg_crs
+    )
+    v4 = transform(
+        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
+    )
+    lon_vertices = xr.concat(
+        [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
+    ).transpose()
+    #    ..., "vertices"
+    # )
+    lat_vertices = xr.concat(
+        [v1[1], v2[1], v3[1], v4[1]], dim=cf.BOUNDS_DIM
+    ).transpose()
+
+    lon_vertices.name = cf.LON_BOUNDS
+    lat_vertices.name = cf.LAT_BOUNDS
+    lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
+    lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
+    # bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
+    #    ds.cf["Y"].dims[0], ds.cf["X"].dims[0], cf.BOUNDS_DIM
+    # )
+    ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
+    ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+
+    return ds.assign_coords({trg_dims[0]: lon_vertices, trg_dims[1]: lat_vertices})
+
+
 def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
     """Transforms a coordinate into a rotated grid coordinate and vice versa.
 

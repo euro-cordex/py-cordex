@@ -55,3 +55,13 @@ def test_transform():
 
     assert np.allclose(ds1.lon, ds1.xt)
     assert np.allclose(ds1.lat, ds1.yt)
+
+
+@requires_cartopy
+def test_bounds():
+    # assert that we get the same bounds as before
+    ds = cx.cordex_domain("EUR-11", bounds=True)
+    _v = cx.vertices(ds.rlon, ds.rlat, CRS.from_cf(ds.cf["grid_mapping"].attrs))
+    v = cx.transform_bounds(ds)
+    np.array_equal(v.lon_vertices, _v.lon_vertices)
+    np.array_equal(v.lat_vertices, _v.lat_vertices)

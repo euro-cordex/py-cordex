@@ -16,9 +16,9 @@ Top-level functions
    cordex_domain
    domain_info
    create_dataset
-   vertices
    transform
    transform_coords
+   transform_bounds
 
 Tutorial
 ========
