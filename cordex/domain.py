@@ -96,8 +96,8 @@ def cordex_domain(
 
     Returns
     -------
-    Dataset : xarray.core.Dataset
-        Dataset containing the coordinates.
+    Grid : xr.Dataset
+        Dataset containing a CORDEX grid.
 
     Example
     -------
@@ -185,7 +185,6 @@ def create_dataset(
             of the ``bounds`` parameter, and will be removed in a future
             version.
 
-
     attrs: str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
@@ -196,6 +195,11 @@ def create_dataset(
         Add spatial bounds to longitude and latitude coordinates.
 
         .. versionadded:: v0.5.0
+
+    Returns
+    -------
+    Grid : Dataset
+        Dataset containing a CORDEX grid.
 
     """
     if add_vertices is True:
@@ -298,17 +302,7 @@ def _get_regular_dataset(
     ds.lat.attrs["axis"] = "Y"
 
     if bounds is True:
-        from cartopy import crs as ccrs
-
-        pole = (
-            ds[mapping_name].grid_north_pole_longitude,
-            ds[mapping_name].grid_north_pole_latitude,
-        )
-        # v = vertices(ds, ccrs.RotatedPole(*pole))
-        v = vertices(ds.rlon, ds.rlat, ccrs.RotatedPole(*pole))
-        ds = xr.merge([ds, v])
-        ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
-        ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+        ds = ds.cf.add_bounds(("lon", "lat"))
 
     if dummy is not None:
         ds = _add_dummy(ds, dummy)
