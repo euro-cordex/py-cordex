@@ -21,8 +21,8 @@ New Features
 Deprecations
 ~~~~~~~~~~~~
 
-- ``add_vertices`` keyword is deprecated in favour of ``bounds`` keyword in :py:meth:`cordex_domain` and :py:meth:`create_dataset` (:pull:`101`). Note that the 2D longitude and latitude bounds (``lon_vertices``, ``lat_vertices``)
-will now appear as coordinates in the domain dataset by default and not as data variables.
+- ``add_vertices`` keyword is deprecated in favour of ``bounds`` keyword in :py:meth:`cordex_domain` and :py:meth:`create_dataset`. Note that the 2D longitude and latitude bounds (``lon_vertices``, ``lat_vertices``)
+will now appear as coordinates in the domain dataset by default and not as data variables (:pull:`101`).
 - :py:meth:`map_crs` and :py:meth:`rotated_coord_transform` are deprecated and will be removed in the future (:pull:`71`).
 - :py:meth:`vertices` is deprecated, please use :py:meth:`transform_bounds` instead (:pull:`102`).
 
