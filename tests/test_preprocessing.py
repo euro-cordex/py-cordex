@@ -22,10 +22,10 @@ from . import requires_xesmf
 
 
 def create_test_ds(
-    name, pol_name="rotated_latitude_longitude", dummy=True, add_vertices=True, **kwargs
+    name, pol_name="rotated_latitude_longitude", dummy=True, bounds=True, **kwargs
 ):
     domain = cordex_domain(
-        name, mapping_name=pol_name, dummy=dummy, add_vertices=add_vertices, **kwargs
+        name, mapping_name=pol_name, dummy=dummy, bounds=bounds, **kwargs
     )
     return domain
 
