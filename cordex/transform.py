@@ -269,7 +269,7 @@ def grid_mapping(pollon, pollat, mapping_name=None):
     """creates a grid mapping DataArray object"""
     if mapping_name is None:
         mapping_name = cf.DEFAULT_MAPPING_NCVAR
-    da = xr.DataArray(np.zeros((), dtype=np.int32))
+    da = xr.DataArray(np.zeros((), dtype=cf.grid_mapping_dtype))
     attrs = cf.mapping.copy()
     attrs["grid_north_pole_longitude"] = pollon
     attrs["grid_north_pole_latitude"] = pollat

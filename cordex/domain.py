@@ -127,7 +127,7 @@ def cordex_domain(
         config = tables.loc[short_name]
     return create_dataset(
         **config,
-        name=short_name,
+        short_name=short_name,
         dummy=dummy,
         add_vertices=False,
         attrs=attrs,
@@ -146,6 +146,7 @@ def create_dataset(
     pollon=None,
     pollat=None,
     name=None,
+    short_name=None,
     dummy=False,
     add_vertices=False,
     attrs=None,
@@ -173,6 +174,8 @@ def create_dataset(
         pol longitude (degrees)
     pollat : float
         pol latitude (degrees)
+    short_name : str
+        CORDEX domain identifier, goes into the ``CORDEX_domain`` global attribute.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
@@ -217,6 +220,9 @@ def create_dataset(
         attrs = {}
     if name:
         attrs["CORDEX_domain"] = name
+    # remove inconsistencies in keyword names
+    if short_name:
+        attrs["CORDEX_domain"] = short_name
     if pollon is None or pollat is None:
         rotated = False
     try:
@@ -228,7 +234,7 @@ def create_dataset(
     x, y = _lin_coord(nlon, dlon, ll_lon), _lin_coord(nlat, dlat, ll_lat)
 
     if rotated is True:
-        return _get_rotated_dataset(
+        ds = _get_rotated_dataset(
             x,
             y,
             #  lon,
@@ -236,18 +242,21 @@ def create_dataset(
             pollon,
             pollat,
             bounds=bounds,
-            dummy=dummy,
             mapping_name=mapping_name,
             attrs=attrs,
         )
     else:
-        return _get_regular_dataset(
+        ds = _get_regular_dataset(
             x,
             y,
             bounds=bounds,
-            dummy=dummy,
             attrs=attrs,
         )
+
+    if dummy:
+        ds = _add_dummy(ds, dummy)
+
+    return ds
 
 
 def domain_info(short_name, tables=None):
@@ -282,7 +291,6 @@ def _get_regular_dataset(
     lon,
     lat,
     bounds=False,
-    dummy=None,
     attrs=None,
 ):
     ds = xr.Dataset(
@@ -304,8 +312,6 @@ def _get_regular_dataset(
     if bounds is True:
         ds = ds.cf.add_bounds(("lon", "lat"))
 
-    if dummy is not None:
-        ds = _add_dummy(ds, dummy)
     return ds
 
 
@@ -315,7 +321,6 @@ def _get_rotated_dataset(
     pollon,
     pollat,
     bounds=False,
-    dummy=None,
     mapping_name=None,
     attrs=None,
 ):
@@ -334,18 +339,16 @@ def _get_rotated_dataset(
     lon, lat = transform(ds.rlon, ds.rlat, src_crs=CRS.from_cf(mapping.attrs))
     ds = ds.assign_coords(lon=lon, lat=lat)
 
+    for key, coord in ds.coords.items():
+        coord.encoding["_FillValue"] = None
+        coord.attrs = cf.coords[key]
+
     if bounds is True:
         v = vertices(ds.rlon, ds.rlat, CRS.from_cf(mapping.attrs))
         ds = xr.merge([ds, v])
         ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
         ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
-    for key, coord in ds.coords.items():
-        coord.encoding["_FillValue"] = None
-        coord.attrs = cf.coords[key]
-
-    if dummy is not None:
-        ds = _add_dummy(ds, dummy)
     return ds
 
 

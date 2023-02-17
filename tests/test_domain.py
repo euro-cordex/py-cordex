@@ -1,34 +1,55 @@
 import numpy as np
+import pytest
+import xarray as xr
 
 import cordex as cx
 
 from . import requires_cartopy
 
 
-def test_domain_basic():
-    eur11 = cx.cordex_domain("EUR-11")
-    assert eur11.rlon.ndim == 1
-    assert eur11.rlat.ndim == 1
-    assert eur11.lon.ndim == 2
-    assert eur11.lat.ndim == 2
-    assert "lon_vertices" in cx.cordex_domain("EUR-11", add_vertices=True)
-    assert "lat_vertices" in cx.cordex_domain("EUR-11", add_vertices=True)
-    assert "rotated_pole" in cx.cordex_domain("EUR-11", mapping_name="rotated_pole")
-    assert "rotated_pole" in cx.cordex_domain("EUR-11", mapping_name="rotated_pole")
-    assert "dummy" in cx.cordex_domain("EUR-11", dummy=True)
-    assert "topo" in cx.cordex_domain("EUR-11", dummy="topo")
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
+@pytest.mark.parametrize("bounds", [False, True])
+@pytest.mark.parametrize("mapping_name", [None, "rotated_pole"])
+@pytest.mark.parametrize("dummy", [False, True, "data", "topo"])
+def test_domain_coordinates(domain_id, bounds, mapping_name, dummy):
+    ds = cx.cordex_domain(
+        domain_id, bounds=bounds, mapping_name=mapping_name, dummy=dummy
+    )
+    assert ds.cf["X"].ndim == 1
+    assert ds.cf["Y"].ndim == 1
+
+    if ds.cf.grid_mapping_names:
+        assert ds.cf["longitude"].ndim == 2
+        assert ds.cf["latitude"].ndim == 2
+        if mapping_name:
+            assert [mapping_name] in ds.cf.grid_mapping_names.values()
+        else:
+            assert ["rotated_latitude_longitude"] in ds.cf.grid_mapping_names.values()
+    else:
+        assert ds.cf["longitude"].ndim == 1
+        assert ds.cf["latitude"].ndim == 1
+        assert ds.cf.grid_mapping_names == {}
+
+    if bounds is True:
+        assert "longitude" in ds.cf.bounds
+        assert "latitude" in ds.cf.bounds
+
+    if dummy is True:
+        assert "dummy" in ds
+    if isinstance(dummy, str):
+        assert dummy in ds
+
     assert cx.cordex_domain("EUR-11").attrs["CORDEX_domain"] == "EUR-11"
     assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
-    assert "rotated_latitude_longitude" not in cx.cordex_domain("EUR-11i").data_vars
 
+
+def test_domain():
+    ds = cx.cordex_domain("EUR-11")
+    ds.attrs["CORDEX_domain"] == "EUR-11"
+    # test attributes
+    assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
     # ensure rounding errors fixed
-    assert np.float64(eur11.rlon.isel(rlon=34).data) == -24.635
-
-
-def test_cordex_regular():
-    eur11i = cx.cordex_domain("EUR-11i")
-    assert eur11i.lon.ndim == 1
-    assert eur11i.lat.ndim == 1
+    assert np.float64(ds.rlon.isel(rlon=34).data) == -24.635
 
 
 def test_constructor():
@@ -46,7 +67,9 @@ def test_constructor():
     assert eur11_user.equals(eur11)
 
 
-def test_domain_info():
+@pytest.mark.parametrize("bounds", [False, True])
+# @pytest.mark.parametrize("", [2, 3])
+def test_domain_info(bounds):
     import pandas as pd
 
     info = {
@@ -66,6 +89,10 @@ def test_domain_info():
     }
     table = pd.DataFrame(info, index=[0]).set_index("short_name")
     assert cx.domain_info("EUR-11", table) == info
+    xr.testing.assert_equal(
+        cx.create_dataset(**info, bounds=bounds),
+        cx.cordex_domain("EUR-11", bounds=bounds),
+    )
 
 
 @requires_cartopy
