@@ -247,13 +247,15 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
     lat_vertices.name = cf.LAT_BOUNDS
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
-    # bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
-    #    ds.cf["Y"].dims[0], ds.cf["X"].dims[0], cf.BOUNDS_DIM
-    # )
+    bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
+        ds.cf["Y"].dims[0], ds.cf["X"].dims[0], cf.BOUNDS_DIM
+    )
     ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
     ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
 
-    return ds.assign_coords({trg_dims[0]: lon_vertices, trg_dims[1]: lat_vertices})
+    return ds.assign_coords(
+        {trg_dims[0]: bounds.lon_vertices, trg_dims[1]: bounds.lat_vertices}
+    )
 
 
 def rotated_coord_transform(lon, lat, np_lon, np_lat, direction="rot2geo"):
