@@ -1,8 +1,7 @@
 import pkg_resources
 
 from . import regions, tables, tutorial
-
-# from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
+from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
 from .domain import cordex_domain, create_dataset, domain_info, vertices
 from .tables import domains, ecmwf
 from .transform import (

@@ -16,3 +16,15 @@ def test_guess_info(domain_id):
     assert ds.cx.domain_id == domain_id
     assert ds.cx.guess() == info
     assert ds.dummy.cx.guess() == info
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_KNMI-RACMO22E_v1_mon_197901-198012",
+        "tas_EUR-11_ECMWF-ERAINT_evaluation_r1i1p1_GERICS-REMO2015_v1_mon_197902-198012",
+    ],
+)
+def test_dataset_guess(filename):
+    ds = cx.tutorial.open_dataset(filename)
+    assert ds.cx.guess() == cx.domain_info(ds.cx.domain_id)
