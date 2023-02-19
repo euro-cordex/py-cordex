@@ -4,6 +4,8 @@ import numpy as np
 
 import cordex as cx
 
+from .config import nround
+
 
 def get_tempfile():
     """Creates a temporay filename."""
@@ -15,9 +17,9 @@ def to_center_coordinate(ds):
     return ds
 
 
-def _get_info(ds, tables=None):
+def _get_info(ds, tables=None, precision=nround):
     if tables is None:
-        tables = cx.domains.table
+        tables = cx.domains.table.replace(np.nan, None)
     try:
         x = ds.cf["X"]
         y = ds.cf["Y"]
@@ -52,15 +54,22 @@ def _get_info(ds, tables=None):
     }
     # round
     info = {
-        k: (np.round(v, 14) if isinstance(v, float) else v) for k, v in coords.items()
+        k: (np.round(v, nround) if isinstance(v, float) else v)
+        for k, v in coords.items()
     }
     return info
 
 
 def _guess_domain(ds, tables=None):
     if tables is None:
-        tables = cx.domains.table
-    info = _get_info(ds, tables)
+        tables = cx.domains.table  # .replace(np.nan, None)
+    try:
+        info = _get_info(ds, tables)
+    except Exception as e:
+        print(e)
+        raise Exception(
+            "Could not determine domain, only rotated_latitude_longitude supported."
+        )
     filt = tables
     for k, v in info.items():
         if filt.empty:
@@ -70,4 +79,4 @@ def _guess_domain(ds, tables=None):
         else:
             filt = filt[np.isnan(filt[k])]  # | filt[k] is None]
     # reset index and convert to dict
-    return filt.reset_index().iloc[0].to_dict()
+    return filt.reset_index().iloc[0].replace(np.nan, None).to_dict()

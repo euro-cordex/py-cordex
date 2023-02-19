@@ -126,9 +126,9 @@ def cordex_domain(
     if tables is None:
         tables = domains.table
     if isinstance(tables, list):
-        config = pd.concat(tables).loc[short_name]
-    else:
-        config = tables.loc[short_name]
+        tables = pd.concat(tables)
+    config = tables.replace(np.nan, None).loc[short_name]
+
     return create_dataset(
         **config,
         short_name=short_name,
@@ -287,7 +287,7 @@ def domain_info(short_name, tables=None):
     elif isinstance(tables, list):
         tables = pd.concat(tables)
 
-    config = tables.loc[short_name]
+    config = tables.replace(np.nan, None).loc[short_name]
     # return config
     return {**{"short_name": short_name}, **config.to_dict()}
 
@@ -487,3 +487,10 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
     return xr.merge([lat_vertices, lon_vertices])
+
+
+def _crop_to_domain(ds, domain_id, drop=True):
+    domain = cordex_domain(domain_id)
+    x_mask = ds.rlon.round(8).isin(domain.cf["X"])
+    y_mask = ds.rlat.round(8).isin(domain.cf["Y"])
+    return ds.where(x_mask & y_mask, drop=drop)

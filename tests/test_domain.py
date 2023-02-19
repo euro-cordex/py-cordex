@@ -6,6 +6,8 @@ import cordex as cx
 
 from . import requires_cartopy
 
+# from cordex.utils import _get_info, _guess_domain
+
 
 @pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
 @pytest.mark.parametrize("bounds", [False, True])
@@ -93,6 +95,13 @@ def test_domain_info(bounds):
         cx.create_dataset(**info, bounds=bounds),
         cx.cordex_domain("EUR-11", bounds=bounds),
     )
+
+
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-22", "EUR-44", "EUR-11i"])
+def test_domain_guess(domain_id):
+    ds = cx.cordex_domain(domain_id)
+    assert ds.cx.domain_id == domain_id
+    assert ds.cx.guess() == cx.domain_info(domain_id)
 
 
 @requires_cartopy
