@@ -14,13 +14,12 @@ class CordexAccessor:
         return self._obj.attrs["CORDEX_domain"]
 
     @property
+    def grid_mapping(self):
+        return self._obj.cf["grid_mapping"]
+
     def info(self):
         """Return domain info."""
         return _get_info(self._obj)
-
-    @property
-    def grid_mapping(self):
-        return self._obj.cf["grid_mapping"]
 
     def guess(self):
         """Guess which domain."""
