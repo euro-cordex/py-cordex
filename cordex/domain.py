@@ -284,11 +284,12 @@ def domain_info(short_name, tables=None):
     """
     if tables is None:
         tables = domains.table
-    if isinstance(tables, list):
-        config = pd.concat(tables).loc[short_name]
-    else:
-        config = tables.loc[short_name]
-    return {**{"short_name": short_name}, **dict(**config)}
+    elif isinstance(tables, list):
+        tables = pd.concat(tables)
+
+    config = tables.loc[short_name]
+    # return config
+    return {**{"short_name": short_name}, **config.to_dict()}
 
 
 def _get_regular_dataset(
