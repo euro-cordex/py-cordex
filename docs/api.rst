@@ -1,4 +1,3 @@
-.. currentmodule:: cordex
 
 #############
 API reference
@@ -6,6 +5,7 @@ API reference
 
 This page provides an auto-generated summary of the py-cordex API.
 
+.. currentmodule:: cordex
 
 Top-level functions
 ===================
@@ -20,14 +20,7 @@ Top-level functions
    transform_coords
    transform_bounds
 
-Tutorial
-========
 
-.. autosummary::
-   :toctree: generated/
-
-   tutorial.open_dataset
-   tutorial.ensemble
 
 Preprocessing
 =============
@@ -77,3 +70,42 @@ Regions within Euro-Cordex
 
    regions.germany
    regions.prudence
+
+
+Tutorial
+========
+
+.. autosummary::
+   :toctree: generated/
+
+   tutorial.open_dataset
+   tutorial.ensemble
+
+.. currentmodule:: xarray
+
+Dataset
+=======
+
+.. _dsattr:
+
+Attributes
+~~~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+   :template: autosummary/accessor_attribute.rst
+
+    Dataset.cx.domain_id
+    Dataset.cx.grid_mapping
+
+.. _dsmeth:
+
+Methods
+~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+   :template: autosummary/accessor_method.rst
+
+    Dataset.cx.info
+    Dataset.cx.guess
