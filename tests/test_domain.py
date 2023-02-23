@@ -6,6 +6,8 @@ import cordex as cx
 
 from . import requires_cartopy
 
+# from cordex.utils import _get_info, _guess_domain
+
 
 @pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
 @pytest.mark.parametrize("bounds", [False, True])

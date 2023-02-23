@@ -18,6 +18,13 @@ New Features
 
 - Added :py:meth:`transform`, :py:meth:`transform_coords` and :py:meth:`transform_bounds` in favour of deprecated :py:meth:`map_crs`, :py:meth:`rotated_coord_transform` and :py:meth:`vertices`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`, :pull:`102`).
 
+- Introduced ``cx`` Dataset and DataArray accessors (:pull:`105`).
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+``nan`` values in domain tables are replace with ``None``. That means in case you retrive domain information with :py:meth:`domain_info` for a regular grid, ``pollon`` and ``pollat`` will now be ``None`` instead of ``nan`` (:issue:`107`, :pull:`105`).
+
 Deprecations
 ~~~~~~~~~~~~
 
