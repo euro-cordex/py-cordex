@@ -371,6 +371,7 @@ def _add_time_bounds(ds, cf_freq):
         ds = _add_month_bounds(ds)
     else:
         from pyhomogenize import time_control
+
         ds = time_control(ds).add_time_bounds(frequency=cf_freq).ds
     return ds
 
