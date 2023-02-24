@@ -370,13 +370,8 @@ def _add_time_bounds(ds, cf_freq):
     if cf_freq == "mon":
         ds = _add_month_bounds(ds)
     else:
-        try:
-            ds = ds.convert_calendar(ds.time.dt.calendar).cf.add_bounds("time")
-        except Exception:
-            # wait for cftime arithemtics in xarry here:
-            warn("could not add time bounds.")
-    ds[time_bounds_name].encoding = ds.time.encoding
-    ds.time.attrs.update({"bounds": time_bounds_name})
+        from pyhomogenize import time_control
+        ds = time_control(ds).add_time_bounds(frequency=cf_freq).ds
     return ds
 
 
