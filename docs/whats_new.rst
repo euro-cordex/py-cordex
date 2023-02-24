@@ -18,7 +18,7 @@ New Features
 
 - Added :py:meth:`transform`, :py:meth:`transform_coords` and :py:meth:`transform_bounds` in favour of deprecated :py:meth:`map_crs`, :py:meth:`rotated_coord_transform` and :py:meth:`vertices`. Dropped ``cartopy`` dependency in favour of ``pyproj`` (:pull:`71`, :pull:`102`).
 
-- Introduced ``cx`` Dataset and DataArray accessors (:pull:`105`).
+- Introduced ``cx`` Dataset and DataArray accessors (:pull:`105`, :pull:`112`).
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~

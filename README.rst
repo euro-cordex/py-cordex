@@ -48,6 +48,7 @@ Check out the tutorial notebook on binder!
 .. image:: http://mybinder.org/badge_logo.svg
     :alt: py-cordex examples
     :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmaster
+
 Features
 --------
 
