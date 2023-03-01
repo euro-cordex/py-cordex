@@ -175,7 +175,7 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
     return ds.assign_coords({trg_dims[0]: xt, trg_dims[1]: yt})
 
 
-def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
+def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None):
     """Transform X and Y bounds of a Dataset.
 
     Transformation of linear X and Y coordinates
@@ -193,6 +193,10 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
     trg_crs : pyproj.CRS
         Target coordinate reference system into which bounds
         should be transformed. If not supplied, ``EPSG:4326`` is the default.
+    trg_dims: list or set
+        Names of the bounds coordinates.
+    bnds_dim: str
+        Names of the bounds dimension.
 
     Returns
     -------
@@ -216,6 +220,8 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
             ds.cf["longitude"].name + "_vertices",
             ds.cf["latitude"].name + "_vertices",
         )
+    if bnds_dim is None:
+        bnds_dim = cf.BOUNDS_DIM
     # ds = xr.merge([rlon_bounds, rlat_bounds])
     rlon_bounds = (
         ds.cf.add_bounds(ds.cf["X"].dims).cf.get_bounds("X").drop("rlon_bounds")
@@ -237,22 +243,21 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None):
     v4 = transform(
         rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
     )
-    lon_vertices = xr.concat(
-        [v1[0], v2[0], v3[0], v4[0]], dim=cf.BOUNDS_DIM
-    ).transpose()
+    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim=bnds_dim)  # .transpose()
     #    ..., "vertices"
     # )
-    lat_vertices = xr.concat(
-        [v1[1], v2[1], v3[1], v4[1]], dim=cf.BOUNDS_DIM
-    ).transpose()
+    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim=bnds_dim)  # .transpose()
 
     lon_vertices.name = cf.LON_BOUNDS
     lat_vertices.name = cf.LAT_BOUNDS
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
 
+    # bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
+    #    ..., bnds_dim
+    # )
     bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
-        ds.cf["Y"].dims[0], ds.cf["X"].dims[0], cf.BOUNDS_DIM
+        ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
     ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
