@@ -64,7 +64,9 @@ cmor_tables_inpath = str(pooch.os_cache("cmor-tables"))
 
 def fetch_cordex_cmor_table(table):
     return retrieve_cmor_table(
-        table, url="https://github.com/euro-cordex/cordex-cmor-tables/raw/main/Tables"
+        # table, url="https://github.com/euro-cordex/cordex-cmor-tables/raw/main/Tables"
+        table,
+        url="https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/raw/main/Tables",
     )
 
 
