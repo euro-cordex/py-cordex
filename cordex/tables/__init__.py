@@ -62,6 +62,7 @@ def cordex_cmor_table(table, table_dir=None):
     fetch_cordex_cmor_table("CORDEX_coordinate")
     fetch_cordex_cmor_table("CORDEX_grids")
     fetch_cordex_cmor_table("CORDEX_formula_terms")
+    fetch_cordex_cmor_table("CORDEX_CV")
 
     return fetch_cordex_cmor_table(table)
 

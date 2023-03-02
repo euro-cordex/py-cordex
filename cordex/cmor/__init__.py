@@ -1,4 +1,3 @@
-from .. import tables
 from .cmor import cmorize_variable, prepare_variable
 from .config import set_options
 from .utils import (
@@ -10,16 +9,15 @@ from .utils import (
     to_cftime,
 )
 
+# def fetch_basic_tables():
+#     """fetch basic cmor tables"""
+#     tables.cmip6_cmor_table("CORDEX_coordinate.json")
+#     tables.cmip6_cmor_table("CORDEX_grids.json")
+#     tables.cmip6_cmor_table("CORDEX_formula_terms.json")
+#     tables.cordex_cmor_table("CORDEX_CV.json")
 
-def fetch_basic_tables():
-    """fetch basic cmor tables"""
-    tables.cmip6_cmor_table("CORDEX_coordinate.json")
-    tables.cmip6_cmor_table("CORDEX_grids.json")
-    tables.cmip6_cmor_table("CORDEX_formula_terms.json")
-    tables.cordex_cmor_table("CORDEX_CV.json")
 
-
-fetch_basic_tables()
+# fetch_basic_tables()
 
 
 __all__ = [
