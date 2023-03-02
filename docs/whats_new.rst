@@ -7,9 +7,9 @@ What's New
    :suppress:
 
     import cordex
-    
+
 v0.5.1 (2 March 2023)
----------------------    
+---------------------
 
 Patch release to update pypi dependencies and fix setup meta data.
 
