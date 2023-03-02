@@ -17,6 +17,11 @@ def test_guess_info(domain_id):
     assert ds.cx.guess() == info
     assert ds.dummy.cx.guess() == info
 
+    # assert we guess unknown domains
+    ds = xr.decode_cf(cx.cordex_domain(domain_id, dummy=True), decode_coords="all")
+    del ds.attrs["CORDEX_domain"]
+    assert ds.cx.domain_id == domain_id
+
 
 @pytest.mark.parametrize(
     "filename",
