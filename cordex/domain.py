@@ -1,25 +1,6 @@
-# -*- coding: utf-8 -*-
-# flake8: noqa
-"""Domain module
-
-This module defines preconfigured CORDEX domain from csv tables. The module
-also contains some tools to create a domain dataset from a csv tables or simply
-from grid information.
-
-Example:
-
-    To get a list of available implementations, create cordex domains, write
-    them to netcdf with some dummy data, you can use ,e.g.,::
-
-        from cordex import domain as dm
-
-        eur11 = dm.cordex_domain('EUR-11')
-
-"""
-
 from warnings import warn
 
-import cf_xarray as cfxr
+import cf_xarray as cfxr  # noqa
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -28,7 +9,7 @@ from pyproj import CRS
 from . import cf
 from .config import nround
 from .tables import domains
-from .transform import grid_mapping, transform, transform_bounds, transform_coords
+from .transform import grid_mapping, transform, transform_bounds
 from .utils import get_tempfile
 
 
@@ -232,7 +213,7 @@ def create_dataset(
     try:
         if np.isnan(pollon) or np.isnan(pollat):
             rotated = False
-    except:
+    except Exception:
         pass
 
     x, y = _lin_coord(nlon, dlon, ll_lon), _lin_coord(nlat, dlat, ll_lat)

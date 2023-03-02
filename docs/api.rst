@@ -20,37 +20,6 @@ Top-level functions
    transform_coords
    transform_bounds
 
-.. currentmodule:: xarray
-
-Dataset
-=======
-
-.. _dsattr:
-
-Attributes
-~~~~~~~~~~
-
-.. autosummary::
-   :toctree: generated/
-   :template: autosummary/accessor_attribute.rst
-
-    Dataset.cx.domain_id
-    Dataset.cx.grid_mapping
-
-.. _dsmeth:
-
-Methods
-~~~~~~~
-
-.. autosummary::
-   :toctree: generated/
-   :template: autosummary/accessor_method.rst
-
-    Dataset.cx.info
-    Dataset.cx.guess
-
-.. currentmodule:: cordex
-
 Preprocessing
 =============
 
@@ -89,7 +58,6 @@ CMOR Tables
    :toctree: generated/
 
    tables.cordex_cmor_table
-   tables.cmip6_cmor_table
 
 Regions within Euro-Cordex
 ==========================
@@ -109,3 +77,32 @@ Tutorial
 
    tutorial.open_dataset
    tutorial.ensemble
+
+.. currentmodule:: xarray
+
+Dataset
+=======
+
+.. _dsattr:
+
+Attributes
+~~~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+   :template: autosummary/accessor_attribute.rst
+
+    Dataset.cx.domain_id
+    Dataset.cx.grid_mapping
+
+.. _dsmeth:
+
+Methods
+~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+   :template: autosummary/accessor_method.rst
+
+    Dataset.cx.info
+    Dataset.cx.guess

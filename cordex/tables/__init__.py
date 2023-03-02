@@ -1,3 +1,5 @@
+from warnings import warn
+
 import pandas as pd
 
 from ._resources import (
@@ -62,6 +64,7 @@ def cordex_cmor_table(table, table_dir=None):
     fetch_cordex_cmor_table("CORDEX_coordinate")
     fetch_cordex_cmor_table("CORDEX_grids")
     fetch_cordex_cmor_table("CORDEX_formula_terms")
+    fetch_cordex_cmor_table("CORDEX_CV")
 
     return fetch_cordex_cmor_table(table)
 
@@ -83,4 +86,9 @@ def cmip6_cmor_table(table):
     filename : str
         Filepath to the cmip6 cmor table.
     """
+    warn(
+        "CMIP6 cmor table fetching is deprecated and will be removed in the future. Please use cordex_cmor_table instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return fetch_cmip6_cmor_table(table)

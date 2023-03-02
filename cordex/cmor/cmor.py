@@ -13,9 +13,6 @@ try:
 except Exception:
     warn("no python cmor package available, consider installing it")
 
-# trigger download of cmor tables
-from cordex import cmor as cxcmor
-
 # import cordex as cx
 from .. import cordex_domain
 from .config import (
@@ -39,9 +36,6 @@ from .utils import (
     month_bounds,
     time_bounds_name,
 )
-
-__all__ = ["cxcmor"]
-# from dateutil import relativedelta as reld
 
 xr.set_options(keep_attrs=True)
 
