@@ -16,7 +16,7 @@ There has also been a lot of refactoring since `py-cordex` now makes extensive u
 to make cmorization as easy as possible.
 This release is used for developing and testing the new `CORDEX cmor tables <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_
 for downscaling CMIP6 global model runs. Since the new archive specifications for CORDEX are not fixed yet, the API will probably change in the future.
-For some examples of cmorization, please visit the `CORDEX cmorization examples notebook <https://wcrp-cordex.github.io/cordex-cmip6-cmor-tables/cmor-examples.html>`_ in the cmor table repository.
+For some examples of cmorization, please visit the `CORDEX cmorization examples notebook <https://wcrp-cordex.github.io/cordex-cmip6-cmor-tables/cmor-examples.html>`_ in the cmor table repository. This version also drops `python3.7 support.
 
 New Features
 ~~~~~~~~~~~~
