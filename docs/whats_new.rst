@@ -8,12 +8,12 @@ What's New
 
     import cordex
 
-v0.5.0 (23 March 2023)
-----------------------
+v0.5.0 (2 March 2023)
+---------------------
 
 This release introduces a cmorization workflow using :py:meth:`cmor.cmorize_variable` and deprecates some code depending on `cartopy`.
 There has also been a lot of refactoring since `py-cordex` now makes extensive use of `cf-xarray <https://github.com/xarray-contrib/cf-xarray>`_
-to make cmorization as easy as possible. 
+to make cmorization as easy as possible.
 This release is used for developing and testing the new `CORDEX cmor tables <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_
 for downscaling CMIP6 global model runs. Since the new archive specifications for CORDEX are not fixed yet, the API will probably change in the future.
 For some examples of cmorization, please visit the `CORDEX cmorization examples notebook <https://wcrp-cordex.github.io/cordex-cmip6-cmor-tables/cmor-examples.html>`_ in the cmor table repository.
