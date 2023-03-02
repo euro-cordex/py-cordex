@@ -23,7 +23,9 @@ New Features
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-``nan`` values in domain tables are replace with ``None``. That means in case you retrive domain information with :py:meth:`domain_info` for a regular grid, ``pollon`` and ``pollat`` will now be ``None`` instead of ``nan`` (:issue:`107`, :pull:`105`).
+* The standard cmor tables are now fetched from the development `repository <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_ (:pull:`116`).
+
+* ``nan`` values in domain tables are replace with ``None``. That means in case you retrive domain information with :py:meth:`domain_info` for a regular grid, ``pollon`` and ``pollat`` will now be ``None`` instead of ``nan`` (:issue:`107`, :pull:`105`).
 
 Deprecations
 ~~~~~~~~~~~~

@@ -57,6 +57,12 @@ def cordex_cmor_table(table, table_dir=None):
     filename : str
         Filepath to the cordex cmor table.
     """
+    # make sure these are fetched because cmor
+    # requires them silently
+    fetch_cordex_cmor_table("CORDEX_coordinate")
+    fetch_cordex_cmor_table("CORDEX_grids")
+    fetch_cordex_cmor_table("CORDEX_formula_terms")
+
     return fetch_cordex_cmor_table(table)
 
 
