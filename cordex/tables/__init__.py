@@ -1,3 +1,5 @@
+from warnings import warn
+
 import pandas as pd
 
 from ._resources import (
@@ -84,4 +86,9 @@ def cmip6_cmor_table(table):
     filename : str
         Filepath to the cmip6 cmor table.
     """
+    warn(
+        "CMIP6 cmor table fetching is deprecated and will be removed in the future. Please use cordex_cmor_table instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return fetch_cmip6_cmor_table(table)
