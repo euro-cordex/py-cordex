@@ -422,12 +422,19 @@ def prepare_variable(
     input_freq=None,
     CORDEX_domain=None,
     time_units=None,
-    time_cell_method=None,
-    cf_freq=None,
     rewrite_time_axis=False,
     squeeze=True,
 ):
     """prepares a variable for cmorization."""
+    # get meta info from cmor table
+    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
+
+    if cfvarinfo is None:
+        raise Exception("{} not found in {}".format(out_name, cmor_table))
+
+    cf_freq = cfvarinfo["frequency"]
+    time_cell_method = _strip_time_cell_method(cfvarinfo)
+
     if isinstance(ds, xr.DataArray):
         ds = ds.to_dataset()
 
@@ -573,15 +580,6 @@ def cmorize_variable(
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
-    # get meta info from cmor table
-    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
-
-    if cfvarinfo is None:
-        raise Exception("{} not found in {}".format(out_name, cmor_table))
-
-    cf_freq = cfvarinfo["frequency"]
-    time_cell_method = _strip_time_cell_method(cfvarinfo)
-
     ds_prep = prepare_variable(
         ds,
         out_name,
@@ -590,8 +588,6 @@ def cmorize_variable(
         mapping_table=mapping_table,
         replace_coords=replace_coords,
         input_freq=input_freq,
-        cf_freq=cf_freq,
-        time_cell_method=time_cell_method,
         rewrite_time_axis=rewrite_time_axis,
         time_units=time_units,
         allow_resample=allow_resample,
