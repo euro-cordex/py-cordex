@@ -8,8 +8,14 @@ What's New
 
     import cordex
 
-v0.5.0 (Unreleased)
--------------------
+v0.5.0 (23 March 2023)
+----------------------
+
+This release introduces a cmorization workflow using :py:meth:`cmor.cmorize_variable` and deprecates some code depending on `cartopy`.
+There has also been a lot of refactoring since `py-cordex` now makes extensive use of `cf-xarray <https://github.com/xarray-contrib/cf-xarray>`_
+to make cmorization as easy as possible. 
+This release is used for developing and testing the new `CORDEX cmor tables <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_
+for downscaling CMIP6 global model runs. Since the new archive specifications for CORDEX are not fixed yet, the API will probably change in the future.
 
 New Features
 ~~~~~~~~~~~~
@@ -23,7 +29,7 @@ New Features
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-* The standard cmor tables are now fetched from the development `repository <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_ (:pull:`116`).
+* The standard cmor tables are now fetched from the `development repository <https://github.com/WCRP-CORDEX/cordex-cmip6-cmor-tables/tree/main/Tables>`_ (:pull:`116`).
 
 * ``nan`` values in domain tables are replace with ``None``. That means in case you retrive domain information with :py:meth:`domain_info` for a regular grid, ``pollon`` and ``pollat`` will now be ``None`` instead of ``nan`` (:issue:`107`, :pull:`105`).
 
