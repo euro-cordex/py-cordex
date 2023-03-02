@@ -13,9 +13,9 @@ from .utils import (
 
 def fetch_basic_tables():
     """fetch basic cmor tables"""
-    tables.cmip6_cmor_table("CMIP6_coordinate.json")
-    tables.cmip6_cmor_table("CMIP6_grids.json")
-    tables.cmip6_cmor_table("CMIP6_formula_terms.json")
+    tables.cmip6_cmor_table("CORDEX_coordinate.json")
+    tables.cmip6_cmor_table("CORDEX_grids.json")
+    tables.cmip6_cmor_table("CORDEX_formula_terms.json")
     tables.cordex_cmor_table("CORDEX_CV.json")
 
 
