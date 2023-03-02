@@ -166,9 +166,9 @@ def test_cmorizer_fx():
         ds,
         "orog",
         mapping_table={"orog": {"varname": "topo"}},
-        cmor_table=cx.tables.cmip6_cmor_table("CMIP6_fx"),
+        cmor_table=cx.tables.cordex_cmor_table("CORDEX_fx"),
         dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cmip6_cmor_table("CMIP6_grids"),
+        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
@@ -185,9 +185,9 @@ def test_cmorizer_mon():
         ds,
         "tas",
         mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cmip6_cmor_table("CMIP6_Amon"),
+        cmor_table=cx.tables.cordex_cmor_table("CORDEX_mon"),
         dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cmip6_cmor_table("CMIP6_grids"),
+        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
@@ -197,7 +197,7 @@ def test_cmorizer_mon():
     assert "tas" in output
 
 
-@pytest.mark.parametrize("table, tdim", [("CMIP6_day", 3), ("CMIP6_3hr", 17)])
+@pytest.mark.parametrize("table, tdim", [("CORDEX_day", 3), ("CORDEX_1hr", 49)])
 def test_cmorizer_subdaily(table, tdim):
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_1hr")
     eur11 = cx.cordex_domain("EUR-11")
@@ -206,9 +206,9 @@ def test_cmorizer_subdaily(table, tdim):
         ds,
         "tas",
         mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cmip6_cmor_table(table),
+        cmor_table=cx.tables.cordex_cmor_table(table),
         dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cmip6_cmor_table("CMIP6_grids"),
+        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
