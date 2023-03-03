@@ -1,4 +1,3 @@
-import json
 import os
 from warnings import warn
 
@@ -31,6 +30,7 @@ from .utils import (
     _get_cfvarinfo,
     _get_cordex_pole,
     _get_pole,
+    _read_cmor_table,
     _strip_time_cell_method,
     mid_of_month,
     month_bounds,
@@ -237,15 +237,14 @@ def _units_convert(da, cf_units, format=None):
     return da
 
 
-def _cf_units_convert(da, table_file, mapping_table={}):
+def _cf_units_convert(da, table, mapping_table={}):
     """Convert units.
 
     Convert units according to the rules in units_convert_rules dict.
     Maybe metpy can do this also: https://unidata.github.io/MetPy/latest/tutorials/unit_tutorial.html
 
     """
-    with open(table_file) as f:
-        table = json.load(f)
+
     if da.name in mapping_table:
         map_units = mapping_table[da.name].get("units")
         atr_units = da.attrs.get("units")
@@ -426,11 +425,10 @@ def prepare_variable(
     squeeze=True,
 ):
     """prepares a variable for cmorization."""
-    # get meta info from cmor table
-    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
-    if cfvarinfo is None:
-        raise Exception("{} not found in {}".format(out_name, cmor_table))
+    if isinstance(cmor_table, str):
+        cmor_table = _read_cmor_table(cmor_table)
+    cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
     cf_freq = cfvarinfo["frequency"]
     time_cell_method = _strip_time_cell_method(cfvarinfo)

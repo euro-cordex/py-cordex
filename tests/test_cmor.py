@@ -9,6 +9,7 @@ import xarray as xr
 import cordex as cx
 from cordex import cmor
 from cordex.cmor import utils
+from cordex.tables import cordex_cmor_table
 
 
 def test_cfdt():
@@ -166,9 +167,9 @@ def test_cmorizer_fx():
         ds,
         "orog",
         mapping_table={"orog": {"varname": "topo"}},
-        cmor_table=cx.tables.cordex_cmor_table("CORDEX_fx"),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
+        cmor_table=cordex_cmor_table("CORDEX_fx"),
+        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
+        grids_table=cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
@@ -185,9 +186,9 @@ def test_cmorizer_mon():
         ds,
         "tas",
         mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cordex_cmor_table("CORDEX_mon"),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
+        cmor_table=cordex_cmor_table("CORDEX_mon"),
+        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
+        grids_table=cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
@@ -206,9 +207,9 @@ def test_cmorizer_subdaily(table, tdim):
         ds,
         "tas",
         mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cordex_cmor_table(table),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
+        cmor_table=cordex_cmor_table(table),
+        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
+        grids_table=cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain="EUR-11",
         time_units=None,
         allow_units_convert=True,
@@ -217,3 +218,11 @@ def test_cmorizer_subdaily(table, tdim):
     output = xr.open_dataset(filename)
     assert "tas" in output
     assert output.dims["time"] == tdim
+
+
+@pytest.mark.parametrize("table_id", ["1hr", "6hr", "day", "mon"])
+def test_table_id(table_id):
+    table = f"CORDEX_{table_id}"
+    filename = cordex_cmor_table(table)
+    tid = utils.get_table_id(utils._read_cmor_table(filename))
+    assert tid == table_id

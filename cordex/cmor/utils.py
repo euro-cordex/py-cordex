@@ -300,9 +300,22 @@ def _read_json_file(filename):
     return data
 
 
-def _get_cfvarinfo(cf_varname, table):
-    data = _read_cmor_table(table)
-    return data["variable_entry"].get(cf_varname, None)
+def _get_cfvarinfo(out_name, table):
+    info = table["variable_entry"].get(out_name, None)
+    if info is None:
+        raise Exception("{} not found in table".format(out_name))
+    return info
+
+
+def get_table_id(table):
+    """parse the table_id from a cmor table header"""
+    separator = " "
+    table_id = table["Header"].get("table_id", None)
+    if table_id is None:
+        raise Exception("no table_id in Header")
+    if separator in table_id:
+        return table_id.split(separator)[1]
+    return table_id
 
 
 def _get_time_cell_method(cf_varname, table):
