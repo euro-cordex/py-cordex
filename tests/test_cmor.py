@@ -226,7 +226,7 @@ def test_units_convert():
 def test_table_id(table_id):
     table = f"CORDEX_{table_id}"
     filename = cordex_cmor_table(table)
-    tid = utils.get_table_id(utils._read_cmor_table(filename))
+    tid = utils.get_table_id(utils._read_table(filename))
     assert tid == table_id
 
 

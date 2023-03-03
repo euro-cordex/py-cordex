@@ -396,8 +396,13 @@ def cmorize_cmor(
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
+    dataset_table_json = dataset_table
+    cmor_table_json = cmor_table
+
     if isinstance(dataset_table, dict):
-        dataset_table = _tmp_table(dataset_table)
+        dataset_table_json = _tmp_table(dataset_table)
+    if isinstance(cmor_table, dict):
+        cmor_table_json = _tmp_table(cmor_table)
 
     cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
@@ -407,7 +412,7 @@ def cmorize_cmor(
     time_cell_method = _strip_time_cell_method(cfvarinfo)
 
     table_ids = _setup(
-        dataset_table, cmor_table, grids_table=grids_table, inpath=inpath
+        dataset_table_json, cmor_table_json, grids_table=grids_table, inpath=inpath
     )
 
     cmorTime, cmorGrid = _define_grid(ds, table_ids, time_cell_method=time_cell_method)
@@ -519,10 +524,10 @@ def cmorize_variable(
     out_name: str
         CF out_name of the variable that should be cmorized. The corresponding variable name
         in the dataset is looked up from the mapping_table if provided.
-    cmor_table : str
-        Filepath to cmor table.
+    cmor_table : str or dict
+        Cmor table dict of filepath to cmor table (json).
     dataset_table: str
-        Filepath to dataset cmor table.
+        Dataset table dict of filepath to dataset cmor table (json).
     mapping_table: dict
         Mapping of input variable names and meta data to CF out_name. Required if
         the variable name in the input dataset is not equal to out_name.
