@@ -526,7 +526,7 @@ def cmorize_variable(
         in the dataset is looked up from the mapping_table if provided.
     cmor_table : str or dict
         Cmor table dict of filepath to cmor table (json).
-    dataset_table: str
+    dataset_table: str or dict
         Dataset table dict of filepath to dataset cmor table (json).
     mapping_table: dict
         Mapping of input variable names and meta data to CF out_name. Required if
@@ -563,7 +563,7 @@ def cmorize_variable(
         Rewrite the time axis to CF compliant timestamps.
     outpath: str
         Root directory for output (can be either a relative or full path). This will override
-        the outpath defined in the dataset cmor input table.
+        the outpath defined in the dataset cmor input table (``dataset_table``).
     **kwargs:
         Argumets passed to prepare_variable.
 
