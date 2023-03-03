@@ -11,6 +11,8 @@ from cordex import cmor
 from cordex.cmor import utils
 from cordex.tables import cordex_cmor_table
 
+from . import requires_pint_xarray
+
 mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
 
 
@@ -204,8 +206,16 @@ def test_cmorizer_subdaily(table_id, tdim):
     assert output.dims["time"] == tdim
 
 
+@requires_pint_xarray
 def test_units_convert():
-    pass
+    import pint_xarray  # noqa
+    from cf_xarray.units import units  # noqa
+
+    ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_mon")
+    ds["TEMP2"] = ds.TEMP2.pint.quantify().pint.to("degC").pint.dequantify(format="cf")
+    filename = run_cmorizer(ds, "tas", "EUR-11", "mon")
+    output = xr.open_dataset(filename)
+    assert output.tas.units == "K"
 
 
 @pytest.mark.parametrize("table_id", ["1hr", "6hr", "day", "mon"])
