@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 
 import cftime
 import cftime as cfdt
@@ -165,18 +166,21 @@ def test_month_bounds():
     assert np.array_equal(mid, expect)
 
 
-def run_cmorizer(ds, out_name, domain_id, table_id):
+def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs):
+    if dataset_table is None:
+        dataset_table = cordex_cmor_table("CORDEX_remo_example")
     return cmor.cmorize_variable(
         ds,
         out_name,
         mapping_table=mapping_table,
         cmor_table=cordex_cmor_table(f"CORDEX_{table_id}"),
-        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
+        dataset_table=dataset_table,
         grids_table=cordex_cmor_table("CORDEX_grids"),
         CORDEX_domain=domain_id,
         replace_coords=True,
         allow_units_convert=True,
         allow_resample=True,
+        **kwargs,
     )
 
 
@@ -224,3 +228,12 @@ def test_table_id(table_id):
     filename = cordex_cmor_table(table)
     tid = utils.get_table_id(utils._read_cmor_table(filename))
     assert tid == table_id
+
+
+def test_table_manipulation():
+    home = os.environ["HOME"]
+    print(f"writing to {home}")
+    ds = cx.cordex_domain("EUR-11", dummy="topo")
+    filename = run_cmorizer(ds, "orog", "EUR-11", "fx", outpath=home)
+    print(filename)
+    assert home in filename

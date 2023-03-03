@@ -2,6 +2,7 @@
 """
 import datetime as dt
 import json
+import tempfile
 from warnings import warn
 
 import cftime as cfdt
@@ -290,7 +291,7 @@ def _encode_time(time):
     return xr.conventions.encode_cf_variable(time)
 
 
-def _read_cmor_table(table):
+def _read_table(table):
     return _read_json_file(table)
 
 
@@ -300,10 +301,16 @@ def _read_json_file(filename):
     return data
 
 
+def _write_json_file(filename, data):
+    with open(filename, "w") as fp:
+        json.dump(data, fp, indent=4)
+    return filename
+
+
 def _get_cfvarinfo(out_name, table):
     """Returns variable entry from cmor table"""
     if isinstance(table, str):
-        table = _read_cmor_table(table)
+        table = _read_table(table)
     info = table["variable_entry"].get(out_name, None)
     if info is None:
         raise Exception(
@@ -321,6 +328,14 @@ def get_table_id(table):
     if separator in table_id:
         return table_id.split(separator)[1]
     return table_id
+
+
+def _tmp_table(table, format="json"):
+    """creates a temporay table json file"""
+    _, filename = tempfile.mkstemp()
+    warn(f"writing temporary table to {filename}")
+    if format == "json":
+        return _write_json_file(filename, table)
 
 
 def _get_time_cell_method(cf_varname, table):

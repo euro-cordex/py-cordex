@@ -1,4 +1,5 @@
 import os
+from os import path as op
 from warnings import warn
 
 import cf_xarray as cfxr
@@ -30,8 +31,9 @@ from .utils import (
     _get_cfvarinfo,
     _get_cordex_pole,
     _get_pole,
-    _read_cmor_table,
+    _read_table,
     _strip_time_cell_method,
+    _tmp_table,
     mid_of_month,
     month_bounds,
     time_bounds_name,
@@ -394,6 +396,9 @@ def cmorize_cmor(
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
+    if isinstance(dataset_table, dict):
+        dataset_table = _tmp_table(dataset_table)
+
     cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
     if cfvarinfo is None:
@@ -427,7 +432,7 @@ def prepare_variable(
     """prepares a variable for cmorization."""
 
     if isinstance(cmor_table, str):
-        cmor_table = _read_cmor_table(cmor_table)
+        cmor_table = _read_table(cmor_table)
     cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
     cf_freq = cfvarinfo["frequency"]
@@ -577,6 +582,12 @@ def cmorize_variable(
 
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
+
+    if op.isfile(dataset_table):
+        dataset_table = _read_table(dataset_table)
+
+    if outpath:
+        dataset_table["outpath"] = outpath
 
     ds_prep = prepare_variable(
         ds,
