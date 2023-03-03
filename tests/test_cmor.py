@@ -11,6 +11,8 @@ from cordex import cmor
 from cordex.cmor import utils
 from cordex.tables import cordex_cmor_table
 
+mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
+
 
 def test_cfdt():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
@@ -161,63 +163,49 @@ def test_month_bounds():
     assert np.array_equal(mid, expect)
 
 
-def test_cmorizer_fx():
-    ds = cx.cordex_domain("EUR-11", dummy="topo")
-    filename = cmor.cmorize_variable(
+def run_cmorizer(ds, out_name, domain_id, table_id):
+    return cmor.cmorize_variable(
         ds,
-        "orog",
-        mapping_table={"orog": {"varname": "topo"}},
-        cmor_table=cordex_cmor_table("CORDEX_fx"),
+        out_name,
+        mapping_table=mapping_table,
+        cmor_table=cordex_cmor_table(f"CORDEX_{table_id}"),
         dataset_table=cordex_cmor_table("CORDEX_remo_example"),
         grids_table=cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
+        CORDEX_domain=domain_id,
+        replace_coords=True,
         allow_units_convert=True,
+        allow_resample=True,
     )
+
+
+def test_cmorizer_fx():
+    ds = cx.cordex_domain("EUR-11", dummy="topo")
+    filename = run_cmorizer(ds, "orog", "EUR-11", "fx")
     output = xr.open_dataset(filename)
     assert "orog" in output
 
 
 def test_cmorizer_mon():
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_mon")
-    eur11 = cx.cordex_domain("EUR-11")
-    ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-    filename = cmor.cmorize_variable(
-        ds,
-        "tas",
-        mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cordex_cmor_table("CORDEX_mon"),
-        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
-        allow_units_convert=True,
-    )
+    filename = run_cmorizer(ds, "tas", "EUR-11", "mon")
     output = xr.open_dataset(filename)
     assert output.dims["time"] == 12
     assert "tas" in output
 
 
-@pytest.mark.parametrize("table, tdim", [("CORDEX_day", 3), ("CORDEX_1hr", 49)])
-def test_cmorizer_subdaily(table, tdim):
+@pytest.mark.parametrize("table_id, tdim", [("day", 3), ("1hr", 49)])
+def test_cmorizer_subdaily(table_id, tdim):
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_1hr")
     eur11 = cx.cordex_domain("EUR-11")
     ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-    filename = cmor.cmorize_variable(
-        ds,
-        "tas",
-        mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cordex_cmor_table(table),
-        dataset_table=cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
-        allow_units_convert=True,
-        allow_resample=True,
-    )
+    filename = run_cmorizer(ds, "tas", "EUR-11", table_id)
     output = xr.open_dataset(filename)
     assert "tas" in output
     assert output.dims["time"] == tdim
+
+
+def test_units_convert():
+    pass
 
 
 @pytest.mark.parametrize("table_id", ["1hr", "6hr", "day", "mon"])

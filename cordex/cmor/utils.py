@@ -301,9 +301,14 @@ def _read_json_file(filename):
 
 
 def _get_cfvarinfo(out_name, table):
+    """Returns variable entry from cmor table"""
+    if isinstance(table, str):
+        table = _read_cmor_table(table)
     info = table["variable_entry"].get(out_name, None)
     if info is None:
-        raise Exception("{} not found in table".format(out_name))
+        raise Exception(
+            "{} not found in table {}".format(out_name, get_table_id(table))
+        )
     return info
 
 
