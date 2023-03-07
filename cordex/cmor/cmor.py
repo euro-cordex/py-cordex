@@ -224,7 +224,7 @@ def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
     else:
         coords = [cmorTime, cmorGrid]
     cmor_var = cmor.variable(da.name, da.units, coords)
-    cmor.write(cmor_var, da.values)
+    cmor.write(cmor_var, da.to_numpy(), ntimes_passed=da.time.size)
     return cmor.close(cmor_var, file_name=file_name)
 
 
