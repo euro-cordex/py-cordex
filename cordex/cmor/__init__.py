@@ -1,5 +1,5 @@
 from .cmor import cmorize_variable, prepare_variable
-from .config import set_options
+from .config import options, set_options
 from .utils import (
     mid_of_month,
     mid_of_season,
@@ -30,4 +30,5 @@ __all__ = [
     "season_bounds",
     "to_cftime",
     "set_options",
+    "options",
 ]

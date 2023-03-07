@@ -2,7 +2,11 @@ import datetime as dt
 
 import numpy as np
 
-options = {"table_prefix": "CORDEX-CMIP6", "exit_control": "CMOR_NORMAL"}
+options = {
+    "table_prefix": "CORDEX-CMIP6",
+    "exit_control": "CMOR_NORMAL",
+    "resample_kwargs": {"closed": "right"},
+}
 
 
 # time offsets relative to left labeling for resampling.

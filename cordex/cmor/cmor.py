@@ -69,7 +69,6 @@ def _resample(
     ds, time, time_cell_method="point", label="left", time_offset=True, **kwargs
 ):
     """Resample a variable."""
-    # freq = "{}H".format(hfreq)
     if time_cell_method == "point":
         return ds.resample(
             time=time, label=label, **kwargs
@@ -388,7 +387,9 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     pd_freq = freq_map[cf_freq]
     if pd_freq != input_freq:
         warn("resampling input data from {} to {}".format(input_freq, pd_freq))
-        resample = _resample(ds, pd_freq, time_cell_method=time_cell_method)
+        resample = _resample(
+            ds, pd_freq, time_cell_method=time_cell_method, **options["resample_kwargs"]
+        )
         return resample
     return ds
 
