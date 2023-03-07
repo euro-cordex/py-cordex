@@ -452,7 +452,7 @@ def prepare_variable(
         ds = ds.to_dataset()
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
-    if mapping_table is None:
+    if out_name not in mapping_table:
         try:
             var_ds = ds[[out_name]]
         except Exception:
