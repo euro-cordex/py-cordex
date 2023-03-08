@@ -135,7 +135,7 @@ def _get_time_axis_name(time_cell_method):
 
 def _define_axes(ds, table_id):
     if "CORDEX_domain" in ds.attrs:
-        grid = cordex_domain(ds.attrs["CORDEX_domain"], add_vertices=True)
+        grid = cordex_domain(ds.attrs["CORDEX_domain"], bounds=True)
         lon_vertices = grid.lon_vertices.to_numpy()
         lat_vertices = grid.lat_vertices.to_numpy()
     else:
@@ -481,11 +481,15 @@ def prepare_variable(
     if squeeze is True:
         var_ds = var_ds.squeeze(drop=True)
     if CORDEX_domain is not None:
+        var_ds.attrs["CORDEX_domain"] = CORDEX_domain
         var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
     if replace_coords is True:
-        grid = cordex_domain(CORDEX_domain)
+        grid = cordex_domain(CORDEX_domain, bounds=True)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
+        var_ds = var_ds.assign_coords(
+            lon_vertices=grid.lon_vertices, lat_vertices=grid.lat_vertices
+        )
 
     if "time" in var_ds:
         # ensure cftime
