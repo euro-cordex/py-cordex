@@ -1,4 +1,4 @@
-from .cmor import cmorize_variable, prepare_variable
+from .cmor import Cmorizer, cmorize_variable, prepare_variable
 from .config import options, set_options
 from .utils import (
     mid_of_month,
@@ -31,4 +31,5 @@ __all__ = [
     "to_cftime",
     "set_options",
     "options",
+    "Cmorizer",
 ]

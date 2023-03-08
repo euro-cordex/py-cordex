@@ -639,3 +639,164 @@ def cmorize_variable(
     return cmorize_cmor(
         ds_prep, out_name, cmor_table, dataset_table, grids_table, inpath
     )
+
+
+class CmorizerBase:
+    def __init__(self):
+        pass
+
+
+class Cmorizer(CmorizerBase):
+    def __init__(
+        self,
+        dataset_table=None,
+        mapping_table=None,
+        grids_table=None,
+        inpath=None,
+        replace_coords=False,
+        allow_units_convert=False,
+        allow_resample=False,
+        input_freq=None,
+        CORDEX_domain=None,
+        time_units=None,
+        rewrite_time_axis=False,
+        outpath=None,
+    ):
+        """Cmorizes a variable.
+
+        Parameters
+        ----------
+        dataset_table: str or dict
+            Dataset table dict of filepath to dataset cmor table (json).
+        mapping_table: dict
+            Mapping of input variable names and meta data to CF out_name. Required if
+            the variable name in the input dataset is not equal to out_name.
+        inpath: str
+            Path to cmor tables, if ``inpath == None``, inpath is the path
+            to ``cmor_table``. This is required to find additional cmor tables,
+            like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
+        grids_table: str
+            Filepath to cmor grids table.
+        replace_coords: bool
+            Replace coordinates from input file and create them from archive
+            specifications.
+        allow_units_convert: bool
+            Allow units to be converted if they do not agree with the
+            units in the cmor table. Defaults to ``False`` to make the user aware of having
+            correct ``units`` attributes set.
+        allow_resample: bool
+            Allow to resample temporal data to the frequency required from the cmor table.
+            Handles both downsampling and upsampling. Defaults to ``False`` to make users aware
+            of the correct frequency input.
+        input_freq: str
+            The frequency of the input dataset in pandas notation. It ``None`` and the dataset
+            contains a time axis, the frequency will be determined automatically using
+            ``pandas.infer_freq`` if possible.
+        CORDEX_domain: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+            global attribute if available.
+        time_units: str
+            Time units of the cmorized dataset (``ISO 8601``).
+            If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
+            If ``time_units='input'``, the original time units of the input dataset are used.
+        rewrite_time_axis: bool
+            Rewrite the time axis to CF compliant timestamps.
+        outpath: str
+            Root directory for output (can be either a relative or full path). This will override
+            the outpath defined in the dataset cmor input table (``dataset_table``).
+
+        """
+        super().__init__()
+        self.dataset_table = dataset_table
+        self.mapping_table = (mapping_table,)
+        self.grids_table = (grids_table,)
+        self.inpath = (inpath,)
+        self.replace_coords = (replace_coords,)
+        self.allow_units_convert = (allow_units_convert,)
+        self.allow_resample = (allow_resample,)
+        self.CORDEX_domain = (CORDEX_domain,)
+        self.time_units = (time_units,)
+        self.rewrite_time_axis = (rewrite_time_axis,)
+        self.outpath = outpath
+
+    def get_dataset(
+        ds,
+        out_name,
+        cmor_table,
+        mapping_table=None,
+        replace_coords=False,
+        allow_units_convert=False,
+        allow_resample=False,
+        input_freq=None,
+        CORDEX_domain=None,
+        time_units=None,
+        rewrite_time_axis=False,
+        use_cftime=False,
+        squeeze=True,
+    ):
+        """prepares a variable for cmorization."""
+        pass
+
+    def write(self):
+        pass
+
+    def cmorize(self):
+        """Cmorizes a variable.
+
+        Parameters
+        ----------
+        ds : xr.Dataset
+            Dataset containing at least the variable that should be cmorized.
+        out_name: str
+            CF out_name of the variable that should be cmorized. The corresponding variable name
+            in the dataset is looked up from the mapping_table if provided.
+        cmor_table : str or dict
+            Cmor table dict of filepath to cmor table (json).
+        dataset_table: str or dict
+            Dataset table dict of filepath to dataset cmor table (json).
+        mapping_table: dict
+            Mapping of input variable names and meta data to CF out_name. Required if
+            the variable name in the input dataset is not equal to out_name.
+        grids_table: str
+            Filepath to cmor grids table.
+        inpath: str
+            Path to cmor tables, if ``inpath == None``, inpath is the path
+            to ``cmor_table``. This is required to find additional cmor tables,
+            like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
+        replace_coords: bool
+            Replace coordinates from input file and create them from archive
+            specifications.
+        allow_units_convert: bool
+            Allow units to be converted if they do not agree with the
+            units in the cmor table. Defaults to ``False`` to make the user aware of having
+            correct ``units`` attributes set.
+        allow_resample: bool
+            Allow to resample temporal data to the frequency required from the cmor table.
+            Handles both downsampling and upsampling. Defaults to ``False`` to make users aware
+            of the correct frequency input.
+        input_freq: str
+            The frequency of the input dataset in pandas notation. It ``None`` and the dataset
+            contains a time axis, the frequency will be determined automatically using
+            ``pandas.infer_freq`` if possible.
+        CORDEX_domain: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+            global attribute if available.
+        time_units: str
+            Time units of the cmorized dataset (``ISO 8601``).
+            If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
+            If ``time_units='input'``, the original time units of the input dataset are used.
+        rewrite_time_axis: bool
+            Rewrite the time axis to CF compliant timestamps.
+        outpath: str
+            Root directory for output (can be either a relative or full path). This will override
+            the outpath defined in the dataset cmor input table (``dataset_table``).
+        **kwargs:
+            Argumets passed to prepare_variable.
+
+        Returns
+        -------
+        filename
+            Filepath to cmorized file.
+
+        """
+        pass
