@@ -41,6 +41,8 @@ from .utils import (
 
 xr.set_options(keep_attrs=True)
 
+flox_method = "blockwise"
+
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
     rolling = getattr(ds.rolling(time=hfreq + 1, center=True), op)()
@@ -70,15 +72,17 @@ def _resample(
 ):
     """Resample a variable."""
     if time_cell_method == "point":
-        return ds.resample(
-            time=time, label=label, **kwargs
-        ).nearest()  # .interpolate("nearest") # use as_freq?
+        return ds.resample(time=time, label=label, **kwargs).nearest(
+            method=flox_method
+        )  # .interpolate("nearest") # use as_freq?
     elif time_cell_method == "mean":
         if time_offset is True:
             loffset = _get_loffset(time)
         else:
             loffset = None
-        return ds.resample(time=time, label=label, loffset=loffset, **kwargs).mean()
+        return ds.resample(time=time, label=label, loffset=loffset, **kwargs).mean(
+            method=flox_method
+        )
     else:
         raise Exception("unknown time_cell_method: {}".format(time_cell_method))
 
@@ -369,10 +373,13 @@ def _add_time_bounds(ds, cf_freq):
         ds = _add_month_bounds(ds)
     else:
         try:
-            ds = ds.convert_calendar(ds.time.dt.calendar).cf.add_bounds("time")
+            ds = ds.convert_calendar(
+                ds.time.dt.calendar, use_cftime=False
+            ).cf.add_bounds("time")
         except Exception:
             # wait for cftime arithemtics in xarry here:
             warn("could not add time bounds.")
+
     ds[time_bounds_name].encoding = ds.time.encoding
     ds.time.attrs.update({"bounds": time_bounds_name})
     return ds
@@ -437,9 +444,12 @@ def prepare_variable(
     CORDEX_domain=None,
     time_units=None,
     rewrite_time_axis=False,
+    use_cftime=False,
     squeeze=True,
 ):
     """prepares a variable for cmorization."""
+
+    ds = ds.copy(deep=False)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)
@@ -450,6 +460,9 @@ def prepare_variable(
 
     if isinstance(ds, xr.DataArray):
         ds = ds.to_dataset()
+
+    # ensure that we propagate everything
+    # ds = xr.decode_cf(ds, decode_coords="all")
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
     if out_name not in mapping_table:
@@ -484,6 +497,8 @@ def prepare_variable(
         if "time" not in ds.cf.bounds and time_cell_method == "mean":
             warn("adding time bounds")
             var_ds = _add_time_bounds(var_ds, cf_freq)
+        if use_cftime is False:
+            var_ds = var_ds.convert_calendar(ds.time.dt.calendar, use_cftime=False)
         var_ds = _set_time_encoding(var_ds, time_units, ds)
 
     if allow_units_convert is True:
@@ -497,7 +512,10 @@ def prepare_variable(
         warn("adding pole from archive specs: {}".format(CORDEX_domain))
         mapping = _get_cordex_pole(CORDEX_domain)
 
-    var_ds = xr.merge([var_ds, mapping])
+    if "time" in mapping.coords:
+        raise Exception("grid_mapping variable should have no time coordinate!")
+
+    var_ds[mapping.name] = mapping
 
     return var_ds
 

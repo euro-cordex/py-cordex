@@ -5,7 +5,7 @@ import numpy as np
 options = {
     "table_prefix": "CORDEX-CMIP6",
     "exit_control": "CMOR_NORMAL",
-    "resample_kwargs": {"closed": "right"},
+    "resample_kwargs": {"closed": "left"},
 }
 
 
