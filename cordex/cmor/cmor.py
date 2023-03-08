@@ -719,6 +719,12 @@ class Cmorizer(CmorizerBase):
         self.rewrite_time_axis = rewrite_time_axis
         self.outpath = outpath
 
+        if op.isfile(self.dataset_table):
+            self.dataset_table = _read_table(self.dataset_table)
+
+        if outpath:
+            self.dataset_table["outpath"] = outpath
+
     def preprocess(
         self,
         ds,
@@ -817,3 +823,8 @@ class Cmorizer(CmorizerBase):
         """
         ds_prep = self.preprocess(ds, out_name, cmor_table)
         return self._write_with_cmor(ds_prep, out_name, cmor_table)
+
+    def cfinfo(self, out_name, cmor_table):
+        if isinstance(cmor_table, str):
+            cmor_table = _read_table(cmor_table)
+        return _get_cfvarinfo(out_name, cmor_table)
