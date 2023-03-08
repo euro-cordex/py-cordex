@@ -7,7 +7,7 @@ What's New
    :suppress:
 
     import cordex
-    
+
 v0.6.0 (Unreleased)
 -------------------
 
