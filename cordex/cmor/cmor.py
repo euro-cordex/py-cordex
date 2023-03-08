@@ -708,22 +708,22 @@ class Cmorizer(CmorizerBase):
         """
         super().__init__()
         self.dataset_table = dataset_table
-        self.mapping_table = (mapping_table,)
-        self.grids_table = (grids_table,)
-        self.inpath = (inpath,)
-        self.replace_coords = (replace_coords,)
-        self.allow_units_convert = (allow_units_convert,)
-        self.allow_resample = (allow_resample,)
-        self.CORDEX_domain = (CORDEX_domain,)
-        self.time_units = (time_units,)
-        self.rewrite_time_axis = (rewrite_time_axis,)
+        self.mapping_table = mapping_table
+        self.grids_table = grids_table
+        self.inpath = inpath
+        self.replace_coords = replace_coords
+        self.allow_units_convert = allow_units_convert
+        self.allow_resample = allow_resample
+        self.CORDEX_domain = CORDEX_domain
+        self.time_units = time_units
+        self.rewrite_time_axis = rewrite_time_axis
         self.outpath = outpath
 
-    def get_dataset(
+    def preprocess(
+        self,
         ds,
         out_name,
         cmor_table,
-        mapping_table=None,
         replace_coords=False,
         allow_units_convert=False,
         allow_resample=False,
@@ -735,7 +735,21 @@ class Cmorizer(CmorizerBase):
         squeeze=True,
     ):
         """prepares a variable for cmorization."""
-        pass
+        return prepare_variable(
+            ds,
+            out_name,
+            cmor_table,
+            mapping_table=self.mapping_table,
+            replace_coords=replace_coords or self.replace_coords,
+            allow_units_convert=allow_units_convert or self.allow_units_convert,
+            allow_resample=allow_resample or self.allow_resample,
+            input_freq=input_freq,
+            CORDEX_domain=CORDEX_domain or self.CORDEX_domain,
+            time_units=time_units or self.time_units,
+            rewrite_time_axis=rewrite_time_axis or self.rewrite_time_axis,
+            use_cftime=use_cftime,
+            squeeze=squeeze,
+        )
 
     def write(self):
         pass
