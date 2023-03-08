@@ -8,6 +8,15 @@ What's New
 
     import cordex
 
+v0.6.0 (Unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- CMOR updates, including fixing of time step warnings and resampling options, includes options for using `flox <https://flox.readthedocs.io>`_ in resampling operations (:pull:`116`).
+
+
 v0.5.1 (2 March 2023)
 ---------------------
 

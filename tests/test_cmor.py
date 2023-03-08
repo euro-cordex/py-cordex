@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 
 import cftime
 import cftime as cfdt
@@ -9,6 +10,11 @@ import xarray as xr
 import cordex as cx
 from cordex import cmor
 from cordex.cmor import utils
+from cordex.tables import cordex_cmor_table
+
+from . import requires_pint_xarray
+
+mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
 
 
 def test_cfdt():
@@ -160,60 +166,74 @@ def test_month_bounds():
     assert np.array_equal(mid, expect)
 
 
+def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs):
+    if dataset_table is None:
+        dataset_table = cordex_cmor_table("CORDEX_remo_example")
+    return cmor.cmorize_variable(
+        ds,
+        out_name,
+        mapping_table=mapping_table,
+        cmor_table=cordex_cmor_table(f"CORDEX_{table_id}"),
+        dataset_table=dataset_table,
+        grids_table=cordex_cmor_table("CORDEX_grids"),
+        CORDEX_domain=domain_id,
+        replace_coords=True,
+        allow_units_convert=True,
+        allow_resample=True,
+        **kwargs,
+    )
+
+
 def test_cmorizer_fx():
     ds = cx.cordex_domain("EUR-11", dummy="topo")
-    filename = cmor.cmorize_variable(
-        ds,
-        "orog",
-        mapping_table={"orog": {"varname": "topo"}},
-        cmor_table=cx.tables.cordex_cmor_table("CORDEX_fx"),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
-        allow_units_convert=True,
-    )
+    filename = run_cmorizer(ds, "orog", "EUR-11", "fx")
     output = xr.open_dataset(filename)
     assert "orog" in output
 
 
 def test_cmorizer_mon():
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_mon")
-    eur11 = cx.cordex_domain("EUR-11")
-    ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-    filename = cmor.cmorize_variable(
-        ds,
-        "tas",
-        mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cordex_cmor_table("CORDEX_mon"),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
-        allow_units_convert=True,
-    )
+    filename = run_cmorizer(ds, "tas", "EUR-11", "mon")
     output = xr.open_dataset(filename)
     assert output.dims["time"] == 12
     assert "tas" in output
 
 
-@pytest.mark.parametrize("table, tdim", [("CORDEX_day", 3), ("CORDEX_1hr", 49)])
-def test_cmorizer_subdaily(table, tdim):
+@pytest.mark.parametrize("table_id, tdim", [("day", 3), ("1hr", 49)])
+def test_cmorizer_subdaily(table_id, tdim):
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_1hr")
     eur11 = cx.cordex_domain("EUR-11")
     ds = ds.assign_coords({"lon": eur11.lon, "lat": eur11.lat})
-    filename = cmor.cmorize_variable(
-        ds,
-        "tas",
-        mapping_table={"tas": {"varname": "TEMP2"}},
-        cmor_table=cx.tables.cordex_cmor_table(table),
-        dataset_table=cx.tables.cordex_cmor_table("CORDEX_remo_example"),
-        grids_table=cx.tables.cordex_cmor_table("CORDEX_grids"),
-        CORDEX_domain="EUR-11",
-        time_units=None,
-        allow_units_convert=True,
-        allow_resample=True,
-    )
+    filename = run_cmorizer(ds, "tas", "EUR-11", table_id)
     output = xr.open_dataset(filename)
     assert "tas" in output
     assert output.dims["time"] == tdim
+
+
+@requires_pint_xarray
+def test_units_convert():
+    import pint_xarray  # noqa
+    from cf_xarray.units import units  # noqa
+
+    ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_mon")
+    ds["TEMP2"] = ds.TEMP2.pint.quantify().pint.to("degC").pint.dequantify(format="cf")
+    filename = run_cmorizer(ds, "tas", "EUR-11", "mon")
+    output = xr.open_dataset(filename)
+    assert output.tas.units == "K"
+
+
+@pytest.mark.parametrize("table_id", ["1hr", "6hr", "day", "mon"])
+def test_table_id(table_id):
+    table = f"CORDEX_{table_id}"
+    filename = cordex_cmor_table(table)
+    tid = utils.get_table_id(utils._read_table(filename))
+    assert tid == table_id
+
+
+def test_table_manipulation():
+    home = os.environ["HOME"]
+    print(f"writing to {home}")
+    ds = cx.cordex_domain("EUR-11", dummy="topo")
+    filename = run_cmorizer(ds, "orog", "EUR-11", "fx", outpath=home)
+    print(filename)
+    assert home in filename
