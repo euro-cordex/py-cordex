@@ -751,10 +751,12 @@ class Cmorizer(CmorizerBase):
             squeeze=squeeze,
         )
 
-    def write(self):
-        pass
+    def _write_with_cmor(self, ds, out_name, cmor_table):
+        return cmorize_cmor(
+            ds, out_name, cmor_table, self.dataset_table, self.grids_table, self.inpath
+        )
 
-    def cmorize(self):
+    def cmorize(self, ds, out_name, cmor_table):
         """Cmorizes a variable.
 
         Parameters
@@ -813,4 +815,5 @@ class Cmorizer(CmorizerBase):
             Filepath to cmorized file.
 
         """
-        pass
+        ds_prep = self.preprocess(ds, out_name, cmor_table)
+        return self._write_with_cmor(ds_prep, out_name, cmor_table)
