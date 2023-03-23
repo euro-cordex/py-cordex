@@ -5,61 +5,18 @@ py-cordex: create cordex grids and meta data
 +----------------------------+-----------------------------------------------------+
 | Versions                   | |pypi| |conda|                                      |
 +----------------------------+-----------------------------------------------------+
-| Documentation and Support  | |docs| |versions|                                   |
+| Documentation and Support  | |docs| |versions| |binder|                          |
 +----------------------------+-----------------------------------------------------+
 | Open Source                | |license| |fair| |fossa| |zenodo|                   |
 +----------------------------+-----------------------------------------------------+
-| Coding Standards           | |black| |pre-commit| |security|                     |
+| Coding Standards           | |black| |pre-commit|                                |
 +----------------------------+-----------------------------------------------------+
-| Development Status         | |ci| |covecodv|                                     |
+| Development Status         | |ci| |codecov|                                      |
 +----------------------------+-----------------------------------------------------+
-
-.. image:: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml/badge.svg
-    :target: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml
-
-.. image:: https://codecov.io/gh/euro-cordex/py-cordex/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/euro-cordex/py-cordex
-
-.. image:: https://img.shields.io/pypi/v/py-cordex.svg
-    :target: https://pypi.python.org/pypi/py-cordex
-
-.. image:: https://anaconda.org/conda-forge/py-cordex/badges/version.svg
-    :target: https://anaconda.org/conda-forge/py-cordex
-
-.. image:: https://readthedocs.org/projects/py-cordex/badge/?version=latest
-    :target: https://py-cordex.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/euro-cordex/py-cordex/shield.svg
-    :target: https://pyup.io/repos/github/euro-cordex/py-cordex/
-    :alt: Updates
-
-.. image:: https://results.pre-commit.ci/badge/github/euro-cordex/py-cordex/master.svg
-   :target: https://results.pre-commit.ci/latest/github/euro-cordex/py-cordex/master
-   :alt: pre-commit.ci status
-
-.. image:: https://zenodo.org/badge/304687410.svg
-   :target: https://zenodo.org/badge/latestdoi/304687410
-
-.. image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
-   :target: https://fair-software.eu
-
-.. image:: https://img.shields.io/badge/Powered%20by-ExaESM-blue.svg
-   :target: https://www.exaesm.de/
-
-.. image:: https://app.fossa.com/api/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex.svg?type=shield
-   :target: https://app.fossa.com/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex?ref=badge_shield
-
 
 This package offers python tools for the `CORDEX <https://cordex.org/>`_ community and should make your work with CORDEX grids and meta data easy.
 Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the
 form of an ``xarray.Dataset`` directly from the official `CORDEX archive specifications <https://cordex.org/experiment-guidelines/experiment-protocol-rcms/>`_.
-
-Check out the tutorial notebook on binder!
-
-.. image:: http://mybinder.org/badge_logo.svg
-    :alt: py-cordex examples
-    :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmaster
 
 Features
 --------
@@ -125,6 +82,10 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |docs| image:: https://readthedocs.org/projects/py-cordex/badge
         :target: https://py-cordex.readthedocs.io/en/latest
         :alt: Documentation Status
+        
+.. |binder| image:: http://mybinder.org/badge_logo.svg
+        :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmaster
+        :alt: py-cordex examples
 
 .. |zenodo| image:: https://zenodo.org/badge/304687410.svg
         :target: https://zenodo.org/badge/latestdoi/304687410
@@ -152,4 +113,8 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 
 .. |versions| image:: https://img.shields.io/pypi/pyversions/py-cordex.svg
         :target: https://pypi.python.org/pypi/py-cordex
-        :alt: Supported Python Versions
+        :alt: Supported Python Versions   
+
+.. |funding| image:: https://img.shields.io/badge/Powered%20by-ExaESM-blue.svg
+        :target: https://www.exaesm.de/
+        :alt: Funding
