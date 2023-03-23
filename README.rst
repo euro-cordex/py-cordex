@@ -125,7 +125,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |docs| image:: https://readthedocs.org/projects/py-cordex/badge
         :target: https://py-cordex.readthedocs.io/en/latest
         :alt: Documentation Status
-        
+
 .. |zenodo| image:: https://zenodo.org/badge/304687410.svg
         :target: https://zenodo.org/badge/latestdoi/304687410
         :alt: DOI
@@ -133,7 +133,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |license| image:: https://img.shields.io/github/license/euro-cordex/py-cordex.svg
         :target: https://github.com/euro-cordex/py-cordex/blob/master/LICENSE
         :alt: License
-        
+
 .. |fair| image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
         :target: https://fair-software.eu
         :alt: FAIR Software Compliance
@@ -141,7 +141,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |fossa| image:: https://app.fossa.com/api/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex.svg?type=shield
         :target: https://app.fossa.com/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex?ref=badge_shield
         :alt: FOSSA
-            
+
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
         :target: https://github.com/psf/black
         :alt: Python Black
@@ -149,9 +149,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |pre-commit| image:: https://results.pre-commit.ci/badge/github/euro-cordex/py-cordex/master.svg
         :target: https://results.pre-commit.ci/latest/github/euro-cordex/py-cordex/master
         :alt: pre-commit.ci status
-        
+
 .. |versions| image:: https://img.shields.io/pypi/pyversions/py-cordex.svg
         :target: https://pypi.python.org/pypi/py-cordex
         :alt: Supported Python Versions
-
-
