@@ -2,6 +2,18 @@
 py-cordex: create cordex grids and meta data
 ============================================
 
++----------------------------+-----------------------------------------------------+
+| Versions                   | |pypi| |conda|                                      |
++----------------------------+-----------------------------------------------------+
+| Documentation and Support  | |docs| |versions|                                   |
++----------------------------+-----------------------------------------------------+
+| Open Source                | |license| |fair| |fossa| |zenodo|                   |
++----------------------------+-----------------------------------------------------+
+| Coding Standards           | |black| |pre-commit| |security|                     |
++----------------------------+-----------------------------------------------------+
+| Development Status         | |ci| |covecodv|                                     |
++----------------------------+-----------------------------------------------------+
+
 .. image:: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml/badge.svg
     :target: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml
 
@@ -92,3 +104,54 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
 Parts of this package have been developed within the project Pilot Lab Exascale Earth System Modelling (`PL-ExaESM <https://www.fz-juelich.de/SharedDocs/Meldungen/IAS/JSC/EN/2019/2019-09-pl-exaesm.html>`_).
+
+
+.. |pypi| image:: https://img.shields.io/pypi/v/py-cordex.svg
+        :target: https://pypi.python.org/pypi/py-cordex
+        :alt: Python Package Index Build
+
+.. |conda| image:: https://img.shields.io/conda/vn/conda-forge/py-cordex.svg
+        :target: https://anaconda.org/conda-forge/py-cordex
+        :alt: Conda-forge Build Version
+
+.. |ci| image:: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml/badge.svg
+        :target: https://github.com/euro-cordex/py-cordex/actions/workflows/ci.yaml
+        :alt: Build Status
+
+.. |codecov| image:: https://codecov.io/gh/euro-cordex/py-cordex/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/euro-cordex/py-cordex
+        :alt: Covecov
+
+.. |docs| image:: https://readthedocs.org/projects/py-cordex/badge
+        :target: https://py-cordex.readthedocs.io/en/latest
+        :alt: Documentation Status
+        
+.. |zenodo| image:: https://zenodo.org/badge/304687410.svg
+        :target: https://zenodo.org/badge/latestdoi/304687410
+        :alt: DOI
+
+.. |license| image:: https://img.shields.io/github/license/euro-cordex/py-cordex.svg
+        :target: https://github.com/euro-cordex/py-cordex/blob/master/LICENSE
+        :alt: License
+        
+.. |fair| image:: https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow
+        :target: https://fair-software.eu
+        :alt: FAIR Software Compliance
+
+.. |fossa| image:: https://app.fossa.com/api/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex.svg?type=shield
+        :target: https://app.fossa.com/projects/git%2Bgithub.com%2Feuro-cordex%2Fpy-cordex?ref=badge_shield
+        :alt: FOSSA
+            
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+        :target: https://github.com/psf/black
+        :alt: Python Black
+
+.. |pre-commit| image:: https://results.pre-commit.ci/badge/github/euro-cordex/py-cordex/master.svg
+        :target: https://results.pre-commit.ci/latest/github/euro-cordex/py-cordex/master
+        :alt: pre-commit.ci status
+        
+.. |versions| image:: https://img.shields.io/pypi/pyversions/py-cordex.svg
+        :target: https://pypi.python.org/pypi/py-cordex
+        :alt: Supported Python Versions
+
+
