@@ -82,7 +82,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 .. |docs| image:: https://readthedocs.org/projects/py-cordex/badge
         :target: https://py-cordex.readthedocs.io/en/latest
         :alt: Documentation Status
-        
+
 .. |binder| image:: http://mybinder.org/badge_logo.svg
         :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmaster
         :alt: py-cordex examples
@@ -113,7 +113,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
 
 .. |versions| image:: https://img.shields.io/pypi/pyversions/py-cordex.svg
         :target: https://pypi.python.org/pypi/py-cordex
-        :alt: Supported Python Versions   
+        :alt: Supported Python Versions
 
 .. |funding| image:: https://img.shields.io/badge/Powered%20by-ExaESM-blue.svg
         :target: https://www.exaesm.de/
