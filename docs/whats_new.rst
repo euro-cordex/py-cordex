@@ -11,6 +11,8 @@ What's New
 v0.5.2 (Unreleased)
 -------------------
 
+This is a patch release to make cmorization run with the latest xarray version. Also some warnings and performance issues with cmorization are fixed.
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
