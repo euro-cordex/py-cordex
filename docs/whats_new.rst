@@ -8,13 +8,18 @@ What's New
 
     import cordex
 
-v0.6.0 (Unreleased)
+v0.5.2 (Unreleased)
 -------------------
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- CMOR updates, including fixing of time step warnings and resampling options, includes options for using `flox <https://flox.readthedocs.io>`_ in resampling operations (:pull:`119`).
+- Fixes in the cmor module, including fixing of time step warnings and resampling options, includes options for using `flox <https://flox.readthedocs.io>`_ in resampling operations (:pull:`119`).
+
+Bugfixes
+~~~~~~~~
+
+- Fix call to ``encode_cf_variable`` for time during cmorization, see also `#7645 <https://github.com/pydata/xarray/issues/7645>`_ (:pull:`126`).
 
 
 v0.5.1 (2 March 2023)
