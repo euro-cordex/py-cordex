@@ -8,8 +8,8 @@ What's New
 
     import cordex
 
-v0.5.2 (Unreleased)
--------------------
+v0.5.2 (5 April 2023)
+---------------------
 
 This is a patch release to make cmorization run with the latest xarray version. Also some warnings and performance issues with cmorization are fixed.
 
