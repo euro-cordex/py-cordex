@@ -288,7 +288,7 @@ def _encode_time(time):
     see https://github.com/pydata/xarray/issues/4412
 
     """
-    return xr.conventions.encode_cf_variable(time)
+    return xr.conventions.encode_cf_variable(time.variable)
 
 
 def _read_table(table):
