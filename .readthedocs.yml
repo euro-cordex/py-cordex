@@ -15,6 +15,6 @@ sphinx:
   fail_on_warning: false
 conda:
   environment: ci/requirements/docs.yml
-formats:
-  - epub
-  - pdf
+#formats:
+#  - epub
+#  - pdf
