@@ -20,8 +20,8 @@ dependencies:
   - pooch
   - pyproj
   - sphinx
-  - pydata-sphinx-theme==0.8.1 # https://github.com/pydata/pydata-sphinx-theme/issues/1098
-  - sphinx-book-theme==0.3.3
+  - pydata-sphinx-theme #==0.8.1 # https://github.com/pydata/pydata-sphinx-theme/issues/1098
+  - sphinx-book-theme>=0.3.3
   - sphinx-autosummary-accessors
   - pip:
     - sphinxcontrib-mockautodoc
