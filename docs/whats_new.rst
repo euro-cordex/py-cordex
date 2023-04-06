@@ -7,6 +7,14 @@ What's New
    :suppress:
 
     import cordex
+    
+v0.6.0 (Unreleased)
+-------------------
+
+Documentation
+~~~~~~~~~~~~~
+
+- Unpinned sphinx-book-theme (:pull:`127`).
 
 v0.5.2 (5 April 2023)
 ---------------------
