@@ -161,5 +161,56 @@ vocabulary = {
             "realization": 0,
             "cmor_version": "",
         },
-    )
+    ),
+    "CMIP6": dict(
+        domain_id="domain_id",
+        dims={
+            "LAT": "lat",
+            "LON": "lon",
+            "Y": "rlat",
+            "X": "rlon",
+            "LON_BOUNDS": "lon_vertices",
+            "LAT_BOUNDS": "lat_vertices",
+            "BOUNDS_DIM": "vertices",
+        },
+        coords={
+            "rlon": {
+                "axis": "X",
+                "standard_name": "grid_longitude",
+                "long_name": "longitude in rotated pole grid",
+                "units": "degrees",
+            },
+            "rlat": {
+                "axis": "Y",
+                "standard_name": "grid_latitude",
+                "long_name": "latitude in rotated pole grid",
+                "units": "degrees",
+            },
+            "lon": {
+                "standard_name": "longitude",
+                "long_name": "longitude",
+                "units": "degrees_east",
+            },
+            "lat": {
+                "standard_name": "latitude",
+                "long_name": "latitude",
+                "units": "degrees_north",
+            },
+            "lon_vertices": {
+                "units": "degrees_east",
+            },
+            "lat_vertices": {
+                "units": "degrees_north",
+            },
+        },
+        default_mapping_ncvar="rotated_latitude_longitude",
+        default_global_attrs={
+            "institution": "",
+            "institution_id": "",
+            "experiment_id": "",
+            "source_id": "",
+            "contact": "",
+            "comment": "",
+        },
+    ),
 }
