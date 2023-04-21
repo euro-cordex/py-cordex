@@ -248,8 +248,8 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
     # )
     lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim=bnds_dim)  # .transpose()
 
-    lon_vertices.name = cf.LON_BOUNDS
-    lat_vertices.name = cf.LAT_BOUNDS
+    lon_vertices.name = "lon_vertices"  # cf.LON_BOUNDS
+    lat_vertices.name = "lat_vertices"  # cf.LAT_BOUNDS
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
 

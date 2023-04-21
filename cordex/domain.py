@@ -306,7 +306,7 @@ def _get_regular_dataset(
 
     for key, coord in ds.coords.items():
         coord.encoding["_FillValue"] = None
-        coord.attrs = cf.coords[key]
+        coord.attrs = cv["coords"][key]
 
     ds[xdim].attrs["axis"] = "X"
     ds[ydim].attrs["axis"] = "Y"
@@ -351,7 +351,7 @@ def _get_rotated_dataset(
 
     for key, coord in ds.coords.items():
         coord.encoding["_FillValue"] = None
-        coord.attrs = cf.coords[key]
+        coord.attrs = cv["coords"][key]
 
     if bounds is True:
         ds = transform_bounds(ds)
