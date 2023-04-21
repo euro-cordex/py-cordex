@@ -41,12 +41,13 @@ def cordex_domain(
     attrs=None,
     mapping_name=None,
     bounds=False,
+    mip_era="CMIP5",
 ):
     """Creates an xarray dataset containg the domain grid definitions.
 
     Parameters
     ----------
-    short_name:
+    short_name : str
         Domain identifier.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
@@ -60,20 +61,23 @@ def cordex_domain(
             of the ``bounds`` parameter, and will be removed in a future
             version.
 
-    tables: dataframe or list of dataframes, default: cordex_tables
+    tables : dataframe or list of dataframes, default: cordex_tables
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
         provided, all standard tables will be searched.
-    attrs: str or dict
+    attrs : str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
-    mapping_name: str
+    mapping_name : str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
-    bounds: bool
+    bounds : bool
         Add spatial bounds to longitude and latitude coordinates.
 
         .. versionadded:: v0.5.0
+    mip_era : str
+        The mip_era keyword determines the vocabulary for dimensions, coordinates and
+        attributes.
 
     Returns
     -------
@@ -117,7 +121,8 @@ def cordex_domain(
         add_vertices=False,
         attrs=attrs,
         mapping_name=mapping_name,
-        bounds=bounds
+        bounds=bounds,
+        mip_era=mip_era,
     )
 
 
@@ -137,7 +142,8 @@ def create_dataset(
     attrs=None,
     mapping_name=None,
     bounds=False,
-    **kwargs
+    mip_era="CMIP5",
+    **kwargs,
 ):
     """Create domain dataset from grid information.
 
@@ -173,16 +179,19 @@ def create_dataset(
             of the ``bounds`` parameter, and will be removed in a future
             version.
 
-    attrs: str or dict
+    attrs : str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
-    mapping_name: str
+    mapping_name : str
         Variable name of the grid mapping, if mapping_name is `None`, the CF standard
         variable name is used.
-    bounds: bool
+    bounds : bool
         Add spatial bounds to longitude and latitude coordinates.
 
         .. versionadded:: v0.5.0
+    mip_era : str
+        The mip_era keyword determines the vocabulary for dimensions, coordinates and
+        attributes.
 
     Returns
     -------
@@ -198,16 +207,18 @@ def create_dataset(
         )
         bounds = True
 
+    cv = cf.vocabulary[mip_era]
+
     rotated = True
     if attrs == "CORDEX":
-        attrs = cf.DEFAULT_CORDEX_ATTRS
+        attrs = cv["default_global_attrs"]
     elif attrs is None:
         attrs = {}
     if name:
-        attrs["CORDEX_domain"] = name
+        attrs[cv["domain_id"]] = name
     # remove inconsistencies in keyword names
     if short_name:
-        attrs["CORDEX_domain"] = short_name
+        attrs[cv["domain_id"]] = short_name
     if pollon is None or pollat is None:
         rotated = False
     try:
@@ -229,6 +240,7 @@ def create_dataset(
             bounds=bounds,
             mapping_name=mapping_name,
             attrs=attrs,
+            cv=cv,
         )
     else:
         ds = _get_regular_dataset(
@@ -236,6 +248,7 @@ def create_dataset(
             y,
             bounds=bounds,
             attrs=attrs,
+            cv=cv,
         )
 
     if dummy:
@@ -274,17 +287,20 @@ def domain_info(short_name, tables=None):
 
 
 def _get_regular_dataset(
-    lon,
-    lat,
+    x,
+    y,
     bounds=False,
     attrs=None,
+    cv=None,
 ):
+    xdim = cv["dims"]["LON"]
+    ydim = cv["dims"]["LAT"]
     ds = xr.Dataset(
         data_vars=None,
-        coords=dict(
-            lon=(cf.LON_NAME, lon),
-            lat=(cf.LAT_NAME, lat),
-        ),
+        coords={
+            xdim: (xdim, x),
+            ydim: (ydim, y),
+        },
         attrs=attrs,
     )
 
@@ -292,38 +308,46 @@ def _get_regular_dataset(
         coord.encoding["_FillValue"] = None
         coord.attrs = cf.coords[key]
 
-    ds.lon.attrs["axis"] = "X"
-    ds.lat.attrs["axis"] = "Y"
+    ds[xdim].attrs["axis"] = "X"
+    ds[ydim].attrs["axis"] = "Y"
 
     if bounds is True:
-        ds = ds.cf.add_bounds(("lon", "lat"))
+        ds = ds.cf.add_bounds((xdim, ydim))
 
     return ds
 
 
 def _get_rotated_dataset(
-    rlon,
-    rlat,
+    x,
+    y,
     pollon,
     pollat,
     bounds=False,
     mapping_name=None,
     attrs=None,
+    cv=None,
 ):
+    xdim = cv["dims"]["X"]
+    ydim = cv["dims"]["Y"]
+    lon_dim = cv["dims"]["LON"]
+    lat_dim = cv["dims"]["LAT"]
+    lon_bounds = cv["dims"]["LON_BOUNDS"]
+    lat_bounds = cv["dims"]["LON_BOUNDS"]
+
     mapping = grid_mapping(pollon, pollat, mapping_name)
     # lon, lat = transform(x, y, src_crs=CRS.from_cf(mapping.attrs))
 
     ds = xr.Dataset(
         data_vars={mapping.name: mapping},
-        coords=dict(
-            rlon=(cf.RLON_NAME, rlon),
-            rlat=([cf.RLAT_NAME], rlat),
-        ),
+        coords={
+            xdim: (xdim, x),
+            ydim: (ydim, y),
+        },
         attrs=attrs,
     )
 
-    lon, lat = transform(ds.rlon, ds.rlat, src_crs=CRS.from_cf(mapping.attrs))
-    ds = ds.assign_coords(lon=lon, lat=lat)
+    lon, lat = transform(ds[xdim], ds[ydim], src_crs=CRS.from_cf(mapping.attrs))
+    ds = ds.assign_coords({lon_dim: lon, lat_dim: lat})
 
     for key, coord in ds.coords.items():
         coord.encoding["_FillValue"] = None
@@ -332,8 +356,8 @@ def _get_rotated_dataset(
     if bounds is True:
         ds = transform_bounds(ds)
         # ds = xr.merge([ds, v])
-        ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
-        ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+        ds[lon_dim].attrs["bounds"] = lon_bounds
+        ds[lat_dim].attrs["bounds"] = lat_bounds
 
     return ds
 
@@ -472,6 +496,6 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
 
 def _crop_to_domain(ds, domain_id, drop=True):
     domain = cordex_domain(domain_id)
-    x_mask = ds.rlon.round(8).isin(domain.cf["X"])
-    y_mask = ds.rlat.round(8).isin(domain.cf["Y"])
+    x_mask = ds.cf["X"].round(8).isin(domain.cf["X"])
+    y_mask = ds.cf["Y"].round(8).isin(domain.cf["Y"])
     return ds.where(x_mask & y_mask, drop=drop)
