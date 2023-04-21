@@ -332,7 +332,7 @@ def _get_rotated_dataset(
     lon_dim = cv["dims"]["LON"]
     lat_dim = cv["dims"]["LAT"]
     lon_bounds = cv["dims"]["LON_BOUNDS"]
-    lat_bounds = cv["dims"]["LON_BOUNDS"]
+    lat_bounds = cv["dims"]["LAT_BOUNDS"]
 
     mapping = grid_mapping(pollon, pollat, mapping_name)
     # lon, lat = transform(x, y, src_crs=CRS.from_cf(mapping.attrs))
