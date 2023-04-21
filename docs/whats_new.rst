@@ -11,6 +11,11 @@ What's New
 v0.6.0 (Unreleased)
 -------------------
 
+New Features
+~~~~~~~~~~~~
+
+- Support CORDEX-CMIP6 vocabulary (:pull:`129`). 
+
 Documentation
 ~~~~~~~~~~~~~
 
