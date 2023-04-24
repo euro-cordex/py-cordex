@@ -1,5 +1,5 @@
 numpy
-xarray
+xarray==2023.4.2
 pyproj
 netCDF4
 python-cdo
