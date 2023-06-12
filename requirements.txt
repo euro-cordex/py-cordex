@@ -1,5 +1,5 @@
 numpy
 xarray==2023.5.0
-pyproj
+pyproj==3.6.0
 netCDF4==1.6.4
 python-cdo
