@@ -34,7 +34,7 @@ def domain_names(table_name=None):
 
 
 def cordex_domain(
-    short_name,
+    domain_id,
     dummy=False,
     add_vertices=False,
     tables=None,
@@ -47,7 +47,7 @@ def cordex_domain(
 
     Parameters
     ----------
-    short_name : str
+    domain_id : str
         Domain identifier.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
@@ -112,11 +112,11 @@ def cordex_domain(
         tables = domains.table
     if isinstance(tables, list):
         tables = pd.concat(tables)
-    config = tables.replace(np.nan, None).loc[short_name]
+    config = tables.replace(np.nan, None).loc[domain_id]
 
     return create_dataset(
         **config,
-        short_name=short_name,
+        domain_id=domain_id,
         dummy=dummy,
         add_vertices=False,
         attrs=attrs,
@@ -136,7 +136,7 @@ def create_dataset(
     pollon=None,
     pollat=None,
     name=None,
-    short_name=None,
+    domain_id=None,
     dummy=False,
     add_vertices=False,
     attrs=None,
@@ -165,8 +165,8 @@ def create_dataset(
         pol longitude (degrees)
     pollat : float
         pol latitude (degrees)
-    short_name : str
-        CORDEX domain identifier, goes into the ``CORDEX_domain`` global attribute.
+    domain_id : str
+        Domain identifier, goes into the ``CORDEX_domain`` or ``domain_id`` global attribute.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
@@ -217,8 +217,8 @@ def create_dataset(
     if name:
         attrs[cv["domain_id"]] = name
     # remove inconsistencies in keyword names
-    if short_name:
-        attrs[cv["domain_id"]] = short_name
+    if domain_id:
+        attrs[cv["domain_id"]] = domain_id
     if pollon is None or pollat is None:
         rotated = False
     try:
@@ -257,7 +257,7 @@ def create_dataset(
     return ds
 
 
-def domain_info(short_name, tables=None):
+def domain_info(domain_id, tables=None):
     """Returns a dictionary containg the domain grid definitions.
 
     Returns a dictionary with grid information according to the
@@ -267,8 +267,8 @@ def domain_info(short_name, tables=None):
 
     Parameters
     ----------
-    short_name:
-        Name of the Cordex Domain.
+    domain_id:
+        Cordex domain identifier.
 
     Returns
     -------
@@ -281,9 +281,9 @@ def domain_info(short_name, tables=None):
     elif isinstance(tables, list):
         tables = pd.concat(tables)
 
-    config = tables.replace(np.nan, None).loc[short_name]
+    config = tables.replace(np.nan, None).loc[domain_id]
     # return config
-    return {**{"short_name": short_name}, **config.to_dict()}
+    return {**{"domain_id": domain_id}, **config.to_dict()}
 
 
 def _get_regular_dataset(
