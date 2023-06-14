@@ -283,7 +283,7 @@ def domain_info(domain_id, tables=None):
 
     config = tables.replace(np.nan, None).loc[domain_id]
     # return config
-    return {**{"domain_id": domain_id}, **config.to_dict()}
+    return {**{"short_name": domain_id}, **config.to_dict()}
 
 
 def _get_regular_dataset(
