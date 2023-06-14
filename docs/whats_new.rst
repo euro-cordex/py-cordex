@@ -11,6 +11,19 @@ What's New
 v0.6.0 (Unreleased)
 -------------------
 
+New Features
+~~~~~~~~~~~~
+
+- Support for upcoming CORDEX-CMIP6 vocabulary. This includes the new keyword `mip_era` in :py:meth:`cmor.cordex_domain` and
+:py:meth:`cmor.create_dataset` (:pull:`129`).
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- The keyword name for the CORDEX domain identifier has changed from ``short_name`` to ``domain_id``, e.g., in :py:meth:`cmor.cordex_domain` or
+:py:meth:`cmor.domain_info`. If you have explicitly set this keyword, e.g., ``short_name="EUR-11"``, please change this to ``domain_id="EUR-11"``.
+This will be more consistent with the attribues in the updated domain tables.
+
 Documentation
 ~~~~~~~~~~~~~
 
