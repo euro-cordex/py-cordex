@@ -165,8 +165,8 @@ vocabulary = {
     "CMIP6": dict(
         domain_id="domain_id",
         dims={
-            "LAT": "lat",
-            "LON": "lon",
+            "LAT": "latitude",
+            "LON": "longitude",
             "Y": "rlat",
             "X": "rlon",
             "LON_BOUNDS": "lon_vertices",
@@ -186,12 +186,12 @@ vocabulary = {
                 "long_name": "latitude in rotated pole grid",
                 "units": "degrees",
             },
-            "lon": {
+            "longitude": {
                 "standard_name": "longitude",
                 "long_name": "longitude",
                 "units": "degrees_east",
             },
-            "lat": {
+            "latitude": {
                 "standard_name": "latitude",
                 "long_name": "latitude",
                 "units": "degrees_north",
@@ -203,7 +203,7 @@ vocabulary = {
                 "units": "degrees_north",
             },
         },
-        default_mapping_ncvar="rotated_latitude_longitude",
+        default_mapping_ncvar="crs",
         default_global_attrs={
             "institution": "",
             "institution_id": "",

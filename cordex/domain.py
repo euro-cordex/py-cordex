@@ -333,6 +333,7 @@ def _get_rotated_dataset(
     lat_dim = cv["dims"]["LAT"]
     lon_bounds = cv["dims"]["LON_BOUNDS"]
     lat_bounds = cv["dims"]["LAT_BOUNDS"]
+    mapping_name = mapping_name or cv["default_mapping_ncvar"]
 
     mapping = grid_mapping(pollon, pollat, mapping_name)
     # lon, lat = transform(x, y, src_crs=CRS.from_cf(mapping.attrs))
@@ -354,7 +355,7 @@ def _get_rotated_dataset(
         coord.attrs = cv["coords"][key]
 
     if bounds is True:
-        ds = transform_bounds(ds)
+        ds = transform_bounds(ds, trg_dims=(lon_bounds, lat_bounds))
         # ds = xr.merge([ds, v])
         ds[lon_dim].attrs["bounds"] = lon_bounds
         ds[lat_dim].attrs["bounds"] = lat_bounds

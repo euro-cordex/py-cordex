@@ -260,8 +260,10 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
-    ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
-    ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+    # ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
+    # ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
+    ds.cf["longitude"].attrs["bounds"] = cf.LON_BOUNDS
+    ds.cf["latitude"].attrs["bounds"] = cf.LAT_BOUNDS
 
     return ds.assign_coords(
         {
