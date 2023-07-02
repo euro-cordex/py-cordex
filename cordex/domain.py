@@ -13,6 +13,19 @@ from .transform import grid_mapping, transform, transform_bounds
 from .utils import get_tempfile
 
 
+def _locate_domain_id(domain_id, tables):
+    """Locate domain_id in domain table trying different indexes."""
+    indexes = ["short_name", "domain_id", "CORDEX_domain"]
+
+    for i in indexes:
+        if domain_id in tables.reset_index()[i].values:
+            return (
+                tables.reset_index().replace(np.nan, None).set_index(i).loc[domain_id]
+            )
+
+    return tables.replace(np.nan, None).loc[domain_id]
+
+
 def domain_names(table_name=None):
     """Returns a list of short names of all availabe Cordex domains
 
@@ -112,11 +125,12 @@ def cordex_domain(
         tables = domains.table
     if isinstance(tables, list):
         tables = pd.concat(tables)
-    config = tables.replace(np.nan, None).loc[domain_id]
+
+    config = _locate_domain_id(domain_id, tables)
 
     return create_dataset(
         **config,
-        domain_id=domain_id,
+        # domain_id=domain_id,
         dummy=dummy,
         add_vertices=False,
         attrs=attrs,
@@ -214,11 +228,15 @@ def create_dataset(
         attrs = cv["default_global_attrs"]
     elif attrs is None:
         attrs = {}
+
     if name:
         attrs[cv["domain_id"]] = name
     # remove inconsistencies in keyword names
     if domain_id:
         attrs[cv["domain_id"]] = domain_id
+    if cv["domain_id"] in kwargs:
+        attrs[cv["domain_id"]] = kwargs[cv["domain_id"]]
+
     if pollon is None or pollat is None:
         rotated = False
     try:
@@ -422,20 +440,6 @@ def _bounds(coord, include="left"):
     left.name = "left"
     right.name = "right"
     return xr.merge([left, right])
-
-
-def bounds_coordinates(ds, coords):
-    """Adds coordinate bounds as coordinates to the dataset."""
-    if isinstance(coords, str):
-        coords = (coords,)
-    bounds = []
-    for coord in coords:
-        lr = _bounds(ds.coords[coord])
-        name = ds.coords[coord].name + "_b"
-        bounds.append(
-            xr.DataArray(np.append(lr.left, lr.right[-1]), dims=name, name=name)
-        )
-    return ds.assign_coords({b.name: b for b in bounds})
 
 
 def bounds(coords):
