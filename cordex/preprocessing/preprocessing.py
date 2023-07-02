@@ -5,6 +5,8 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 """
 
 
+from warnings import warn
+
 import numpy as np
 import xarray as xr
 
@@ -447,6 +449,12 @@ def get_grid_mapping(ds):
         Dataarray containing the grid mapping meta data.
 
     """
+    message = (
+        "get_grid_mapping is deprecated, please use cf_xarray "
+        'accessor ds.cf["grid_mapping"] instead.'
+    )
+    warn(message, DeprecationWarning, stacklevel=2)
+
     return ds[get_grid_mapping_varname(ds)]
 
 
@@ -551,35 +559,6 @@ def member_id_to_dset_id(ds_dict):
     for ds in ds_dict.values():
         ds_split.update(flatten_coordinate_to_dset_id(ds, "member"))
     return ds_split
-
-
-# def dset_ids_to_coord(ds_dict):
-#     """Creates a DataArray from dataset ids"""
-#     dset_ids = list(ds_dict.keys())
-#     dim = xr.DataArray(
-#         dset_ids, dims="dset_id", name="dset_id", coords={"dset_id": dset_ids}
-#     )
-#     return dim
-
-
-# def align_time_axis(ds_dict):
-#     from datetime import datetime as dt
-
-#     for ds in ds_dict.values():
-#         # ds = ds.copy()
-#         ds.coords["time"] = [dt(date.year, date.month, 15) for date in ds.time.values]
-#     return ds_dict
-
-
-# def concat_along_dset_id(ds_dict, coords="minimal", compat="override", **kwargs):
-#     dset_coord = dset_ids_to_coord(ds_dict)
-#     ds_dict = align_time_axis(ds_dict)
-#     ds_list = []
-#     for ds in ds_dict.values():
-#         ds = replace_rlon_rlat(ds)
-#         ds = replace_lon_lat(ds)
-#         ds_list.append(ds)
-#     return xr.concat(ds_list, dim=dset_coord, coords=coords, compat=compat, **kwargs)
 
 
 def sort_ds_dict_by_attr(ds_dict, attr):

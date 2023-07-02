@@ -26,13 +26,9 @@ DOMAIN_RESOURCE = pooch.create(
     # Use the default cache folder for the OS
     path=cache_url,  # pooch.os_cache("cordex"),
     # The remote data is on Github
-    base_url=base_url + "domains/",
+    base_url="https://raw.githubusercontent.com/WCRP-CORDEX/domain-tables/main/",
     registry={
-        "cordex.csv": None,
-        "cordex-high-res.csv": None,
-        "cordex-fps.csv": None,
-        "cordex-core.csv": None,
-        "cordex-regular.csv": None,
+        "rotated-latitude-longitude.csv": None,
     },
 )
 
@@ -70,10 +66,10 @@ def fetch_cordex_cmor_table(table):
     )
 
 
-def fetch_cmip6_cmor_table(table):
-    return retrieve_cmor_table(
-        table, url="https://github.com/PCMDI/cmip6-cmor-tables/raw/master/Tables"
-    )
+# def fetch_cmip6_cmor_table(table):
+#    return retrieve_cmor_table(
+#        table, url="https://github.com/PCMDI/cmip6-cmor-tables/raw/master/Tables"
+#    )
 
 
 def retrieve_cmor_table(table, url):
@@ -106,12 +102,11 @@ def read_region_table(name):
     return read_remote_table(name, resource=REGION_RESOURCE, index_col="area")
 
 
-def read_cordex_domain_tables():
+def read_domain_table():
     resource = DOMAIN_RESOURCE
-    return {
-        table.split(".")[0]: read_remote_table(table, resource, index_col="short_name")
-        for table in resource.registry.keys()
-    }
+    return read_remote_table(
+        "rotated-latitude-longitude.csv", resource, index_col="short_name"
+    )
 
 
 def region_tables():

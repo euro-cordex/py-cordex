@@ -1,22 +1,19 @@
-from warnings import warn
-
 import pandas as pd
 
-from ._resources import (
+from ._resources import (  # fetch_cmip6_cmor_table,
     cmor_tables_inpath,
     ecmwf_tables,
-    fetch_cmip6_cmor_table,
     fetch_cordex_cmor_table,
-    read_cordex_domain_tables,
+    read_domain_table,
 )
 
 # __cmor_table_version__ = cmor_table_version
 __all__ = [
     "cmor_tables_inpath",
     "ecmwf_tables",
-    "fetch_cmpi6_cmor_table",
+    # "fetch_cmpi6_cmor_table",
     "fetch_cordex_cmor_table",
-    "read_cordex_domain_tables",
+    "read_cordex_domain_table",
     "cmor_tables_inpath",
 ]
 
@@ -31,13 +28,15 @@ class read_cls:
 
     @property
     def table(self):
-        return pd.concat(self.tables.values())
+        if isinstance(self.tables, dict):
+            return pd.concat(self.tables.values())
+        return self.tables
 
     # def __getattr__(self, table):
     #    return self.tables[table]
 
 
-domains = read_cls(read_cordex_domain_tables)
+domains = read_cls(read_domain_table)
 
 ecmwf = read_cls(ecmwf_tables)
 
@@ -69,26 +68,26 @@ def cordex_cmor_table(table, table_dir=None):
     return fetch_cordex_cmor_table(table)
 
 
-def cmip6_cmor_table(table):
-    """fetch a cmip6 cmor table
-
-    If required, the table will be download from github.
-    The tables are experimental right now and only used
-    for development purposes.
-
-    Parameters
-    ----------
-    table: str
-        Name of the cmip6 table.
-
-    Returns
-    -------
-    filename : str
-        Filepath to the cmip6 cmor table.
-    """
-    warn(
-        "CMIP6 cmor table fetching is deprecated and will be removed in the future. Please use cordex_cmor_table instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return fetch_cmip6_cmor_table(table)
+# def cmip6_cmor_table(table):
+#    """fetch a cmip6 cmor table
+#
+#    If required, the table will be download from github.
+#    The tables are experimental right now and only used
+#    for development purposes.
+#
+#    Parameters
+#    ----------
+#    table: str
+#        Name of the cmip6 table.
+#
+#    Returns
+#    -------
+#    filename : str
+#        Filepath to the cmip6 cmor table.
+#    """
+#    warn(
+#        "CMIP6 cmor table fetching is deprecated and will be removed in the future. Please use cordex_cmor_table instead.",
+#        DeprecationWarning,
+#        stacklevel=2,
+#    )
+#    return fetch_cmip6_cmor_table(table)
