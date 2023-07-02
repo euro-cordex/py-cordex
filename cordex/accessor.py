@@ -73,6 +73,44 @@ class CordexAccessor:
             self._guess = _guess_domain(self._obj)
         return self._guess
 
+    def map(self, projection=None):
+        """ """
+        import cartopy.crs as ccrs
+        import cartopy.feature as cf
+        import cartopy.io.img_tiles as cimgt
+        import matplotlib.pyplot as plt
+
+        obj = self._obj
+
+        mapping = obj.cf["grid_mapping"]
+        pole = (
+            mapping.grid_north_pole_longitude,
+            mapping.grid_north_pole_latitude,
+        )
+        transform = ccrs.RotatedPole(*pole)
+        if projection is None:
+            projection = transform
+        ax = plt.axes(projection=projection)
+        # use google maps tiles
+        request = cimgt.GoogleTiles()
+        ax.add_image(request, 4)  # , interpolation='spline36', regrid_shape=2000)
+        ax.gridlines(
+            draw_labels=True,
+            linewidth=0.5,
+            color="gray",
+            xlocs=range(-180, 180, 10),
+            ylocs=range(-90, 90, 5),
+        )
+        ax.set_extent(
+            [obj.rlon.min(), obj.rlon.max(), obj.rlat.min(), obj.rlat.max()],
+            crs=transform,
+        )
+        ax.coastlines(resolution="50m", color="black", linewidth=1)
+        ax.add_feature(cf.BORDERS, color="black")
+
+        return ax
+        # ax.set_title(CORDEX_domain)
+
 
 @xr.register_dataset_accessor("cx")
 class CordexDatasetAccessor(CordexAccessor):
