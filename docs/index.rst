@@ -13,7 +13,6 @@
 
    installation
    usage
-   domains
    science
    contributing
    authors
