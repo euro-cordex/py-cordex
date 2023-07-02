@@ -2,7 +2,14 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :caption: Tutorial
+
+   notebooks/introduction
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
 
    installation
    usage
