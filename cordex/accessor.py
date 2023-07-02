@@ -74,7 +74,17 @@ class CordexAccessor:
         return self._guess
 
     def map(self, projection=None):
-        """ """
+        """Create a simple overview map.
+
+        Creates a simple map overview. By default, the map projection
+        defaults to the grid mapping attribute.
+
+        Returns
+        -------
+        ax : GeoAxesSubplot
+            Cartopy plot projection using tiles.
+
+        """
         import cartopy.crs as ccrs
         import cartopy.feature as cf
         import cartopy.io.img_tiles as cimgt

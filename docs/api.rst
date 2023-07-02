@@ -106,3 +106,4 @@ Methods
 
     Dataset.cx.info
     Dataset.cx.guess
+    Dataset.cx.map
