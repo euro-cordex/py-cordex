@@ -26,6 +26,7 @@ Documentation
 ~~~~~~~~~~~~~
 
 - Unpinned sphinx-book-theme (:pull:`127`).
+- Tutorial notebook is now executed and rendered on readthedocs automatically (:pull:`141`).
 
 v0.5.2 (5 April 2023)
 ---------------------
