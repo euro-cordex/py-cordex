@@ -28,7 +28,7 @@ Breaking Changes
 Deprecations
 ~~~~~~~~~~~~
 
-- Deprecation of :py:meth:`preprocessing.get_grid_mapping` and :py:meth:`preprocessing.get_grid_mapping_name` in favour of `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/grid_mappings.html>`_.
+- Deprecation of :py:meth:`preprocessing.get_grid_mapping` and :py:meth:`preprocessing.get_grid_mapping_name` in favour of `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/grid_mappings.html>`_ (:pull:`144`).
 
 Documentation
 ~~~~~~~~~~~~~
