@@ -27,7 +27,6 @@ Preprocessing
    :toctree: generated/
 
    preprocessing.rename_cordex
-   preprocessing.get_grid_mapping
    preprocessing.replace_coords
    preprocessing.cordex_dataset_id
    preprocessing.promote_empty_dims

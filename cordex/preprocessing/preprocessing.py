@@ -405,31 +405,13 @@ def get_grid_mapping_name(ds):
         grid_mapping_name attribute.
 
     """
-    return get_grid_mapping(ds).grid_mapping_name
-
-
-def get_grid_mapping_varname(ds):
-    """Returns grid mapping dataarray name.
-
-    Returns the variable name of the first grid mapping found
-    in the dataset.
-
-    Parameters
-    ----------
-    ds : xr.Dataset
-        CORDEX like dataset.
-
-    Returns
-    -------
-    grid_mapping_varname : str
-        Variable name of the grid mapping.
-
-    """
-    return next(
-        ds[va].attrs["grid_mapping"]
-        for va in ds.data_vars
-        if "grid_mapping" in ds[va].attrs
+    message = (
+        "get_grid_mapping_name is deprecated, please use cf_xarray "
+        'accessor ds.cf["grid_mapping"].grid_mapping_name instead.'
     )
+    warn(message, DeprecationWarning, stacklevel=2)
+    return ds.cf["grid_mapping"].grid_mapping_name
+    # return get_grid_mapping(ds).grid_mapping_name
 
 
 def get_grid_mapping(ds):
@@ -455,7 +437,8 @@ def get_grid_mapping(ds):
     )
     warn(message, DeprecationWarning, stacklevel=2)
 
-    return ds[get_grid_mapping_varname(ds)]
+    return ds.cf["grid_mapping"]
+    # return ds[get_grid_mapping_varname(ds)]
 
 
 def remap_lambert_conformal(ds, regridder=None, domain=None):
