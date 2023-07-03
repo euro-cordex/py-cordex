@@ -79,6 +79,12 @@ class CordexAccessor:
         Creates a simple map overview. By default, the map projection
         defaults to the grid mapping attribute.
 
+        Parameters
+        ----------
+        projection : cartopy.crs
+            CRS used for projection. By default, the map projection
+            defaults to the CRS defined by the grid mapping attribute.
+
         Returns
         -------
         ax : GeoAxesSubplot
