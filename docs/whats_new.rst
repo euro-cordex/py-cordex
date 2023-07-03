@@ -1,26 +1,28 @@
-.. currentmodule:: cordex
+.. currentmodule:: xarray
 
 What's New
 ==========
 
-.. ipython:: python
-   :suppress:
-
-    import cordex
-
 v0.6.0 (Unreleased)
 -------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Added :py:meth:`Dataset.cx.map` for plotting quick map overviews of CORDEX domains.
+
+.. currentmodule:: cordex
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Support for upcoming CORDEX-CMIP6 vocabulary. This includes the new keyword `mip_era` in :py:meth:`cmor.cordex_domain` and :py:meth:`cmor.create_dataset` (:pull:`129`).
+- Support for upcoming CORDEX-CMIP6 vocabulary. This includes the new keyword `mip_era` in :py:meth:`cordex_domain` and :py:meth:`create_dataset` (:pull:`129`).
 - Updated domain table fetching. There is now only one table that contains all domain definitions which is now located in the `WCRP CORDEX github table repository <https://github.com/WCRP-CORDEX/domain-tables/blob/main/rotated-latitude-longitude.csv>`_ (:pull:`140`). This table allows for selection by different naming conventions for the domain identifier, e.g., ``EUR-12`` is equivilant to ``EUR-11``, etc.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- The keyword name for the CORDEX domain identifier has changed from ``short_name`` to ``domain_id``, e.g., in :py:meth:`cmor.cordex_domain` or :py:meth:`cmor.domain_info`. If you have explicitly set this keyword, e.g., ``short_name="EUR-11"``, please change this to ``domain_id="EUR-11"``. This will be more consistent with the attribues in the updated domain tables.
+- The keyword name for the CORDEX domain identifier has changed from ``short_name`` to ``domain_id``, e.g., in :py:meth:`cordex_domain` or :py:meth:`domain_info`. If you have explicitly set this keyword, e.g., ``short_name="EUR-11"``, please change this to ``domain_id="EUR-11"``. This will be more consistent with the attribues in the updated domain tables.
 
 Documentation
 ~~~~~~~~~~~~~
