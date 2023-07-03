@@ -84,7 +84,7 @@ Parts of this package have been developed within the project Pilot Lab Exascale 
         :alt: Documentation Status
 
 .. |binder| image:: http://mybinder.org/badge_logo.svg
-        :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmaster
+        :target: https://mybinder.org/v2/gh/WCRP-CORDEX/binder-sandbox/main?urlpath=git-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Feuro-cordex%252Fpy-cordex%26urlpath%3Dlab%252Ftree%252Fpy-cordex%252Fnotebooks%252Fdomains.ipynb%26branch%3Dmain
         :alt: py-cordex examples
 
 .. |zenodo| image:: https://zenodo.org/badge/304687410.svg
