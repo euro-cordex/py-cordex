@@ -25,6 +25,11 @@ Breaking Changes
 - The keyword name for the CORDEX domain identifier has changed from ``short_name`` to ``domain_id``, e.g., in :py:meth:`cordex_domain` or :py:meth:`domain_info`. If you have explicitly set this keyword, e.g., ``short_name="EUR-11"``, please change this to ``domain_id="EUR-11"``. This will be more consistent with the attribues in the updated domain tables.
 - Default branch is now ``main`` instead of ``master``.
 
+Deprecations
+~~~~~~~~~~~~
+
+- Deprecation of :py:meth:`preprocessing.get_grid_mapping` and :py:meth:`preprocessing.get_grid_mapping_name` in favour of `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/grid_mappings.html>`_ (:pull:`144`).
+
 Documentation
 ~~~~~~~~~~~~~
 
