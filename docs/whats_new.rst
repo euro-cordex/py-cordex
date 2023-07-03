@@ -1,15 +1,17 @@
-.. currentmodule:: cordex
+.. currentmodule:: xarray
 
 What's New
 ==========
 
-.. ipython:: python
-   :suppress:
-
-    import cordex
-
 v0.6.0 (Unreleased)
 -------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Added :py:meth:`Dataset.cx.map` for plotting quick map overviews of CORDEX domains.
+
+.. currentmodule:: cordex
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
