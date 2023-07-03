@@ -17,7 +17,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Support for upcoming CORDEX-CMIP6 vocabulary. This includes the new keyword `mip_era` in :py:meth:`cordex_domain` and :py:meth:`create_dataset` (:pull:`129`).
-- Updated domain table fetching. There is now only one table that contains all domain definitions which is now located in the `WCRP CORDEX github table repository <https://github.com/WCRP-CORDEX/domain-tables/blob/main/rotated-latitude-longitude.csv>`_ (:pull:`140`). This table allows for selection by different naming conventions for the domain identifier, e.g., ``EUR-12`` is equivilant to ``EUR-11``, etc.
+- Updated domain table fetching. There is now only one table that contains all domain definitions which is now located in the `WCRP CORDEX github table repository <https://github.com/WCRP-CORDEX/domain-tables/blob/main/rotated-latitude-longitude.csv>`_ . This table allows for selection by different naming conventions for the domain identifier, e.g., ``EUR-12`` is equivilant to ``EUR-11``, etc., sell also `this issue <https://github.com/WCRP-CORDEX/cordex-cv/issues/2>`_ (:pull:`140`).
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
