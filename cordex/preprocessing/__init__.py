@@ -4,7 +4,6 @@ from .preprocessing import (
     fix_known_issues,
     get_grid_mapping,
     get_grid_mapping_name,
-    get_grid_mapping_varname,
     member_id_to_dset_id,
     promote_empty_dims,
     remap_lambert_conformal,
