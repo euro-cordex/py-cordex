@@ -139,6 +139,8 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
     """Transform X and Y coordinates of a Dataset.
 
     The transformed coordinates will be added to the Dataset.
+    This function is usefull to add, e.g., global lon/lat coordinates
+    to a rotated pole grid.
 
     Parameters
     ----------
@@ -176,11 +178,13 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
 
 
 def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None):
-    """Transform X and Y bounds of a Dataset.
+    """Transform linear X and Y bounds of a Dataset.
 
-    Transformation of linear X and Y coordinates
+    Transformation of of the bounds of linear X and Y coordinates
     into the target crs according to
     https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
+    If the linear X and Y coordinate bounds are not available, they will be
+    created and transformed.
 
     Parameters
     ----------
