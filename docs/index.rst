@@ -6,6 +6,7 @@
    :caption: Tutorial
 
    notebooks/introduction
+   prudence
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +14,6 @@
 
    installation
    usage
-   science
    contributing
    authors
    whats_new
