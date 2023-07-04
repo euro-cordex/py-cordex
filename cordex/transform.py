@@ -222,27 +222,16 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
         )
     if bnds_dim is None:
         bnds_dim = cf.BOUNDS_DIM
-    # ds = xr.merge([rlon_bounds, rlat_bounds])
-    rlon_bounds = (
-        ds.cf.add_bounds(ds.cf["X"].dims).cf.get_bounds("X").drop("rlon_bounds")
-    )
-    rlat_bounds = (
-        ds.cf.add_bounds(ds.cf["Y"].dims).cf.get_bounds("Y").drop("rlat_bounds")
-    )
+
+    bnds = ds.cf.add_bounds((ds.cf["X"].name, ds.cf["Y"].name))
+    x_bnds = bnds.cf.get_bounds("X").drop(bnds.cf.bounds["X"])
+    y_bnds = bnds.cf.get_bounds("Y").drop(bnds.cf.bounds["Y"])
 
     # order is counterclockwise starting from lower left vertex
-    v1 = transform(
-        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=0), src_crs, trg_crs
-    )
-    v2 = transform(
-        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=0), src_crs, trg_crs
-    )
-    v3 = transform(
-        rlon_bounds.isel(bounds=1), rlat_bounds.isel(bounds=1), src_crs, trg_crs
-    )
-    v4 = transform(
-        rlon_bounds.isel(bounds=0), rlat_bounds.isel(bounds=1), src_crs, trg_crs
-    )
+    v1 = transform(x_bnds.isel(bounds=0), y_bnds.isel(bounds=0), src_crs, trg_crs)
+    v2 = transform(x_bnds.isel(bounds=1), y_bnds.isel(bounds=0), src_crs, trg_crs)
+    v3 = transform(x_bnds.isel(bounds=1), y_bnds.isel(bounds=1), src_crs, trg_crs)
+    v4 = transform(x_bnds.isel(bounds=0), y_bnds.isel(bounds=1), src_crs, trg_crs)
     lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim=bnds_dim)  # .transpose()
     #    ..., "vertices"
     # )
