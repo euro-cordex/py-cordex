@@ -48,7 +48,7 @@ Installation from source
 
 For instructions to install py-cordex from source, please have a look at the
 `contributing guide <https://py-cordex.readthedocs.io/en/stable/contributing.html>`_.
-If you want to contribute, please get in contact as early as possible, e.g.,  
+If you want to contribute, please get in contact as early as possible, e.g.,
 using `draft pull requests <https://github.blog/2019-02-14-introducing-draft-pull-requests>`_.
 
 
