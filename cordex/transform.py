@@ -232,34 +232,29 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
     v2 = transform(x_bnds.isel(bounds=1), y_bnds.isel(bounds=0), src_crs, trg_crs)
     v3 = transform(x_bnds.isel(bounds=1), y_bnds.isel(bounds=1), src_crs, trg_crs)
     v4 = transform(x_bnds.isel(bounds=0), y_bnds.isel(bounds=1), src_crs, trg_crs)
-    lon_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim=bnds_dim)  # .transpose()
+    xt_vertices = xr.concat([v1[0], v2[0], v3[0], v4[0]], dim=bnds_dim)  # .transpose()
     #    ..., "vertices"
     # )
-    lat_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim=bnds_dim)  # .transpose()
+    yt_vertices = xr.concat([v1[1], v2[1], v3[1], v4[1]], dim=bnds_dim)  # .transpose()
 
-    lon_vertices.name = "lon_vertices"  # cf.LON_BOUNDS
-    lat_vertices.name = "lat_vertices"  # cf.LAT_BOUNDS
-    lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
-    lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
+    xt_vertices.name = "xt_vertices"  # cf.LON_BOUNDS
+    yt_vertices.name = "yt_vertices"  # cf.LAT_BOUNDS
+    xt_vertices.attrs = cf.coords[cf.LON_BOUNDS]
+    yt_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
 
-    # bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
-    #    ..., bnds_dim
-    # )
-    bounds = xr.merge([lon_vertices, lat_vertices]).transpose(
+    bounds = xr.merge([xt_vertices, yt_vertices]).transpose(
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
-    # ds[cf.LON_NAME].attrs["bounds"] = cf.LON_BOUNDS
-    # ds[cf.LAT_NAME].attrs["bounds"] = cf.LAT_BOUNDS
     ds.cf["longitude"].attrs["bounds"] = cf.LON_BOUNDS
     ds.cf["latitude"].attrs["bounds"] = cf.LAT_BOUNDS
 
     return ds.assign_coords(
         {
-            trg_dims[0]: bounds.lon_vertices.drop_vars(
+            trg_dims[0]: bounds.xt_vertices.drop_vars(
                 (ds.cf["X"].name, ds.cf["Y"].name)
             ),
-            trg_dims[1]: bounds.lat_vertices.drop_vars(
+            trg_dims[1]: bounds.yt_vertices.drop_vars(
                 (ds.cf["X"].name, ds.cf["Y"].name)
             ),
         }
