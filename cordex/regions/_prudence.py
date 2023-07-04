@@ -1,8 +1,15 @@
+from warnings import warn
+
 import pandas as pd
 import xarray as xr
 
 from ._regions import WGS84
 from ._resources import fetch_prudence
+
+message = (
+    "Prudence regions are deprecated and will be removed in a future version."
+    "Please use regionmask.defined_regions.prudence instead."
+)
 
 
 def _create_polygons(df):
@@ -63,17 +70,37 @@ class Prudence:
 
     @property
     def df(self):
+        warn(
+            message,
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return pd.read_csv(fetch_prudence(), na_filter=False, index_col="area")
 
     @property
     def geodataframe(self):
+        warn(
+            message,
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return geodataframe(self.df)
 
     @property
     def regionmask(self):
+        warn(
+            message,
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return regions(self.df)
 
     def mask_3D(self, lon, lat, **kwargs):
+        warn(
+            message,
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return mask_3D(self.regionmask, lon, lat, **kwargs)
 
 
