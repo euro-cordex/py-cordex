@@ -3,8 +3,13 @@
 What's New
 ==========
 
-v0.6.0 (Unreleased)
--------------------
+v0.6.0 (11 July 2023)
+---------------------
+
+This releases prepares for CORDEX-CMIP6 vocabulary and introduces the `mip_era` keyword in the main API. There has also been
+some refactoring to simplify table fetching and the domain table repository has been updated and moved to the
+`WCRP CORDEX github table repository <https://github.com/WCRP-CORDEX/domain-tables/blob/main/rotated-latitude-longitude.csv>`_.
+Note that you might have to clean up your ``~/.py-cordex`` caching directory to retrieve the new table.
 
 New Features
 ~~~~~~~~~~~~
