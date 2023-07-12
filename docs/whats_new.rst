@@ -3,6 +3,14 @@
 What's New
 ==========
 
+v0.6.1 (Unreleased)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Updated location of domain_id in domain_tables (:pull:`154`).
+
 v0.6.0 (11 July 2023)
 ---------------------
 

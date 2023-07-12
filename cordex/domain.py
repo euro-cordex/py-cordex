@@ -17,10 +17,12 @@ def _locate_domain_id(domain_id, tables):
     """Locate domain_id in domain table trying different indexes."""
     indexes = ["short_name", "domain_id", "CORDEX_domain"]
 
+    tables = tables.replace(np.nan, None)
+
     for i in indexes:
         if domain_id in tables.reset_index()[i].values:
             return (
-                tables.reset_index().replace(np.nan, None).set_index(i).loc[domain_id]
+                tables.reset_index().set_index(i).loc[[domain_id]].reset_index().iloc[0]
             )
 
     return tables.replace(np.nan, None).loc[domain_id]
@@ -299,9 +301,7 @@ def domain_info(domain_id, tables=None):
     elif isinstance(tables, list):
         tables = pd.concat(tables)
 
-    config = tables.replace(np.nan, None).loc[domain_id]
-    # return config
-    return {**{"short_name": domain_id}, **config.to_dict()}
+    return _locate_domain_id(domain_id, tables).to_dict()
 
 
 def _get_regular_dataset(
