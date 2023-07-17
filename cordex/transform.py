@@ -49,7 +49,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
 
     """
     warn(
-        "map_crs is deprecated, please use transform_xy instead",
+        "map_crs is deprecated, please use transform instead",
         DeprecationWarning,
         stacklevel=2,
     )
