@@ -3,8 +3,10 @@
 What's New
 ==========
 
-v0.6.2 (Unreleased)
--------------------
+v0.6.2 (17 July 2023)
+---------------------
+
+Patch releasee to support searching indexes in alternative domain tables.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
