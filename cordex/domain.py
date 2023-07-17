@@ -13,25 +13,27 @@ from .transform import grid_mapping, transform, transform_bounds
 from .utils import get_tempfile
 
 
-def _locate_domain_id(domain_id, tables):
+def _locate_domain_id(domain_id, table):
     """Locate domain_id in domain table trying different indexes."""
-    indexes = ["short_name", "domain_id", "CORDEX_domain"]
 
-    tables = tables.replace(np.nan, None)
+    indexes = [table.index.name]
+    # additional indexes to try
+    indexes.extend(["short_name", "domain_id", "CORDEX_domain"])
 
-    try:
-        return tables.replace(np.nan, None).loc[domain_id]
-    except Exception:
-        for i in indexes:
-            if i in tables.columns:
-                if domain_id in tables.reset_index()[i].values:
-                    return (
-                        tables.reset_index()
-                        .set_index(i)
-                        .loc[[domain_id]]
-                        .reset_index()
-                        .iloc[0]
-                    )
+    table = table.replace(np.nan, None)
+
+    for i in indexes:
+        if i in table.columns:
+            if domain_id in table.reset_index()[i].values:
+                return (
+                    table.reset_index()
+                    .set_index(i)
+                    .loc[[domain_id]]
+                    .reset_index()
+                    .iloc[0]
+                )
+
+    return table.replace(np.nan, None).loc[domain_id]
 
 
 def domain_names(table_name=None):
