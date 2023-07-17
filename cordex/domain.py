@@ -13,19 +13,35 @@ from .transform import grid_mapping, transform, transform_bounds
 from .utils import get_tempfile
 
 
-def _locate_domain_id(domain_id, tables):
-    """Locate domain_id in domain table trying different indexes."""
-    indexes = ["short_name", "domain_id", "CORDEX_domain"]
+def _locate_domain_id(domain_id, table):
+    """Locate domain_id in domain table trying different indexes.
 
-    tables = tables.replace(np.nan, None)
+    First, it is assumed that domain_id can be found in the tables index.
+    If it is not found in the index, a number of different colums are
+    tried as index (``short_name``, ``domain_id``, ``CORDEX_domain``).
+
+    """
+
+    indexes = [table.index.name]
+    # additional indexes to try
+    indexes.extend(["short_name", "domain_id", "CORDEX_domain"])
+    # removed duplicates
+    indexes = list(dict.fromkeys(indexes))
+
+    table = table.replace(np.nan, None)
 
     for i in indexes:
-        if domain_id in tables.reset_index()[i].values:
-            return (
-                tables.reset_index().set_index(i).loc[[domain_id]].reset_index().iloc[0]
-            )
+        if i in table.reset_index().columns:
+            if domain_id in table.reset_index()[i].values:
+                return (
+                    table.reset_index()
+                    .set_index(i)
+                    .loc[[domain_id]]
+                    .reset_index()
+                    .iloc[0]
+                )
 
-    return tables.replace(np.nan, None).loc[domain_id]
+    return table.replace(np.nan, None).loc[domain_id]
 
 
 def domain_names(table_name=None):

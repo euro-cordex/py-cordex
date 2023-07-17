@@ -3,6 +3,14 @@
 What's New
 ==========
 
+v0.6.2 (Unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Support for searching indexes in alternative domain tables (:pull:`157`).
+
 v0.6.1 (17 July 2023)
 ---------------------
 
