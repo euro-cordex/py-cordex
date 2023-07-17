@@ -3,8 +3,10 @@
 What's New
 ==========
 
-v0.6.1 (Unreleased)
--------------------
+v0.6.1 (17 July 2023)
+---------------------
+
+Patch release to update location of domain_id in domain_tables.
 
 Bugfixes
 ~~~~~~~~
