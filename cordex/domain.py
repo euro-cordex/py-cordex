@@ -14,16 +14,24 @@ from .utils import get_tempfile
 
 
 def _locate_domain_id(domain_id, table):
-    """Locate domain_id in domain table trying different indexes."""
+    """Locate domain_id in domain table trying different indexes.
+
+    First, it is assumed that domain_id can be found in the tables index.
+    If it is not found in the index, a number of different colums are
+    tried as index (``short_name``, ``domain_id``, ``CORDEX_domain``).
+
+    """
 
     indexes = [table.index.name]
     # additional indexes to try
     indexes.extend(["short_name", "domain_id", "CORDEX_domain"])
+    # removed duplicates
+    indexes = list(dict.fromkeys(indexes))
 
     table = table.replace(np.nan, None)
 
     for i in indexes:
-        if i in table.columns:
+        if i in table.reset_index().columns:
             if domain_id in table.reset_index()[i].values:
                 return (
                     table.reset_index()
