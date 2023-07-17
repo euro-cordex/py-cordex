@@ -19,13 +19,19 @@ def _locate_domain_id(domain_id, tables):
 
     tables = tables.replace(np.nan, None)
 
-    for i in indexes:
-        if domain_id in tables.reset_index()[i].values:
-            return (
-                tables.reset_index().set_index(i).loc[[domain_id]].reset_index().iloc[0]
-            )
-
-    return tables.replace(np.nan, None).loc[domain_id]
+    try:
+        return tables.replace(np.nan, None).loc[domain_id]
+    except Exception:
+        for i in indexes:
+            if i in tables.columns:
+                if domain_id in tables.reset_index()[i].values:
+                    return (
+                        tables.reset_index()
+                        .set_index(i)
+                        .loc[[domain_id]]
+                        .reset_index()
+                        .iloc[0]
+                    )
 
 
 def domain_names(table_name=None):
