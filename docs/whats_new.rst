@@ -11,6 +11,7 @@ Patch releasee to support searching indexes in alternative domain tables.
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- More clean up of deprecated meta files (:pull:`159`).
 - Support for searching indexes in alternative domain tables (:pull:`157`).
 
 v0.6.1 (17 July 2023)
