@@ -3,6 +3,14 @@
 What's New
 ==========
 
+v0.6.3 (Unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- More clean up of deprecated meta files (:pull:`159`).
+
 v0.6.2 (17 July 2023)
 ---------------------
 
