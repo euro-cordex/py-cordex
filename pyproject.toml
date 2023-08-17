@@ -10,3 +10,19 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 fallback_version = "999"
 version_scheme = "no-guess-dev"
+
+[tool.ruff]
+target-version = "py38"
+builtins = ["ellipsis"]
+exclude = [
+    ".eggs",
+    "doc",
+]
+# E402: module level import not at top of file
+# E501: line too long - let black worry about that
+# E731: do not assign a lambda expression, use a def
+ignore = [
+    "E402",
+    "E501",
+    "E731",
+]
