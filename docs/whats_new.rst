@@ -6,7 +6,7 @@ What's New
 v0.6.3 (Unreleased)
 -------------------
 
-Patch release to fix pre-commit issues.
+Patch release to update pre-commit configuration and fix rtd issues.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
