@@ -34,7 +34,7 @@ def to_cftime(date, calendar="standard"):
 
 
     """
-    if type(date) == dt.date:
+    if isinstance(date, dt.date):
         date = dt.datetime.combine(date, dt.time())
     elif isinstance(date, cfdt.datetime):
         # do nothing
@@ -165,7 +165,7 @@ def _month_bounds(date):
         Temporal bounds of the current month.
 
     """
-    if type(date) == dt.date:
+    if isinstance(date, dt.date):
         date = dt.datetime.combine(date, dt.time())
     month = date.month
     begin = date.replace(day=1, hour=0, minute=0, second=0)
