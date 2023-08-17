@@ -3,8 +3,8 @@
 What's New
 ==========
 
-v0.6.3 (Unreleased)
--------------------
+v0.6.3 (17 August 2023)
+-----------------------
 
 Patch release to update pre-commit configuration and fix rtd issues.
 
