@@ -34,7 +34,7 @@ def to_cftime(date, calendar="standard"):
 
 
     """
-    if isinstance(date, dt.date):
+    if isinstance(date, dt.date) and not isinstance(date, dt.datetime):
         date = dt.datetime.combine(date, dt.time())
     elif isinstance(date, cfdt.datetime):
         # do nothing
