@@ -6,10 +6,13 @@ What's New
 v0.6.3 (Unreleased)
 -------------------
 
+Patch release to update pre-commit configuration and fix rtd issues.
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - More clean up of deprecated meta files (:pull:`159`).
+- Fixed E721 rule, switched to `ruff <https://github.com/astral-sh/ruff>`_ for linting in pre-commit, added ``dependabot.yml`` (:pull:`162`).
 
 v0.6.2 (17 July 2023)
 ---------------------
