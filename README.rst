@@ -13,6 +13,8 @@ py-cordex: create cordex grids and meta data
 +----------------------------+-----------------------------------------------------+
 | Development Status         | |ci| |codecov|                                      |
 +----------------------------+-----------------------------------------------------+
+| Funding                    | |funding|                                           |
++----------------------------+-----------------------------------------------------+
 
 This package offers python tools for the `CORDEX <https://cordex.org/>`_ community and should make your work with CORDEX grids and meta data easy.
 Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the
@@ -60,7 +62,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
-Parts of this package have been developed within the project Pilot Lab Exascale Earth System Modelling (`PL-ExaESM <https://www.fz-juelich.de/SharedDocs/Meldungen/IAS/JSC/EN/2019/2019-09-pl-exaesm.html>`_).
+Parts of this package have been developed within the project Pilot Lab Exascale Earth System Modelling (`PL-ExaESM <https://www.exaesm.de/>`_).
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/py-cordex.svg
