@@ -18,6 +18,7 @@ dependencies:
   - pooch
   - pyproj
   - cartopy
+  - pykdtree
   - sphinx
   - cdo
   - python-cdo
