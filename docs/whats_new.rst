@@ -3,6 +3,16 @@
 What's New
 ==========
 
+v0.6.4 (Unreleased)
+-------------------
+
+Patch release to fix cmor related dependencies.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Pinned ``xarray!=2023.9.0`` due to `this issue <https://github.com/pydata/xarray/issues/8271>`_ (:pull:`174`).
+
 v0.6.3 (17 August 2023)
 -----------------------
 
