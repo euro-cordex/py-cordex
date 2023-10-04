@@ -3,8 +3,8 @@
 What's New
 ==========
 
-v0.6.4 (Unreleased)
--------------------
+v0.6.4 (4 October 2023)
+-----------------------
 
 Patch release to fix cmor related dependencies.
 
