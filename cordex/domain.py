@@ -431,15 +431,6 @@ def _lin_coord(nx, dx, x0, dtype=np.float64):
     return np.round(np.arange(0, nx, dtype=dtype) * dx + x0, nround)
 
 
-def _stack(x, y):
-    """Stack 1d arrays into 2d fields."""
-    tmp_x = np.array(x).squeeze()
-    tmp_y = np.array(y).squeeze()
-    return np.vstack(len(tmp_y) * (tmp_x,)), np.hstack(
-        len(tmp_x) * (tmp_y[:, np.newaxis],)
-    )
-
-
 def _dcoord(coord, include="left"):
     dcoord = coord.values[1:] - coord.values[:-1]
     if include in ["left", "both"]:
