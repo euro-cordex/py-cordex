@@ -615,7 +615,7 @@ def cmorize_variable(
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
-    if op.isfile(dataset_table):
+    if not isinstance(dataset_table, dict):
         dataset_table = _read_table(dataset_table)
 
     if outpath:
