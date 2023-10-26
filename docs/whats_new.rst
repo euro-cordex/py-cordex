@@ -6,6 +6,11 @@ What's New
 Unreleased
 ----------
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Switch CI to `setup-micromamba` (:pull:`185`).
+
 Bugfixes
 ~~~~~~~~
 
