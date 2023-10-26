@@ -1,10 +1,12 @@
-.. currentmodule:: xarray
+.. currentmodule:: cordex
 
 What's New
 ==========
 
-Unreleased
-----------
+v0.6.4 (26 October 2023)
+------------------------
+
+Patch release to update the CI and cmor module.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -68,6 +70,8 @@ Note that you might have to clean up your ``~/.py-cordex`` caching directory to 
 
 New Features
 ~~~~~~~~~~~~
+
+.. currentmodule:: xarray
 
 - Added :py:meth:`Dataset.cx.map` for plotting quick map overviews of CORDEX domains.
 
