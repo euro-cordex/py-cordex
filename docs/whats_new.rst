@@ -6,6 +6,11 @@ What's New
 Unreleased
 ----------
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Added CI for python 3.12 (:pull:`184`).
+
 Bugfixes
 ~~~~~~~~
 
