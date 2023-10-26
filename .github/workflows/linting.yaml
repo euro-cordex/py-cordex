@@ -40,7 +40,6 @@ jobs:
             black
             isort
             flake8
-          channels: conda-forge
 
       - name: Install py-cordex
         run: |
