@@ -9,6 +9,7 @@ Unreleased
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Added CI for python 3.12 (:pull:`184`).
 - Switch CI to `setup-micromamba` (:pull:`185`).
 
 Bugfixes
