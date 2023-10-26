@@ -3,6 +3,11 @@
 What's New
 ==========
 
+Bugfixes
+~~~~~~~~
+
+- Fixed dataset table input argument (when of type ``dict``) in :py:meth:`cmor.cmorize_variable` (:pull:`183`).
+
 v0.6.4 (4 October 2023)
 -----------------------
 
