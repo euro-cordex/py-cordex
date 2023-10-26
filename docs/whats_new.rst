@@ -3,6 +3,9 @@
 What's New
 ==========
 
+Unreleased
+----------
+
 Bugfixes
 ~~~~~~~~
 
