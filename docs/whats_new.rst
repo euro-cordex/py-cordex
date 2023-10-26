@@ -3,7 +3,7 @@
 What's New
 ==========
 
-v0.6.4 (26 October 2023)
+v0.6.5 (26 October 2023)
 ------------------------
 
 Patch release to update the CI and cmor module.
