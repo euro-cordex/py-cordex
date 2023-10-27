@@ -3,6 +3,14 @@
 What's New
 ==========
 
+Unreleased
+----------
+
+Bugfixes
+~~~~~~~~
+
+- Fixed empty mapping_table argument in :py:meth:`cmor.cmorize_variable` (:pull:`187`).
+
 v0.6.5 (26 October 2023)
 ------------------------
 
