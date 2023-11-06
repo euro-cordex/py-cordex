@@ -449,6 +449,9 @@ def prepare_variable(
 ):
     """prepares a variable for cmorization."""
 
+    if mapping_table is None:
+        mapping_table = {}
+
     ds = ds.copy(deep=False)
 
     if isinstance(cmor_table, str):
