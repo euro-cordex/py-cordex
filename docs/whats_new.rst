@@ -3,12 +3,15 @@
 What's New
 ==========
 
-Unreleased
-----------
+v0.6.6 (9 November 2023)
+------------------------
+
+Patch release that fixes installation and cmor issues.
 
 Bugfixes
 ~~~~~~~~
 
+- Fix ``packages`` argument in ``setup.cfg`` (:pull:`192`).
 - Fixed empty mapping_table argument in :py:meth:`cmor.cmorize_variable` (:pull:`187`).
 
 v0.6.5 (26 October 2023)
