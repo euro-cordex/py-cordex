@@ -346,7 +346,7 @@ def _rewrite_time_axis(ds, freq=None, calendar=None):
     ds = ds.copy(deep=False)
     pd_freq = freq_map.get(freq, None)
     if freq is None:
-        pd_freq = xr.infer_freq(ds.time)
+        pd_freq = xr.infer_freq(ds.time).upper()
     if calendar is None:
         calendar = ds.time.dt.calendar
     start = ds.time.data[0]
@@ -398,7 +398,7 @@ def _add_time_bounds(ds, cf_freq):
 
 def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     if input_freq is None and "time" in ds.coords:
-        input_freq = xr.infer_freq(ds.time)
+        input_freq = xr.infer_freq(ds.time).upper()
     if input_freq is None:
         warn("Could not determine frequency of input data, will assume it is correct.")
         return ds
