@@ -398,10 +398,12 @@ def _add_time_bounds(ds, cf_freq):
 
 def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
     if input_freq is None and "time" in ds.coords:
-        input_freq = xr.infer_freq(ds.time).upper()
+        input_freq = xr.infer_freq(ds.time)
     if input_freq is None:
         warn("Could not determine frequency of input data, will assume it is correct.")
         return ds
+    else:
+        input_freq = input_freq.upper()
     pd_freq = freq_map[cf_freq]
     if pd_freq != input_freq:
         warn("resampling input data from {} to {}".format(input_freq, pd_freq))
