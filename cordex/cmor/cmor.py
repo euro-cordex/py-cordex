@@ -41,7 +41,14 @@ from .utils import (
 
 xr.set_options(keep_attrs=True)
 
-flox_method = "blockwise"
+try:
+    import flox  # noqa
+
+    has_flox = True
+    default_flox_method = "blockwise"
+except ImportError:
+    has_flox = False
+    default_flox_method = None
 
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
@@ -72,16 +79,20 @@ def _resample(
 ):
     """Resample a variable."""
     if time_cell_method == "point":
-        return ds.resample(time=time, label=label, **kwargs).nearest(
-            method=flox_method
-        )  # .interpolate("nearest") # use as_freq?
+        return ds.resample(
+            time=time, label=label, **kwargs
+        ).nearest()  # .interpolate("nearest") # use as_freq?
     elif time_cell_method == "mean":
         if time_offset is True:
             loffset = _get_loffset(time)
         else:
             loffset = None
+        mean_kwargs = {}
+        if has_flox:
+            mean_kwargs["engine"] = "flox"
+            mean_kwargs["method"] = default_flox_method
         return ds.resample(time=time, label=label, loffset=loffset, **kwargs).mean(
-            method=flox_method
+            **mean_kwargs
         )
     else:
         raise Exception("unknown time_cell_method: {}".format(time_cell_method))
