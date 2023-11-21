@@ -3,6 +3,14 @@
 What's New
 ==========
 
+UNRELEASED
+----------
+
+Bugfixes
+~~~~~~~~
+
+- Fix ``flox`` method in cmor module (:pull:`197`).
+
 v0.6.6 (9 November 2023)
 ------------------------
 
