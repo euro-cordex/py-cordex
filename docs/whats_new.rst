@@ -6,7 +6,12 @@ What's New
 UNRELEASED
 ----------
 
-Bugfixes
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Stick to upper case pandas time offset strings for now (:pull:`198`).
+
+  Bugfixes
 ~~~~~~~~
 
 - Fix ``flox`` method in cmor module (:pull:`197`).
