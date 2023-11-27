@@ -38,12 +38,17 @@ For that purpose, easy access to meta information should be guaranteed by tables
 Installation
 ------------
 
-We recommend installing `py-cordex` with conda:
+You can install py-cordex using pip or conda, e.g.
+
+.. code-block:: console
+
+    pip install py-cordex
+
+or
 
 .. code-block:: console
 
     conda install -c conda-forge py-cordex
-
 
 Installation from source
 ------------------------
