@@ -24,7 +24,7 @@ class CordexAccessor:
     def domain_id(self, guess=True):
         """Returns the domain_id.
 
-        This property will return the ``CORDEX_domain`` or ``domain_id` global
+        This property will return the ``CORDEX_domain`` or ``domain_id`` global
         attribute if present. If none of those attributes are found, the
         domain information will be guessed.
 
