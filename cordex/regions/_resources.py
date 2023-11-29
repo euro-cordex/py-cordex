@@ -10,7 +10,7 @@ def fetch_vg2500():
         path=cache_url,
         url="https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/2020/vg2500_01-01.gk3.shape.zip",
         known_hash="md5:5a1a86cd131decd9cf116dbfc1a66f17",
-        downloader=downloader
+        downloader=downloader,
     )
     return fname
 
