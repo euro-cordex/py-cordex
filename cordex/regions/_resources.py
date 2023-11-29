@@ -1,4 +1,4 @@
-from pooch import retrieve, HTTPDownloader
+from pooch import HTTPDownloader, retrieve
 
 cache_url = "~/.py-cordex"
 
