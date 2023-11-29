@@ -264,6 +264,7 @@ def _cf_units_convert(da, table, mapping_table={}):
     Maybe metpy can do this also: https://unidata.github.io/MetPy/latest/tutorials/unit_tutorial.html
 
     """
+    from cf_xarray.units import units as cfxr_units  # noqa
 
     if da.name in mapping_table:
         map_units = mapping_table[da.name].get("units")
@@ -282,7 +283,7 @@ def _cf_units_convert(da, table, mapping_table={}):
     da.attrs["units"] = units
     cf_units = table["variable_entry"][da.name]["units"]
 
-    if units != cf_units:
+    if cfxr_units.Unit(units) != cfxr_units.Unit(cf_units):
         warn(
             "converting units {} from input data to CF units {}".format(units, cf_units)
         )
