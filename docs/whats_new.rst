@@ -9,6 +9,7 @@ UNRELEASED
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Update units check using pint (:pull:`203`).
 - Stick to upper case pandas time offset strings for now (:pull:`198`).
 
 Bugfixes
