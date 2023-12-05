@@ -12,6 +12,7 @@ options = {
 # time offsets relative to left labeling for resampling.
 # we want the time label to be the center.
 loffsets = {
+    "H": dt.timedelta(minutes=30),
     "3H": dt.timedelta(hours=1, minutes=30),
     "6H": dt.timedelta(hours=3),
     "D": dt.timedelta(hours=12),
