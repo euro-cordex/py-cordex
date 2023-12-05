@@ -84,14 +84,6 @@ def cordex_domain(
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    add_vertices : bool
-        Add grid boundaries in the gloabl coordinates (lon_vertices and lat_vertices).
-
-        .. deprecated:: v0.5.0
-            The ``add_vertices`` parameter is deprecated in favor
-            of the ``bounds`` parameter, and will be removed in a future
-            version.
-
     tables : dataframe or list of dataframes, default: cordex_tables
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If no table is
@@ -104,8 +96,6 @@ def cordex_domain(
         variable name is used.
     bounds : bool
         Add spatial bounds to longitude and latitude coordinates.
-
-        .. versionadded:: v0.5.0
     mip_era : str
         The mip_era keyword determines the vocabulary for dimensions, coordinates and
         attributes.
@@ -203,14 +193,6 @@ def create_dataset(
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    add_vertices : bool
-        Add grid boundaries in the global coordinates (lon_vertices and lat_vertices).
-
-        .. deprecated:: v0.5.0
-            The ``add_vertices`` parameter is deprecated in favor
-            of the ``bounds`` parameter, and will be removed in a future
-            version.
-
     attrs : str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
@@ -219,8 +201,6 @@ def create_dataset(
         variable name is used.
     bounds : bool
         Add spatial bounds to longitude and latitude coordinates.
-
-        .. versionadded:: v0.5.0
     mip_era : str
         The mip_era keyword determines the vocabulary for dimensions, coordinates and
         attributes.
