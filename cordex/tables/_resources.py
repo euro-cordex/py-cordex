@@ -75,7 +75,7 @@ def fetch_cordex_cmor_table(table):
 def retrieve_cmor_table(table, url):
     path = cmor_tables_inpath
     if Path(table).suffix == "":
-        fname = "{}.json".format(table)
+        fname = f"{table}.json"
     else:
         fname = table
     return pooch.retrieve(

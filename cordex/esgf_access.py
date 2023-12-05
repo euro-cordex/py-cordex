@@ -20,7 +20,7 @@ except Exception:
 
 
 DKRZ_HOST = "esgf-data.dkrz.de"
-DKRZ_ESG_URL = "https://{}/esg-search".format(DKRZ_HOST)
+DKRZ_ESG_URL = f"https://{DKRZ_HOST}/esg-search"
 
 # cordex  output  EUR-11  GERICS  ECMWF-ERAINT  evaluation  r1i1p1  REMO2015  v1  day  tasmax  v20180813
 CORDEX_COLUMNS = [
@@ -72,11 +72,11 @@ def logon(host=DKRZ_HOST):
     """logon to ESGF Host."""
     from pyesgf.logon import LogonManager
 
-    print("logon to: {}".format(host))
+    print(f"logon to: {host}")
     lm = LogonManager()
     lm.logoff()
     lm.logon(hostname=host, interactive=True, bootstrap=True)
-    print("logged on: {}".format(lm.is_logged_on()))
+    print(f"logged on: {lm.is_logged_on()}")
     return lm.is_logged_on()
 
 
@@ -92,7 +92,7 @@ def context(attrs, conn=None, verbose=False):
     else:
         ctx = conn.new_context(**attrs)
     if verbose:
-        print("Hit Count: {}".format(ctx.hit_count))
+        print(f"Hit Count: {ctx.hit_count}")
     return ctx
 
 
@@ -126,7 +126,7 @@ def get_opendap_urls(attrs, conn=None, agg=False, verbose=False):
             sources.append(ctx_result.opendap_url)
         open_dap[result.dataset_id] = sources
     if verbose:
-        print("found {} datasets".format(len(open_dap.keys())))
+        print(f"found {len(open_dap.keys())} datasets")
     return open_dap
 
 
