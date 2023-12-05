@@ -80,7 +80,7 @@ def _resample(
     """Resample a variable."""
     if time_cell_method == "point":
         return ds.resample(
-            time=time, label=label, **kwargs
+            time=time, label="right", closed="right"
         ).nearest()  # .interpolate("nearest") # use as_freq?
     elif time_cell_method == "mean":
         if time_offset is True:
@@ -279,7 +279,12 @@ def _cf_units_convert(da, table, mapping_table={}):
         else:
             units = atr_units
     else:
-        units = da.units
+        try:
+            units = da.units
+        except AttributeError:
+            warn(
+                f"could not find units attribute on {da.name}, if you are sure about the units, set allow_units_convert=False."
+            )
     da.attrs["units"] = units
     cf_units = table["variable_entry"][da.name]["units"]
 
