@@ -514,7 +514,7 @@ def flatten_coordinate_to_dset_id(ds, coord):
     """Flattens an arbitrary coordinate to become part of the dataset id."""
     flatten = {}
     for xcoord, ds_coord in ds.groupby(coord):
-        dset_id = cordex_dataset_id(ds_coord) + ".{}".format(xcoord)
+        dset_id = cordex_dataset_id(ds_coord) + f".{xcoord}"
         flatten[dset_id] = ds_coord
     return flatten
 

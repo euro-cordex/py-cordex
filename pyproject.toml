@@ -1,3 +1,36 @@
+[project]
+name = "py-cordex"
+description = "Creation of cordex grids and meta data"
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+keywords = ["cordex", "xarray", "metadata", "CF conventions"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "xarray != 2023.9.0",
+    "cf-xarray >= 0.8",
+    "pooch",
+    "pyproj >= 3.3.0"
+]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "https://py-cordex.readthedocs.io"
+documentation = "https://py-cordex.readthedocs.io"
+repository = "https://github.com/euro-cordex/py-cordex.git"
+changelog = "https://py-cordex.readthedocs.io/en/latest/whats-new.html"
+
 [build-system]
 requires = [
     "setuptools>=42",
@@ -6,6 +39,9 @@ requires = [
     "setuptools_scm_git_archive",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["cordex"]
 
 [tool.setuptools_scm]
 fallback_version = "999"
@@ -25,4 +61,31 @@ ignore = [
     "E402",
     "E501",
     "E731",
+]
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I",
+    # Pyupgrade
+    "UP",
+]
+
+[tool.pytest]
+python_files = "test_*.py"
+testpaths = ["tests"]
+
+[tool.rstcheck]
+report_level = "WARNING"
+ignore_roles = [
+    "pull",
+    "issue",
+]
+ignore_directives = [
+    "ipython",
+    "autodata",
+    "autosummary",
 ]

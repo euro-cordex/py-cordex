@@ -9,6 +9,7 @@ UNRELEASED
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Moved from ``setup.cfg`` to ``pyproject.toml`` (:pull:`209`).
 - Update point cell method resampling (:pull:`207`).
 - Update units check using pint (:pull:`203`).
 - Stick to upper case pandas time offset strings for now (:pull:`198`).

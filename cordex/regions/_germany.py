@@ -30,7 +30,7 @@ class Germany:
     @staticmethod
     def _filename(domain):
         # url = "https://daten.gdz.bkg.bund.de/produkte/vg/vg2500/aktuell/vg2500_01-01.gk3.shape.zip"
-        shp_file = "!vg2500_01-01.gk3.shape/vg2500/vg2500_{}.shp".format(domain)
+        shp_file = f"!vg2500_01-01.gk3.shape/vg2500/vg2500_{domain}.shp"
         fname = fetch_vg2500()
         return "zip://" + fname + shp_file
 

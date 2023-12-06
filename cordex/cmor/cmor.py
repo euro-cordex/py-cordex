@@ -53,13 +53,13 @@ except ImportError:
 
 def resample_both_closed(ds, hfreq, op, **kwargs):
     rolling = getattr(ds.rolling(time=hfreq + 1, center=True), op)()
-    freq = "{}H".format(hfreq)
+    freq = f"{hfreq}H"
     return rolling.resample(time=freq, loffset=0.5 * pd.Timedelta(hfreq, "H")).nearest()
 
 
 def _resample_op(ds, hfreq, op, **kwargs):
     rolling = getattr(ds.rolling(time=hfreq + 1, center=True), op)()
-    freq = "{}H".format(hfreq)
+    freq = f"{hfreq}H"
     return rolling.resample(time=freq, loffset=0.5 * pd.Timedelta(hfreq, "H")).nearest()
 
 
@@ -95,7 +95,7 @@ def _resample(
             **mean_kwargs
         )
     else:
-        raise Exception("unknown time_cell_method: {}".format(time_cell_method))
+        raise Exception(f"unknown time_cell_method: {time_cell_method}")
 
 
 def _get_bnds(values):
@@ -289,9 +289,7 @@ def _cf_units_convert(da, table, mapping_table={}):
     cf_units = table["variable_entry"][da.name]["units"]
 
     if cfxr_units.Unit(units) != cfxr_units.Unit(cf_units):
-        warn(
-            "converting units {} from input data to CF units {}".format(units, cf_units)
-        )
+        warn(f"converting units {units} from input data to CF units {cf_units}")
         da = _units_convert(da, cf_units)
         # da = da.pint.to(cf_units)
     return da
@@ -323,7 +321,7 @@ def _set_time_encoding(ds, units, orig):
             u = units
     if u is None:
         u = time_units_default
-        warn("time units are set to default: {}".format(u))
+        warn(f"time units are set to default: {u}")
     ds.time.encoding["units"] = u
     ds.time.encoding["dtype"] = time_dtype
     return ds
@@ -412,7 +410,7 @@ def _adjust_frequency(ds, cf_freq, input_freq=None, time_cell_method=None):
         input_freq = input_freq.upper()
     pd_freq = freq_map[cf_freq]
     if pd_freq != input_freq:
-        warn("resampling input data from {} to {}".format(input_freq, pd_freq))
+        warn(f"resampling input data from {input_freq} to {pd_freq}")
         resample = _resample(
             ds, pd_freq, time_cell_method=time_cell_method, **options["resample_kwargs"]
         )
@@ -438,7 +436,7 @@ def cmorize_cmor(
     cfvarinfo = _get_cfvarinfo(out_name, cmor_table)
 
     if cfvarinfo is None:
-        raise Exception("{} not found in {}".format(out_name, cmor_table))
+        raise Exception(f"{out_name} not found in {cmor_table}")
 
     time_cell_method = _strip_time_cell_method(cfvarinfo)
 
@@ -535,7 +533,7 @@ def prepare_variable(
     try:
         mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
     except KeyError:
-        warn("adding pole from archive specs: {}".format(CORDEX_domain))
+        warn(f"adding pole from archive specs: {CORDEX_domain}")
         mapping = _get_cordex_pole(CORDEX_domain)
 
     if "time" in mapping.coords:
