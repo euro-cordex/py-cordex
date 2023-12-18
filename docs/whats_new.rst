@@ -17,7 +17,7 @@ Internal Changes
 Bugfixes
 ~~~~~~~~
 
-- Deactivate ssl verification for VG2500 (:pull:`206`).
+- Ensure ssl verification for VG2500 fetching (:pull:`206`, :pull:`212`).
 - Fix ``flox`` method in cmor module (:pull:`197`).
 
 v0.6.6 (9 November 2023)
