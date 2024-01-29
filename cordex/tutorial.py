@@ -4,6 +4,7 @@ Useful for:
 * users learning py-cordex
 
 """
+
 # code stolen from xarray, I am sorry!
 import os
 import pathlib

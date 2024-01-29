@@ -65,7 +65,7 @@ def map_crs(x, y, src_crs, trg_crs=None):
         trg_crs,
         input_core_dims=input_core_dims,  # list with one entry per arg
         # [["rlat", "rlon"], ["rlat", "rlon"]],
-        output_core_dims=output_core_dims
+        output_core_dims=output_core_dims,
         # exclude_dims=set(("lat",)),  # dimensions allowed to change size. Must be set!
     )
 
