@@ -4,7 +4,6 @@ based on https://github.com/jbusecke/cmip6_preprocessing/blob/master/cmip6_prepr
 
 """
 
-
 from warnings import warn
 
 import numpy as np

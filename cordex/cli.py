@@ -1,4 +1,5 @@
 """Console script for cordex."""
+
 import argparse
 import sys
 
