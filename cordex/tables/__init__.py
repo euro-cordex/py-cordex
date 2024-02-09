@@ -19,6 +19,7 @@ __all__ = [
 
 table_prefix = "CORDEX-CMIP6"
 
+
 class read_cls:
     def __init__(self, reader):
         self.reader = reader
