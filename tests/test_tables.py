@@ -18,6 +18,6 @@ import cordex as cx
 #    cx.tables.cmip6_cmor_table(table)
 
 
-@pytest.mark.parametrize("table", ["CORDEX_CV", "CORDEX_remo_example"])
+@pytest.mark.parametrize("table", ["CORDEX-CMIP6_CV", "CORDEX-CMIP6_remo_example"])
 def test_download_cordex_cmor_tables(table):
     cx.tables.cordex_cmor_table(table)

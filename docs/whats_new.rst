@@ -9,6 +9,7 @@ UNRELEASED
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Updated cmor table prefix to ``CORDEX-CMIP6`` (:pull:`227`).
 - Moved from ``setup.cfg`` to ``pyproject.toml`` (:pull:`209`).
 - Update point cell method resampling (:pull:`207`).
 - Update units check using pint (:pull:`203`).

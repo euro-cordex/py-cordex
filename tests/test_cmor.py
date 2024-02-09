@@ -16,6 +16,10 @@ from . import requires_pint_xarray
 
 mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
 
+table_prefix = "CORDEX-CMIP6"
+
+cmor.set_options(table_prefix=table_prefix)
+
 
 def test_cfdt():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
@@ -168,14 +172,14 @@ def test_month_bounds():
 
 def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs):
     if dataset_table is None:
-        dataset_table = cordex_cmor_table("CORDEX_remo_example")
+        dataset_table = cordex_cmor_table(f"{table_prefix}_remo_example")
     return cmor.cmorize_variable(
         ds,
         out_name,
         mapping_table=mapping_table,
-        cmor_table=cordex_cmor_table(f"CORDEX_{table_id}"),
+        cmor_table=cordex_cmor_table(f"{table_prefix}_{table_id}"),
         dataset_table=dataset_table,
-        grids_table=cordex_cmor_table("CORDEX_grids"),
+        grids_table=cordex_cmor_table(f"{table_prefix}_grids"),
         CORDEX_domain=domain_id,
         replace_coords=True,
         allow_units_convert=True,
@@ -224,7 +228,7 @@ def test_units_convert():
 
 @pytest.mark.parametrize("table_id", ["1hr", "6hr", "day", "mon"])
 def test_table_id(table_id):
-    table = f"CORDEX_{table_id}"
+    table = f"{table_prefix}_{table_id}"
     filename = cordex_cmor_table(table)
     tid = utils.get_table_id(utils._read_table(filename))
     assert tid == table_id
