@@ -17,6 +17,7 @@ __all__ = [
     "cmor_tables_inpath",
 ]
 
+table_prefix = "CORDEX-CMIP6"
 
 class read_cls:
     def __init__(self, reader):
@@ -60,10 +61,10 @@ def cordex_cmor_table(table, table_dir=None):
     """
     # make sure these are fetched because cmor
     # requires them silently
-    fetch_cordex_cmor_table("CORDEX_coordinate")
-    fetch_cordex_cmor_table("CORDEX_grids")
-    fetch_cordex_cmor_table("CORDEX_formula_terms")
-    fetch_cordex_cmor_table("CORDEX_CV")
+    fetch_cordex_cmor_table(f"{table_prefix}_coordinate")
+    fetch_cordex_cmor_table(f"{table_prefix}_grids")
+    fetch_cordex_cmor_table(f"{table_prefix}_formula_terms")
+    fetch_cordex_cmor_table(f"{table_prefix}_CV")
 
     return fetch_cordex_cmor_table(table)
 
