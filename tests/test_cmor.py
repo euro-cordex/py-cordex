@@ -20,6 +20,7 @@ table_prefix = "CORDEX-CMIP6"
 
 cmor.set_options(table_prefix=table_prefix)
 
+
 def test_cfdt():
     assert cmor.to_cftime(dt.datetime(2000, 1, 1, 1)) == cfdt.datetime(2000, 1, 1, 1)
     assert cmor.to_cftime(dt.date(2000, 1, 1)) == cfdt.datetime(2000, 1, 1)
