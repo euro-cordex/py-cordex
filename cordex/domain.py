@@ -491,3 +491,52 @@ def _crop_to_domain(ds, domain_id, drop=True):
     x_mask = ds.cf["X"].round(8).isin(domain.cf["X"])
     y_mask = ds.cf["Y"].round(8).isin(domain.cf["Y"])
     return ds.where(x_mask & y_mask, drop=drop)
+
+
+def cell_area(domain_id, R=6371000, attrs=True):  # meters from cdo help
+    """Compute cell areas for a rotated CORDEX domain.
+
+    Parameters
+    ----------
+    domain_id : str
+        Domain identifier.
+    R : float
+        Earth radius in cm.
+    attrs: logical
+        Add CF attributes for atmospheric grid-cell area.
+
+    Returns
+    -------
+    Cell area : xr.DataArray
+        DataArray containg the size of each grid cell.
+
+    """
+    # short name: areacella
+    # standard name: cell_area
+    ds = cordex_domain(domain_id)
+    # compute diffs
+    ds = ds.cf.add_bounds(("rlon", "rlat"))
+    rlon_bounds = cfxr.bounds_to_vertices(ds.cf.get_bounds("rlon"), "bounds")
+    rlat_bounds = cfxr.bounds_to_vertices(ds.cf.get_bounds("rlat"), "bounds")
+    ds["drlon"] = rlon_bounds.diff("rlon_vertices").rename({"rlon_vertices": "rlon"})
+    ds["drlat"] = rlat_bounds.diff("rlat_vertices").rename({"rlat_vertices": "rlat"})
+
+    dphi = np.deg2rad(ds.drlon)
+    dtheta = np.deg2rad(ds.drlat)
+    dOmega = np.sin(np.deg2rad(-1 * ds.rlat + 90.0)) * dtheta * dphi
+
+    da = R**2 * dOmega
+
+    if attrs is True:
+        da.name = "areacella"
+        da.attrs = {
+            "standard_name": "cell_area",
+            "units": "m2",
+            "cell_methods": "area: sum",
+            "cell_measures": "area: areacella",
+            "long_name": "Atmosphere Grid-Cell Area",
+        }
+    else:
+        da.attrs = {}
+
+    return da
