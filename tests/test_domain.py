@@ -13,9 +13,14 @@ from . import requires_cartopy
 @pytest.mark.parametrize("bounds", [False, True])
 @pytest.mark.parametrize("mapping_name", [None, "rotated_pole"])
 @pytest.mark.parametrize("dummy", [False, True, "data", "topo"])
-def test_domain_coordinates(domain_id, bounds, mapping_name, dummy):
+@pytest.mark.parametrize("cell_area", [False, True])
+def test_domain_coordinates(domain_id, bounds, mapping_name, dummy, cell_area):
     ds = cx.cordex_domain(
-        domain_id, bounds=bounds, mapping_name=mapping_name, dummy=dummy
+        domain_id,
+        bounds=bounds,
+        mapping_name=mapping_name,
+        dummy=dummy,
+        cell_area=cell_area,
     )
     assert ds.cf["X"].ndim == 1
     assert ds.cf["Y"].ndim == 1
@@ -35,6 +40,9 @@ def test_domain_coordinates(domain_id, bounds, mapping_name, dummy):
     if bounds is True:
         assert "longitude" in ds.cf.bounds
         assert "latitude" in ds.cf.bounds
+
+    if cell_area is True:
+        assert "areacella" in ds
 
     if dummy is True:
         assert "dummy" in ds
@@ -107,3 +115,7 @@ def test_vertices():
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
     cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
+
+
+def test_cell_area():
+    pass
