@@ -9,7 +9,7 @@ from . import requires_cartopy
 # from cordex.utils import _get_info, _guess_domain
 
 
-@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i", "SAM-44", "AFR-22"])
 @pytest.mark.parametrize("bounds", [False, True])
 @pytest.mark.parametrize("mapping_name", [None, "rotated_pole"])
 @pytest.mark.parametrize("dummy", [False, True, "data", "topo"])
@@ -49,13 +49,11 @@ def test_domain_coordinates(domain_id, bounds, mapping_name, dummy, cell_area):
     if isinstance(dummy, str):
         assert dummy in ds
 
-    assert cx.cordex_domain("EUR-11").attrs["CORDEX_domain"] == "EUR-11"
-    assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
 
-
-def test_domain():
-    ds = cx.cordex_domain("EUR-11")
-    ds.attrs["CORDEX_domain"] == "EUR-11"
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i", "SAM-44", "AFR-22"])
+def test_domain(domain_id):
+    ds = cx.cordex_domain(domain_id)
+    ds.attrs["CORDEX_domain"] == domain_id
     # test attributes
     assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
     # ensure rounding errors fixed
@@ -117,5 +115,6 @@ def test_vertices():
     cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
 
 
-def test_cell_area():
-    pass
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
+def test_cell_area(domain_id):
+    assert cx.cell_area(domain_id)

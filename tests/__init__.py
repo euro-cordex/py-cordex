@@ -4,6 +4,8 @@ import importlib
 
 import pytest
 
+import cordex as cx
+
 
 def _importorskip(modname):
     try:
@@ -21,3 +23,6 @@ has_regionmask, requires_regionmask = _importorskip("regionmask")
 has_xesmf, requires_xesmf = _importorskip("xesmf")
 has_geopandas, requires_geopandas = _importorskip("geopandas")
 has_pint_xarray, requires_pint_xarray = _importorskip("pint_xarray")
+
+all_domains = cx.domains.table.index.to_list()
+basic_domains = [d for d in all_domains if "44" in d]
