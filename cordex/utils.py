@@ -2,10 +2,6 @@ import tempfile
 
 import numpy as np
 
-import cordex as cx
-
-from .config import nround
-
 
 def get_tempfile():
     """Creates a temporay filename."""
@@ -17,66 +13,70 @@ def to_center_coordinate(ds):
     return ds
 
 
-def _get_info(ds, tables=None, precision=nround):
-    if tables is None:
-        tables = cx.domains.table.replace(np.nan, None)
-    try:
-        x = ds.cf["X"]
-        y = ds.cf["Y"]
-    except KeyError:
-        x = ds.rlon
-        y = ds.rlat
-    nlon = x.size
-    nlat = y.size
-    dlon = x.diff(x.dims[0]).values.item(0)
-    dlat = y.diff(y.dims[0]).values.item(0)
-    ll_lon = x[0].min().values.item(0)
-    ll_lat = y[0].min().values.item(0)
-    ur_lon = x[-1].min().values.item(0)
-    ur_lat = y[-1].min().values.item(0)
-    try:
-        pollon = ds.cf["grid_mapping"].grid_north_pole_longitude
-        pollat = ds.cf["grid_mapping"].grid_north_pole_latitude
-    except KeyError:
-        pollon = None
-        pollat = None
-    coords = {
-        "nlon": nlon,
-        "nlat": nlat,
-        "ll_lon": ll_lon,
-        "ur_lon": ur_lon,
-        "ll_lat": ll_lat,
-        "ur_lat": ur_lat,
-        "dlon": dlon,
-        "dlat": dlat,
-        "pollon": pollon,
-        "pollat": pollat,
-    }
-    # round
-    info = {
-        k: (np.round(v, nround) if isinstance(v, float) else v)
-        for k, v in coords.items()
-    }
-    return info
+def compute_cell_area(ds, R=6371000):
+    """Compute cell area of a regular spherical grid.
 
+    Parameters
+    ----------
+    ds : str
+        Dataset containing longitude and latitude coordinates.
+        Can either be regular or curvilinear coordinates.
+    R : float
+        Earth radius in units [m]. Defaults to 6371000 meters.
+    """
 
-def _guess_domain(ds, tables=None):
-    if tables is None:
-        tables = cx.domains.table  # .replace(np.nan, None)
-    try:
-        info = _get_info(ds, tables)
-    except Exception as e:
-        print(e)
-        raise Exception(
-            "Could not determine domain, only rotated_latitude_longitude supported."
+    dphi, dtheta = (
+        np.deg2rad(
+            ds.cf[c]
+            # pad values to account for differentiation
+            .pad({ds.cf[c].dims[0]: (1, 0)}, mode="reflect", reflect_type="odd").diff(
+                ds.cf[c].dims[0]
+            )
         )
-    filt = tables
-    for k, v in info.items():
-        if filt.empty:
-            return None
-        if v:
-            filt = filt[np.isclose(filt[k], v)]
-        else:
-            filt = filt[np.isnan(filt[k])]  # | filt[k] is None]
-    # reset index and convert to dict
-    return filt.reset_index().iloc[0].replace(np.nan, None).to_dict()
+        for c in ("X", "Y")
+    )
+    dOmega = np.cos(np.deg2rad(ds.cf["Y"])) * dtheta * dphi
+    return R**2 * dOmega
+
+
+def get_cell_area(ds, R=6371000, attrs=True):
+    """Compute cell areas for a rotated CORDEX domain.
+
+    Parameters
+    ----------
+    ds : str
+        Dataset containing longitude and latitude coordinates.
+        Can either be regular or curvilinear coordinates.
+    R : float
+        Earth radius in units [m]. Defaults to 6371000 meters.
+    attrs: logical or str
+        If True, add attributes for grid-cell area. If ``"CF"``,
+        add CF attributes for atmospheric grid-cell area.
+
+    Returns
+    -------
+    Cell area : xr.DataArray
+        DataArray containg the size of each grid cell in units [m2]
+
+    """
+
+    da = compute_cell_area(ds, R)
+
+    if attrs:
+        da.name = "areacell"
+        da.attrs = {
+            "standard_name": "cell_area",
+            "units": "m2",
+            "long_name": "Grid-Cell Area",
+        }
+    if attrs == "CF":
+        da.name = "areacella"
+        da.attrs = da.attrs | {
+            "cell_methods": "area: sum",
+            "cell_measures": "area: areacella",
+            "long_name": "Atmosphere Grid-Cell Area",
+        }
+    if not attrs:
+        da.attrs = {}
+
+    return da

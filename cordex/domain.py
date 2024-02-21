@@ -10,7 +10,7 @@ from . import cf
 from .config import nround
 from .tables import domains
 from .transform import grid_mapping, transform, transform_bounds
-from .utils import get_tempfile
+from .utils import get_cell_area, get_tempfile
 
 
 def _locate_domain_id(domain_id, table):
@@ -73,6 +73,7 @@ def cordex_domain(
     mapping_name=None,
     bounds=False,
     mip_era="CMIP5",
+    cell_area=False,
 ):
     """Creates an xarray dataset containg the domain grid definitions.
 
@@ -99,6 +100,8 @@ def cordex_domain(
     mip_era : str
         The mip_era keyword determines the vocabulary for dimensions, coordinates and
         attributes.
+    cell_area: logical
+        Add a grid-cell area variable.
 
     Returns
     -------
@@ -145,6 +148,7 @@ def cordex_domain(
         mapping_name=mapping_name,
         bounds=bounds,
         mip_era=mip_era,
+        cell_area=cell_area,
     )
 
 
@@ -165,6 +169,7 @@ def create_dataset(
     mapping_name=None,
     bounds=False,
     mip_era="CMIP5",
+    cell_area=False,
     **kwargs,
 ):
     """Create domain dataset from grid information.
@@ -268,7 +273,12 @@ def create_dataset(
         )
 
     if dummy:
+        if dummy is True:
+            dummy = "dummy"
         ds = _add_dummy(ds, dummy)
+
+    if cell_area is True:
+        ds = _assign_cell_area(ds, dummy)
 
     return ds
 
@@ -377,9 +387,8 @@ def _get_rotated_dataset(
     return ds
 
 
-def _add_dummy(ds, name=True):
-    if name is True:
-        name = "dummy"
+def _add_dummy(ds, name):
+    """adds a dummy variable to the dataset"""
 
     attrs = {"coordinates": "lat lon"}
     try:
@@ -493,6 +502,14 @@ def _crop_to_domain(ds, domain_id, drop=True):
     return ds.where(x_mask & y_mask, drop=drop)
 
 
+def _assign_cell_area(ds, dummy):
+    area = get_cell_area(ds, attrs="CF")
+    ds = ds.assign_coords(**{area.name: area})
+    if dummy:
+        ds[dummy].attrs["cell_measures"] = f"area: {area.name}"
+    return ds
+
+
 def cell_area(domain_id, R=6371000, attrs=True):  # meters from cdo help
     """Compute cell areas for a rotated CORDEX domain.
 
@@ -500,43 +517,21 @@ def cell_area(domain_id, R=6371000, attrs=True):  # meters from cdo help
     ----------
     domain_id : str
         Domain identifier.
+        Dataset containing longitude and latitude coordinates.
+        Can either be regular or curvilinear coordinates.
     R : float
-        Earth radius in cm.
-    attrs: logical
-        Add CF attributes for atmospheric grid-cell area.
+        Earth radius in units [m]. Defaults to 6371000 meters.
+    attrs: logical or str
+        If True, add attributes for grid-cell area. If ``"CF"``,
+        add CF attributes for atmospheric grid-cell area.
 
     Returns
     -------
     Cell area : xr.DataArray
-        DataArray containg the size of each grid cell.
+        DataArray containg the size of each grid cell in units [m2]
 
     """
-    # short name: areacella
-    # standard name: cell_area
-    ds = cordex_domain(domain_id)
-    # compute diffs
-    ds = ds.cf.add_bounds(("rlon", "rlat"))
-    rlon_bounds = cfxr.bounds_to_vertices(ds.cf.get_bounds("rlon"), "bounds")
-    rlat_bounds = cfxr.bounds_to_vertices(ds.cf.get_bounds("rlat"), "bounds")
-    ds["drlon"] = rlon_bounds.diff("rlon_vertices").rename({"rlon_vertices": "rlon"})
-    ds["drlat"] = rlat_bounds.diff("rlat_vertices").rename({"rlat_vertices": "rlat"})
 
-    dphi = np.deg2rad(ds.drlon)
-    dtheta = np.deg2rad(ds.drlat)
-    dOmega = np.sin(np.deg2rad(-1 * ds.rlat + 90.0)) * dtheta * dphi
-
-    da = R**2 * dOmega
-
-    if attrs is True:
-        da.name = "areacella"
-        da.attrs = {
-            "standard_name": "cell_area",
-            "units": "m2",
-            "cell_methods": "area: sum",
-            "cell_measures": "area: areacella",
-            "long_name": "Atmosphere Grid-Cell Area",
-        }
-    else:
-        da.attrs = {}
+    da = get_cell_area(cordex_domain(domain_id), R, attrs)
 
     return da
