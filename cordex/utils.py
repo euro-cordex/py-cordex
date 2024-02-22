@@ -71,11 +71,13 @@ def get_cell_area(ds, R=6371000, attrs=True):
         }
     if attrs == "CF":
         da.name = "areacella"
-        da.attrs = da.attrs | {
-            "cell_methods": "area: sum",
-            "cell_measures": "area: areacella",
-            "long_name": "Atmosphere Grid-Cell Area",
-        }
+        da.attrs.update(
+            {
+                "cell_methods": "area: sum",
+                "cell_measures": "area: areacella",
+                "long_name": "Atmosphere Grid-Cell Area",
+            }
+        )
     if not attrs:
         da.attrs = {}
 
