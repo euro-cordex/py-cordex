@@ -55,9 +55,8 @@ def test_domain(domain_id):
     ds = cx.cordex_domain(domain_id)
     ds.attrs["CORDEX_domain"] == domain_id
     # test attributes
-    assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
+    assert "institution" in cx.cordex_domain(domain_id, attrs="CORDEX").attrs
     # ensure rounding errors fixed
-    assert np.float64(ds.rlon.isel(rlon=34).data) == -24.635
 
 
 def test_constructor():
@@ -73,6 +72,7 @@ def test_constructor():
         pollat=39.25,
     )
     assert eur11_user.equals(eur11)
+    assert np.float64(eur11.rlon.isel(rlon=34).data) == -24.635
 
 
 @pytest.mark.parametrize("bounds", [False, True])
