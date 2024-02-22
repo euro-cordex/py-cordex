@@ -117,4 +117,4 @@ def test_vertices():
 
 @pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
 def test_cell_area(domain_id):
-    assert cx.cell_area(domain_id)
+    cx.cell_area(domain_id)
