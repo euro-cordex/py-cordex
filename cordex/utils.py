@@ -13,14 +13,13 @@ def to_center_coordinate(ds):
     return ds
 
 
-def compute_cell_area(ds, R=6371000):
+def _cell_area(ds, R=6371000):
     """Compute cell area of a regular spherical grid.
 
     Parameters
     ----------
     ds : str
         Dataset containing longitude and latitude coordinates.
-        Can either be regular or curvilinear coordinates.
     R : float
         Earth radius in units [m]. Defaults to 6371000 meters.
     """
@@ -39,14 +38,17 @@ def compute_cell_area(ds, R=6371000):
     return R**2 * dOmega
 
 
-def get_cell_area(ds, R=6371000, attrs=True):
-    """Compute cell areas for a rotated CORDEX domain.
+def cell_area(ds, R=6371000, attrs=True):
+    """Compute cell areas for a regular spherical grid.
+
+    .. math::
+        \\sum_{i=1}^{\\infty} x_{i}
 
     Parameters
     ----------
     ds : str
-        Dataset containing longitude and latitude coordinates.
-        Can either be regular or curvilinear coordinates.
+        Dataset containing a regular grid with longitude and latitude
+        coordinates that can be understood by cf_xarray.
     R : float
         Earth radius in units [m]. Defaults to 6371000 meters.
     attrs: logical or str
@@ -58,9 +60,14 @@ def get_cell_area(ds, R=6371000, attrs=True):
     Cell area : xr.DataArray
         DataArray containg the size of each grid cell in units [m2]
 
+    References
+    ----------
+
+    https://en.wikipedia.org/wiki/Solid_angle
+
     """
 
-    da = compute_cell_area(ds, R)
+    da = _cell_area(ds, R)
 
     if attrs:
         da.name = "areacell"

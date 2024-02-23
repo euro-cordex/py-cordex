@@ -2,7 +2,7 @@ import pkg_resources
 
 from . import regions, tables, tutorial
 from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
-from .domain import cell_area, cordex_domain, create_dataset, domain_info, vertices
+from .domain import cordex_domain, create_dataset, domain_info, vertices
 from .tables import domains, ecmwf
 from .transform import (
     map_crs,
@@ -11,6 +11,7 @@ from .transform import (
     transform_bounds,
     transform_coords,
 )
+from .utils import cell_area
 
 try:
     __version__ = pkg_resources.get_distribution("py-cordex").version

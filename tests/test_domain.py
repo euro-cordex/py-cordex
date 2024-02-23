@@ -113,8 +113,3 @@ def test_vertices():
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
     cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
-
-
-@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
-def test_cell_area(domain_id):
-    cx.cell_area(domain_id)

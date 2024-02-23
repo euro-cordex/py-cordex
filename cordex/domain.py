@@ -10,7 +10,7 @@ from . import cf
 from .config import nround
 from .tables import domains
 from .transform import grid_mapping, transform, transform_bounds
-from .utils import get_cell_area, get_tempfile
+from .utils import cell_area, get_tempfile
 
 
 def _locate_domain_id(domain_id, table):
@@ -101,7 +101,7 @@ def cordex_domain(
         The mip_era keyword determines the vocabulary for dimensions, coordinates and
         attributes.
     cell_area: logical
-        Add a grid-cell area variable.
+        Add a grid-cell area coordinate variable.
 
     Returns
     -------
@@ -503,35 +503,8 @@ def _crop_to_domain(ds, domain_id, drop=True):
 
 
 def _assign_cell_area(ds, dummy):
-    area = get_cell_area(ds, attrs="CF")
+    area = cell_area(ds, attrs="CF")
     ds = ds.assign_coords(**{area.name: area})
     if dummy:
         ds[dummy].attrs["cell_measures"] = f"area: {area.name}"
     return ds
-
-
-def cell_area(domain_id, R=6371000, attrs=True):  # meters from cdo help
-    """Compute cell areas for a rotated CORDEX domain.
-
-    Parameters
-    ----------
-    domain_id : str
-        Domain identifier.
-        Dataset containing longitude and latitude coordinates.
-        Can either be regular or curvilinear coordinates.
-    R : float
-        Earth radius in units [m]. Defaults to 6371000 meters.
-    attrs: logical or str
-        If True, add attributes for grid-cell area. If ``"CF"``,
-        add CF attributes for atmospheric grid-cell area.
-
-    Returns
-    -------
-    Cell area : xr.DataArray
-        DataArray containg the size of each grid cell in units [m2]
-
-    """
-
-    da = get_cell_area(cordex_domain(domain_id), R, attrs)
-
-    return da
