@@ -6,6 +6,13 @@ What's New
 UNRELEASED
 ----------
 
+New Features
+~~~~~~~~~~~~
+
+- Added :py:meth:`cell_area` which computes the cell area of a regular grid, e.g., the cell area in the rotated coordinates of a CORDEX dataset (:pull:`230`).
+
+- New keyword ``cell_area`` in py:meth:`cordex_domain` which will add a cell area coordinate (:pull:`230`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
