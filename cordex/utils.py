@@ -41,9 +41,6 @@ def _cell_area(ds, R=6371000):
 def cell_area(ds, R=6371000, attrs=True):
     """Compute cell areas for a regular spherical grid.
 
-    .. math::
-        \\sum_{i=1}^{\\infty} x_{i}
-
     Parameters
     ----------
     ds : str
@@ -59,6 +56,18 @@ def cell_area(ds, R=6371000, attrs=True):
     -------
     Cell area : xr.DataArray
         DataArray containg the size of each grid cell in units [m2]
+
+    Notes
+    -----
+    The solid angle differential of the sphere is computed as
+
+    .. math::
+        d\\Omega = \\sin\theta\\,d\theta\\,d\varphi
+
+    with the surface element
+
+    .. math::
+        dA = R^2 d\\Omega
 
     References
     ----------
