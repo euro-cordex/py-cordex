@@ -39,7 +39,7 @@ def _cell_area(ds, R=6371000):
 
 
 def cell_area(ds, R=6371000, attrs=True):
-    """Compute cell areas for a regular spherical grid.
+    r"""Compute cell areas for a regular spherical grid.
 
     Parameters
     ----------
@@ -62,12 +62,12 @@ def cell_area(ds, R=6371000, attrs=True):
     The solid angle differential of the sphere is computed as
 
     .. math::
-        d\\Omega = \\sin\theta\\,d\theta\\,d\varphi
+        d\Omega = \sin\theta\,d\theta\,d\phi
 
     with the surface element
 
     .. math::
-        dA = R^2 d\\Omega
+        dA = R^2 d\Omega
 
     References
     ----------
