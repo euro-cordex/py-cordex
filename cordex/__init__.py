@@ -11,6 +11,7 @@ from .transform import (
     transform_bounds,
     transform_coords,
 )
+from .utils import cell_area
 
 try:
     __version__ = pkg_resources.get_distribution("py-cordex").version
@@ -36,4 +37,5 @@ __all__ = [
     "transform_bounds",
     "domains",
     "ecmwf",
+    "cell_area",
 ]

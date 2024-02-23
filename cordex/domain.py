@@ -10,7 +10,7 @@ from . import cf
 from .config import nround
 from .tables import domains
 from .transform import grid_mapping, transform, transform_bounds
-from .utils import get_tempfile
+from .utils import cell_area, get_tempfile
 
 
 def _locate_domain_id(domain_id, table):
@@ -73,6 +73,7 @@ def cordex_domain(
     mapping_name=None,
     bounds=False,
     mip_era="CMIP5",
+    cell_area=False,
 ):
     """Creates an xarray dataset containg the domain grid definitions.
 
@@ -99,6 +100,8 @@ def cordex_domain(
     mip_era : str
         The mip_era keyword determines the vocabulary for dimensions, coordinates and
         attributes.
+    cell_area: logical
+        Add a grid-cell area coordinate variable.
 
     Returns
     -------
@@ -145,6 +148,7 @@ def cordex_domain(
         mapping_name=mapping_name,
         bounds=bounds,
         mip_era=mip_era,
+        cell_area=cell_area,
     )
 
 
@@ -165,6 +169,7 @@ def create_dataset(
     mapping_name=None,
     bounds=False,
     mip_era="CMIP5",
+    cell_area=False,
     **kwargs,
 ):
     """Create domain dataset from grid information.
@@ -268,7 +273,12 @@ def create_dataset(
         )
 
     if dummy:
+        if dummy is True:
+            dummy = "dummy"
         ds = _add_dummy(ds, dummy)
+
+    if cell_area is True:
+        ds = _assign_cell_area(ds, dummy)
 
     return ds
 
@@ -377,9 +387,8 @@ def _get_rotated_dataset(
     return ds
 
 
-def _add_dummy(ds, name=True):
-    if name is True:
-        name = "dummy"
+def _add_dummy(ds, name):
+    """adds a dummy variable to the dataset"""
 
     attrs = {"coordinates": "lat lon"}
     try:
@@ -491,3 +500,11 @@ def _crop_to_domain(ds, domain_id, drop=True):
     x_mask = ds.cf["X"].round(8).isin(domain.cf["X"])
     y_mask = ds.cf["Y"].round(8).isin(domain.cf["Y"])
     return ds.where(x_mask & y_mask, drop=drop)
+
+
+def _assign_cell_area(ds, dummy):
+    area = cell_area(ds, attrs="CF")
+    ds = ds.assign_coords(**{area.name: area})
+    if dummy:
+        ds[dummy].attrs["cell_measures"] = f"area: {area.name}"
+    return ds

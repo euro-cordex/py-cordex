@@ -9,13 +9,18 @@ from . import requires_cartopy
 # from cordex.utils import _get_info, _guess_domain
 
 
-@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i"])
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i", "SAM-44", "AFR-22"])
 @pytest.mark.parametrize("bounds", [False, True])
 @pytest.mark.parametrize("mapping_name", [None, "rotated_pole"])
 @pytest.mark.parametrize("dummy", [False, True, "data", "topo"])
-def test_domain_coordinates(domain_id, bounds, mapping_name, dummy):
+@pytest.mark.parametrize("cell_area", [False, True])
+def test_domain_coordinates(domain_id, bounds, mapping_name, dummy, cell_area):
     ds = cx.cordex_domain(
-        domain_id, bounds=bounds, mapping_name=mapping_name, dummy=dummy
+        domain_id,
+        bounds=bounds,
+        mapping_name=mapping_name,
+        dummy=dummy,
+        cell_area=cell_area,
     )
     assert ds.cf["X"].ndim == 1
     assert ds.cf["Y"].ndim == 1
@@ -36,22 +41,22 @@ def test_domain_coordinates(domain_id, bounds, mapping_name, dummy):
         assert "longitude" in ds.cf.bounds
         assert "latitude" in ds.cf.bounds
 
+    if cell_area is True:
+        assert "areacella" in ds
+
     if dummy is True:
         assert "dummy" in ds
     if isinstance(dummy, str):
         assert dummy in ds
 
-    assert cx.cordex_domain("EUR-11").attrs["CORDEX_domain"] == "EUR-11"
-    assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
 
-
-def test_domain():
-    ds = cx.cordex_domain("EUR-11")
-    ds.attrs["CORDEX_domain"] == "EUR-11"
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-11i", "SAM-44", "AFR-22"])
+def test_domain(domain_id):
+    ds = cx.cordex_domain(domain_id)
+    ds.attrs["CORDEX_domain"] == domain_id
     # test attributes
-    assert "institution" in cx.cordex_domain("EUR-11", attrs="CORDEX").attrs
+    assert "institution" in cx.cordex_domain(domain_id, attrs="CORDEX").attrs
     # ensure rounding errors fixed
-    assert np.float64(ds.rlon.isel(rlon=34).data) == -24.635
 
 
 def test_constructor():
@@ -67,6 +72,7 @@ def test_constructor():
         pollat=39.25,
     )
     assert eur11_user.equals(eur11)
+    assert np.float64(eur11.rlon.isel(rlon=34).data) == -24.635
 
 
 @pytest.mark.parametrize("bounds", [False, True])
