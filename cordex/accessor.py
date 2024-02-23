@@ -162,7 +162,8 @@ class CordexAccessor:
         """
         import cartopy.crs as ccrs
         import cartopy.feature as cf
-        import cartopy.io.img_tiles as cimgt
+
+        # import cartopy.io.img_tiles as cimgt
         import matplotlib.pyplot as plt
 
         obj = self._obj
@@ -172,13 +173,20 @@ class CordexAccessor:
             mapping.grid_north_pole_longitude,
             mapping.grid_north_pole_latitude,
         )
-        transform = ccrs.RotatedPole(*pole)
+        central_longitude = 0.0
+        if obj.cf["X"].min() > 0.0:
+            central_longitude = 180.0
+
+        transform = ccrs.RotatedPole(*pole, central_rotated_longitude=central_longitude)
+
         if projection is None:
             projection = transform
+
         ax = plt.axes(projection=projection)
         # use google maps tiles
-        request = cimgt.GoogleTiles()
-        ax.add_image(request, 4)  # , interpolation='spline36', regrid_shape=2000)
+        ax.stock_img()
+        # request = cimgt.GoogleTiles()
+        # ax.add_image(request, 4)  # , interpolation='spline36', regrid_shape=2000)
         ax.gridlines(
             draw_labels=True,
             linewidth=0.5,
@@ -187,10 +195,15 @@ class CordexAccessor:
             ylocs=range(-90, 90, 5),
         )
         ax.set_extent(
-            [obj.rlon.min(), obj.rlon.max(), obj.rlat.min(), obj.rlat.max()],
+            [
+                obj.rlon.min() - central_longitude,
+                obj.rlon.max() - central_longitude,
+                obj.rlat.min(),
+                obj.rlat.max(),
+            ],
             crs=transform,
         )
-        ax.coastlines(resolution="50m", color="black", linewidth=1)
+        ax.coastlines(resolution="110m", color="black", linewidth=1)
         ax.add_feature(cf.BORDERS, color="black")
 
         return ax
