@@ -98,3 +98,16 @@ def cell_area(ds, R=6371000, attrs=True):
         da.attrs = {}
 
     return da
+
+
+def create_polygon(obj):
+    """create polygon in rotated pole coords"""
+    from shapely.geometry import Polygon
+
+    coords = [
+        [obj.cf["X"].min(), obj.cf["Y"].min()],
+        [obj.cf["X"].max(), obj.cf["Y"].min()],
+        [obj.cf["X"].max(), obj.cf["Y"].max()],
+        [obj.cf["X"].min(), obj.cf["Y"].max()],
+    ]
+    return Polygon(coords)
