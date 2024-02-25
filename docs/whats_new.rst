@@ -6,11 +6,12 @@ What's New
 UNRELEASED
 ----------
 
+This release introduces the :py:meth:`cell_area` function and adds the ``cell_area`` keyword in :py:meth:`cordex_domain`.
+
 New Features
 ~~~~~~~~~~~~
 
 - Added :py:meth:`cell_area` which computes the cell area of a regular grid, e.g., the cell area in the rotated coordinates of a CORDEX dataset (:pull:`230`).
-
 - New keyword ``cell_area`` in :py:meth:`cordex_domain` which will add a cell area coordinate (:pull:`230`).
 
 Internal Changes
@@ -25,6 +26,9 @@ Internal Changes
 Bugfixes
 ~~~~~~~~
 
+.. currentmodule:: xarray
+
+- Fix :py:meth:`Dataset.cx.map` for the southern hemisphere (:pull:`231`).
 - Ensure ssl verification for VG2500 fetching (:pull:`206`, :pull:`212`).
 - Fix ``flox`` method in cmor module (:pull:`197`).
 
@@ -35,6 +39,8 @@ Patch release that fixes installation and cmor issues.
 
 Bugfixes
 ~~~~~~~~
+
+.. currentmodule:: cordex
 
 - Fix ``packages`` argument in ``setup.cfg`` (:pull:`192`).
 - Fixed empty mapping_table argument in :py:meth:`cmor.cmorize_variable` (:pull:`187`).
