@@ -3,7 +3,7 @@
 What's New
 ==========
 
-v0.7.0 (25 November 2024)
+v0.7.0 (25 February 2024)
 -------------------------
 
 This release introduces the :py:meth:`cell_area` function and adds the ``cell_area`` keyword in :py:meth:`cordex_domain`. Includes internal updates for CORDEX-CMIP6 cmorization.
