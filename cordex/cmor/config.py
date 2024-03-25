@@ -18,7 +18,12 @@ loffsets = {
     "D": dt.timedelta(hours=12),
 }
 
-time_axis_names = {"point": "time1", "mean": "time"}
+time_axis_names = {
+    "point": "time1",
+    "mean": "time",
+    "maximum": "time",
+    "minimum": "time",
+}
 
 units_format = "cf"  # "~P"
 # units.define("deg = degree")
