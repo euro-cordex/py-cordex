@@ -141,7 +141,7 @@ def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
 
 def _get_time_axis_name(time_cell_method):
     """Get the name of the CMOR time coordinate"""
-    return time_axis_names[time_cell_method]
+    return time_axis_names.get(time_cell_method, "time")
 
 
 def _define_axes(ds, table_id):
@@ -196,15 +196,15 @@ def _define_time(ds, table_id, time_cell_method=None):
     cmor.set_table(table_id)
 
     if time_cell_method is None:
-        warn("no time_cell_method given, assuming: point")
-        time_cell_method = "point"
+        warn("no time_cell_method given, assuming: mean")
+        time_cell_method = "mean"
 
     # encode time and time bounds
 
     time_axis_encode = _encode_time(ds.time).to_numpy()
     time_axis_name = _get_time_axis_name(time_cell_method)
 
-    if time_cell_method == "mean":
+    if time_cell_method != "point":
         time_bounds = _time_bounds(ds)
         time_bounds.encoding = ds.time.encoding
         time_bounds_encode = _encode_time(time_bounds).to_numpy()
@@ -518,7 +518,7 @@ def prepare_variable(
             var_ds = _adjust_frequency(var_ds, cf_freq, input_freq, time_cell_method)
         if rewrite_time_axis is True:
             var_ds = _rewrite_time_axis(var_ds, cf_freq)
-        if "time" not in ds.cf.bounds and time_cell_method == "mean":
+        if "time" not in ds.cf.bounds and time_cell_method != "point":
             warn("adding time bounds")
             var_ds = _add_time_bounds(var_ds, cf_freq)
         if use_cftime is False:
