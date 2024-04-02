@@ -1,7 +1,9 @@
 .. currentmodule:: cordex
 
-What's New
+UNRELEASED
 ==========
+
+- Fix cmor time axis issue (:pull:`236`).
 
 v0.7.0 (25 February 2024)
 -------------------------
