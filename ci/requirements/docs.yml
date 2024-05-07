@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - docutils<0.21.2 # see https://github.com/euro-cordex/py-cordex/issues/243
+  - docutils=0.20 # see https://github.com/euro-cordex/py-cordex/issues/243
   - pint-xarray
   - matplotlib-base
   - xarray
