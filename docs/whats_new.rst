@@ -3,8 +3,8 @@
 What's new
 ==========
 
-Unreleased
-----------
+v0.7.1 (4 June 2024)
+--------------------
 
 - Fix cmor time axis issue (:pull:`236`).
 
