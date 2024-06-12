@@ -3,8 +3,23 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+Patch release.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Pin ```pint!=0.24`` due to breaking changes that affect ``cf_xarray`` (:pull:`249`).
+
 v0.7.1 (4 June 2024)
 --------------------
+
+Patch release.
+
+Bugfixes
+~~~~~~~~
 
 - Fix cmor time axis issue (:pull:`236`).
 
