@@ -19,6 +19,7 @@ dependencies:
   - python-cdo
   - cmor
   - pint-xarray
+  - pint!=0.24 # see https://github.com/euro-cordex/py-cordex/issues/249
   - flox
 # for testing
   - pytest
