@@ -10,6 +10,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Pin ``pint!=0.24`` due to breaking changes that affect ``cf_xarray`` (:pull:`249`).
+- Changed ``CORDEX_domain`` keyword to ``domain_id`` in :py:meth:`cmor.cmorize_variable`, added deprecation warning (:pull:`252`).
 
 v0.7.1 (4 June 2024)
 --------------------
