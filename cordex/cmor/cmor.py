@@ -145,8 +145,8 @@ def _get_time_axis_name(time_cell_method):
 
 
 def _define_axes(ds, table_id):
-    if "CORDEX_domain" in ds.attrs:
-        grid = cordex_domain(ds.attrs["CORDEX_domain"], bounds=True)
+    if "domain_id" in ds.attrs:
+        grid = cordex_domain(ds.attrs["domain_id"], bounds=True)
         lon_vertices = grid.lon_vertices.to_numpy()
         lat_vertices = grid.lat_vertices.to_numpy()
     else:
@@ -622,6 +622,15 @@ def cmorize_variable(
 
     """
     ds = ds.copy()
+
+    if "CORDEX_domain" in kwargs:
+        warn(
+            "'CORDEX_domain' keyword is deprecated, please use the 'domain_id' keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        domain_id = kwargs["CORDEX_domain"]
+        del kwargs["CORDEX_domain"]
 
     if domain_id is None:
         try:
