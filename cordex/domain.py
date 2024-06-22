@@ -119,7 +119,7 @@ def domain(
 
         import cordex as cx
 
-        eur11 = cx.cordex_domain('EUR-11')
+        eur11 = cx.domain('EUR-11')
 
     """
 
@@ -200,7 +200,7 @@ def cordex_domain(
 
         import cordex as cx
 
-        eur11 = cx.domain('EUR-11')
+        eur11 = cx.cordex_domain('EUR-11')
 
     """
 
