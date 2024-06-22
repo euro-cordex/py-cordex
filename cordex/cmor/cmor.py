@@ -458,7 +458,7 @@ def prepare_variable(
     allow_units_convert=False,
     allow_resample=False,
     input_freq=None,
-    CORDEX_domain=None,
+    domain_id=None,
     time_units=None,
     rewrite_time_axis=False,
     use_cftime=False,
@@ -500,11 +500,12 @@ def prepare_variable(
     # remove point coordinates, e.g, height2m
     if squeeze is True:
         var_ds = var_ds.squeeze(drop=True)
-    if CORDEX_domain is not None:
-        var_ds.attrs["CORDEX_domain"] = CORDEX_domain
-        var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
+    if domain_id is not None:
+        var_ds.attrs["domain_id"] = domain_id
+        var_ds = _crop_to_cordex_domain(var_ds, domain_id)
     if replace_coords is True:
-        grid = cordex_domain(CORDEX_domain, bounds=True)
+        domain_id = domain_id or var_ds.cx.domain_id
+        grid = cordex_domain(domain_id, bounds=True)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
         var_ds = var_ds.assign_coords(
@@ -533,8 +534,8 @@ def prepare_variable(
     try:
         mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
     except KeyError:
-        warn(f"adding pole from archive specs: {CORDEX_domain}")
-        mapping = _get_cordex_pole(CORDEX_domain)
+        warn(f"adding pole from archive specs: {domain_id}")
+        mapping = _get_cordex_pole(domain_id)
 
     if "time" in mapping.coords:
         raise Exception("grid_mapping variable should have no time coordinate!")
@@ -556,7 +557,7 @@ def cmorize_variable(
     allow_units_convert=False,
     allow_resample=False,
     input_freq=None,
-    CORDEX_domain=None,
+    domain_id=None,
     time_units=None,
     rewrite_time_axis=False,
     outpath=None,
@@ -599,8 +600,8 @@ def cmorize_variable(
         The frequency of the input dataset in pandas notation. It ``None`` and the dataset
         contains a time axis, the frequency will be determined automatically using
         ``pandas.infer_freq`` if possible.
-    CORDEX_domain: str
-        Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+    domain_id: str
+        Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
         global attribute if available.
     time_units: str
         Time units of the cmorized dataset (``ISO 8601``).
@@ -622,15 +623,16 @@ def cmorize_variable(
     """
     ds = ds.copy()
 
-    if CORDEX_domain is None:
+    if domain_id is None:
         try:
-            CORDEX_domain = ds.CORDEX_domain
-        except Exception:
+            domain_id = ds.cx.domain_id
+        except Exception as e:
+            warn(e)
             warn(
-                "could not identify CORDEX domain, try to set the 'CORDEX_domain' argument"
+                "could not identify CORDEX domain, try to set the 'domain_id' argument"
             )
-    elif "CORDEX_domain" not in ds.attrs:
-        ds.attrs["CORDEX_domain"] = CORDEX_domain
+    elif "domain_id" not in ds.attrs:
+        ds.attrs["domain_id"] = domain_id
 
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
@@ -645,7 +647,7 @@ def cmorize_variable(
         ds,
         out_name,
         cmor_table,
-        CORDEX_domain=CORDEX_domain,
+        domain_id=domain_id,
         mapping_table=mapping_table,
         replace_coords=replace_coords,
         input_freq=input_freq,
@@ -677,7 +679,7 @@ class Cmorizer(CmorizerBase):
         allow_units_convert=False,
         allow_resample=False,
         input_freq=None,
-        CORDEX_domain=None,
+        domain_id=None,
         time_units=None,
         rewrite_time_axis=False,
         outpath=None,
@@ -712,8 +714,8 @@ class Cmorizer(CmorizerBase):
             The frequency of the input dataset in pandas notation. It ``None`` and the dataset
             contains a time axis, the frequency will be determined automatically using
             ``pandas.infer_freq`` if possible.
-        CORDEX_domain: str
-            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+        domain_id: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
             global attribute if available.
         time_units: str
             Time units of the cmorized dataset (``ISO 8601``).
@@ -734,7 +736,7 @@ class Cmorizer(CmorizerBase):
         self.replace_coords = replace_coords
         self.allow_units_convert = allow_units_convert
         self.allow_resample = allow_resample
-        self.CORDEX_domain = CORDEX_domain
+        self.domain_id = domain_id
         self.time_units = time_units
         self.rewrite_time_axis = rewrite_time_axis
         self.outpath = outpath
@@ -754,7 +756,7 @@ class Cmorizer(CmorizerBase):
         allow_units_convert=False,
         allow_resample=False,
         input_freq=None,
-        CORDEX_domain=None,
+        domain_id=None,
         time_units=None,
         rewrite_time_axis=False,
         use_cftime=False,
@@ -770,7 +772,7 @@ class Cmorizer(CmorizerBase):
             allow_units_convert=allow_units_convert or self.allow_units_convert,
             allow_resample=allow_resample or self.allow_resample,
             input_freq=input_freq,
-            CORDEX_domain=CORDEX_domain or self.CORDEX_domain,
+            domain_id=domain_id or self.domain_id,
             time_units=time_units or self.time_units,
             rewrite_time_axis=rewrite_time_axis or self.rewrite_time_axis,
             use_cftime=use_cftime,
@@ -820,8 +822,8 @@ class Cmorizer(CmorizerBase):
             The frequency of the input dataset in pandas notation. It ``None`` and the dataset
             contains a time axis, the frequency will be determined automatically using
             ``pandas.infer_freq`` if possible.
-        CORDEX_domain: str
-            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+        domain_id: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
             global attribute if available.
         time_units: str
             Time units of the cmorized dataset (``ISO 8601``).
