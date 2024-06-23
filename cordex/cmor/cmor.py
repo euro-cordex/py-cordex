@@ -167,7 +167,7 @@ def _define_axes(ds, table_id):
     cmor_axis = [cmorLat, cmorLon]
 
     # add z axis if required
-    if "Z" in ds.cf.coords:
+    if "Z" in ds.cf.dims:
         z = ds.cf["Z"]
         cmorZ = cmor.axis(
             table_entry=z.name, coords_vals=z.to_numpy(), units=z.attrs.get("units")
