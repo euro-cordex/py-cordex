@@ -164,8 +164,18 @@ def _define_axes(ds, table_id):
         coord_vals=ds.rlon.to_numpy(),
         units=ds.rlon.units,
     )
+    cmor_axis = [cmorLat, cmorLon]
+
+    # add z axis if required
+    if "Z" in ds.cf.coords:
+        z = ds.cf["Z"]
+        cmorZ = cmor.axis(
+            table_entry=z.name, coords_vals=z.to_numpy(), units=z.attrs.get("units")
+        )
+        cmor_axis.insert(0, cmorZ)
+
     cmorGrid = cmor.grid(
-        [cmorLat, cmorLon],
+        cmor_axis,
         latitude=ds.lat.to_numpy(),
         longitude=ds.lon.to_numpy(),
         latitude_vertices=lat_vertices,
@@ -470,6 +480,8 @@ def prepare_variable(
         mapping_table = {}
 
     ds = ds.copy(deep=False)
+    # use cf_xarray to guess coordinate meta data
+    ds = ds.cf.guess_coord_axis(verbose=True)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)
