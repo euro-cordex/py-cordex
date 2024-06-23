@@ -64,7 +64,7 @@ def domain_names(table_name=None):
         return list(domains.table.index)
 
 
-def cordex_domain(
+def domain(
     domain_id,
     dummy=False,
     add_vertices=False,
@@ -119,16 +119,9 @@ def cordex_domain(
 
         import cordex as cx
 
-        eur11 = cx.cordex_domain('EUR-11')
+        eur11 = cx.domain('EUR-11')
 
     """
-    if add_vertices is True:
-        warn(
-            "add_vertices keyword is deprecated, please use the bounds keyword instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        bounds = True
 
     if attrs is None:
         attrs = {}
@@ -144,6 +137,85 @@ def cordex_domain(
         # domain_id=domain_id,
         dummy=dummy,
         add_vertices=False,
+        attrs=attrs,
+        mapping_name=mapping_name,
+        bounds=bounds,
+        mip_era=mip_era,
+        cell_area=cell_area,
+    )
+
+
+def cordex_domain(
+    domain_id,
+    dummy=False,
+    add_vertices=False,
+    tables=None,
+    attrs=None,
+    mapping_name=None,
+    bounds=False,
+    mip_era="CMIP5",
+    cell_area=False,
+):
+    """Creates an xarray dataset containg coordinates and meta data of a CORDEX grid.
+
+    Parameters
+    ----------
+    domain_id : str
+        Domain identifier.
+    dummy : str or logical
+        Name of dummy field, if dummy=topo, the cdo topo operator will be
+        used to create some dummy topography data. dummy data is useful for
+        looking at the domain with ncview.
+    tables : dataframe or list of dataframes, default: cordex_tables
+        Tables from which to look up the grid information. Index in the table
+        should be the short name of the domain, e.g., `EUR-11`. If no table is
+        provided, all standard tables will be searched.
+    attrs : str or dict
+        Global attributes that should be added to the dataset. If `attrs='CORDEX'`
+        a set of standard CF global attributes.
+    mapping_name : str
+        Variable name of the grid mapping, if mapping_name is `None`, the CF standard
+        variable name is used.
+    bounds : bool
+        Add spatial bounds to longitude and latitude coordinates.
+    mip_era : str
+        The mip_era keyword determines the vocabulary for dimensions, coordinates and
+        attributes.
+    cell_area: logical
+        Add a grid-cell area coordinate variable.
+
+    Returns
+    -------
+    Grid : xr.Dataset
+        Dataset containing a CORDEX grid.
+
+    References
+    ----------
+    Please refer to the CF conventions document : https://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html#grid-mappings-and-projections
+
+    Example
+    -------
+
+    To create a cordex rotated pole domain dataset, you can use ,e.g.,::
+
+        import cordex as cx
+
+        eur11 = cx.cordex_domain('EUR-11')
+
+    """
+
+    if add_vertices is True:
+        warn(
+            "add_vertices keyword is deprecated, please use the bounds keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bounds = True
+
+    return domain(
+        domain_id,
+        dummy=dummy,
+        tables=tables,
         attrs=attrs,
         mapping_name=mapping_name,
         bounds=bounds,

@@ -2,7 +2,7 @@ import pkg_resources
 
 from . import regions, tables, tutorial
 from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
-from .domain import cordex_domain, create_dataset, domain_info, vertices
+from .domain import cordex_domain, create_dataset, domain, domain_info, vertices
 from .tables import domains, ecmwf
 from .transform import (
     map_crs,
@@ -26,6 +26,7 @@ __all__ = [
     "regions",
     "tables",
     "tutorial",
+    "domain",
     "cordex_domain",
     "create_dataset",
     "domain_info",

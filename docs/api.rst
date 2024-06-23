@@ -13,7 +13,7 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
-   cordex_domain
+   domain
    domain_info
    create_dataset
    transform

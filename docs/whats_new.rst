@@ -3,14 +3,23 @@
 What's new
 ==========
 
-UNRELEASED
-----------
+v0.8.0 (UNRELEASED)
+-------------------
+
+Unreleased.
+
+.. note::
+   This version introduces :py:meth:`domain` which is equivalent to the former
+   `cordex_domain` function. Both API calls are available, however, future
+   improvements might only be done on the new ``domain`` API and it is
+   recommended to use :py:meth:`domain` in the future.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Pin ``pint!=0.24`` due to breaking changes that affect ``cf_xarray`` (:pull:`249`).
 - Changed ``CORDEX_domain`` keyword to ``domain_id`` in :py:meth:`cmor.cmorize_variable`, added deprecation warning (:pull:`252`).
+- Added :py:meth:`domain` which is equivalent to earlier ``cordex_domain`` (:pull:`254`).
 
 v0.7.1 (4 June 2024)
 --------------------
