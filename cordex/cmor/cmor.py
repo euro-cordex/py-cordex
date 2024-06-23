@@ -144,7 +144,7 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names.get(time_cell_method, "time")
 
 
-def _define_axes(ds, table_id):
+def _define_grid(ds, table_id):
     if "domain_id" in ds.attrs:
         grid = cordex_domain(ds.attrs["domain_id"], bounds=True)
         lon_vertices = grid.lon_vertices.to_numpy()
@@ -164,18 +164,9 @@ def _define_axes(ds, table_id):
         coord_vals=ds.rlon.to_numpy(),
         units=ds.rlon.units,
     )
-    cmor_axis = [cmorLat, cmorLon]
-
-    # add z axis if required
-    if "Z" in ds.cf.dims:
-        z = ds.cf["Z"]
-        cmorZ = cmor.axis(
-            table_entry=z.name, coords_vals=z.to_numpy(), units=z.attrs.get("units")
-        )
-        cmor_axis.insert(0, cmorZ)
 
     cmorGrid = cmor.grid(
-        cmor_axis,
+        [cmorLat, cmorLon],
         latitude=ds.lat.to_numpy(),
         longitude=ds.lon.to_numpy(),
         latitude_vertices=lat_vertices,
@@ -230,29 +221,51 @@ def _define_time(ds, table_id, time_cell_method=None):
     )
 
 
-def _define_grid(ds, table_ids, time_cell_method="point"):
-    cmorGrid = _define_axes(ds, table_ids["grid"])
+def _define_axis(ds, table_ids, time_cell_method="point"):
+    cmorGrid = _define_grid(ds, table_ids["grid"])
 
     if "time" in ds:
         cmorTime = _define_time(ds, table_ids["mip"], time_cell_method)
     else:
         cmorTime = None
 
-    return cmorTime, cmorGrid
-
-
-def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
-    cmor.set_table(table_id)
-    if cmorTime is None:
-        coords = [cmorGrid]
+    # add z axis if required
+    if "Z" in ds.cf.dims:
+        z = ds.cf["Z"]
+        bounds = ds.cf.add_bounds("Z").cf.get_bounds("Z").to_numpy()
+        cmorZ = cmor.axis(
+            table_entry=z.name,
+            coord_vals=z.to_numpy(),
+            units=z.attrs.get("units"),
+            cell_bounds=bounds,
+        )
     else:
-        coords = [cmorTime, cmorGrid]
+        cmorZ = None
+
+    return cmorTime, cmorZ, cmorGrid
+
+
+def _cmor_write(da, table_id, cmorTime, cmorZ, cmorGrid, file_name=True):
+    """write to netcdf via cmor python API"""
+
+    cmor.set_table(table_id)
+
+    # create coordinate ids
+    coords = []
+    if cmorTime:
+        coords.append(cmorTime)
+    if cmorZ:
+        coords.append(cmorZ)
+    coords.append(cmorGrid)
+
     cmor_var = cmor.variable(da.name, da.units, coords)
+
     if "time" in da.coords:
         ntimes_passed = da.time.size
     else:
         ntimes_passed = None
     cmor.write(cmor_var, da.to_numpy(), ntimes_passed=ntimes_passed)
+
     return cmor.close(cmor_var, file_name=file_name)
 
 
@@ -454,9 +467,11 @@ def cmorize_cmor(
         dataset_table_json, cmor_table_json, grids_table=grids_table, inpath=inpath
     )
 
-    cmorTime, cmorGrid = _define_grid(ds, table_ids, time_cell_method=time_cell_method)
+    cmorTime, cmorZ, cmorGrid = _define_axis(
+        ds, table_ids, time_cell_method=time_cell_method
+    )
 
-    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorGrid)
+    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorZ, cmorGrid)
 
 
 def prepare_variable(
