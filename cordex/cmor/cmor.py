@@ -591,6 +591,13 @@ def cmorize_variable(
 ):
     """Cmorizes a variable.
 
+    This functions call the python cmor API and creates a cmorized NetCDF file from the input
+    dataset. Coordinates of the input dataset should be understandable by ``cf_xarray`` if they
+    follow basic CF conventions. If a vertical coordinate is available, it should have an ``axis="Z"``
+    attribute so it can be understood by ``cf_xarray`` and it should be named after the unique key of the
+    coordinate in the cmor grids table (not the out_name), e.g., name it ``sdepth`` if you
+    need a soil layer coordinate instead of ``depth``.
+
     Parameters
     ----------
     ds : xr.Dataset
@@ -645,6 +652,27 @@ def cmorize_variable(
     -------
     filename
         Filepath to cmorized file.
+
+    Example
+    -------
+
+    To cmorize a dataset, you can use ,e.g.,::
+
+        import cordex as cx
+        from cordex.cmor import cmorize_variable
+        from cordex.tables import cordex_cmor_table
+
+        ds = cx.cordex_domain("EUR-11", dummy="topo").rename(topo="orog")
+        dataset_table = cordex_cmor_table(f"CORDEX-CMIP6_remo_example")
+
+        filename = cmorize_variable(
+            ds,
+            "orog",
+            cmor_table=cordex_cmor_table("CORDEX-CMIP6_fx"),
+            dataset_table=dataset_table,
+            replace_coords=True,
+            allow_units_convert=True,
+        )
 
     """
     ds = ds.copy()
