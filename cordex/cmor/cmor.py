@@ -512,13 +512,12 @@ def prepare_variable(
     # ds = xr.decode_cf(ds, decode_coords="all")
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
-    if out_name not in mapping_table:
-        try:
-            var_ds = ds[[out_name]]
-        except Exception:
-            raise Exception(
-                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
-            )
+    if out_name in ds.data_vars:
+        var_ds = ds[[out_name]]
+    elif mapping_table and out_name not in mapping_table:
+        raise Exception(
+            f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
+        )
     else:
         varname = mapping_table[out_name]["varname"]
         # cf_name = varinfo["cf_name"]

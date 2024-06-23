@@ -220,7 +220,7 @@ def test_cmorizer_mon():
 
 def test_cmorizer_mon_sdepth():
     ds = create_sdepth_ds()
-    filename = run_cmorizer(ds, "tsl", "EUR-11", "mon")
+    filename = run_cmorizer(ds, "tsl", "EUR-11", "day")
     return filename
 
 
