@@ -6,13 +6,19 @@ What's new
 v0.8.0 (UNRELEASED)
 -------------------
 
-Unreleased.
+This version introduces :py:meth:`domain` which should tighten the API call in the future.
+The cmor module was also updated to make more usage of ``cf_xarray``.
 
 .. note::
    This version introduces :py:meth:`domain` which is equivalent to the former
-   `cordex_domain` function. Both API calls are available, however, future
+   ``cordex_domain`` function. Both API calls are available, however, future
    improvements might only be done on the new ``domain`` API and it is
    recommended to use :py:meth:`domain` in the future.
+
+New Features
+~~~~~~~~~~~~
+
+- Cmor function :py:meth:`cmor.cmorize_variable` can now handle 3D fields if a Z-axis is available (:pull:`230`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
