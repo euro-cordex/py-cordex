@@ -32,6 +32,7 @@ Features
 You can use this package, e.g., to easily access CORDEX grid definitions:
 
 .. code-block:: python
+
     import cordex as cx
 
     cx.domain("EUR-11")
@@ -43,6 +44,7 @@ to create an xarray Dataset:
 and make a quick plot using the accessor:
 
 .. code-block:: python
+
     cx.domain("EUR-11").cx.plot()
 
 .. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/main/docs/eur-11.png
