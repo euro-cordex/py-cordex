@@ -29,6 +29,16 @@ Features
 * Includes coordinate transformations, bounds and vertices for CORDEX datasets.
 * Utitlities for cmorization to make the CORDEX ensembles more consistent.
 
+You can use this package, e.g., to easily access CORDEX grid definitions, e.g.
+```python
+import cordex as cx
+
+cx.domain("EUR-11")
+```
+creates an xarray Dataset:
+
+.. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/nblink/eur11-xarray.png
+
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
 Installation
