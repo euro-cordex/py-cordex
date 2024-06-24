@@ -20,20 +20,16 @@ This package offers python tools for the `CORDEX <https://cordex.org/>`_ communi
 Most of the tools leverage the ``xarray`` API to create grid and coordinate informations and data of CORDEX domains in the
 form of an ``xarray.Dataset`` directly from the official `CORDEX archive specifications <https://cordex.org/experiment-guidelines/experiment-protocol-rcms/>`_.
 
+Please have a look at the `introduction noteboook <https://py-cordex.readthedocs.io/en/latest/notebooks/introduction.html>`_!
+
 Features
 --------
 
 * Tools to manage CORDEX grids as xarray datasets.
 * Includes coordinate transformations, bounds and vertices for CORDEX datasets.
 * Utitlities for cmorization to make the CORDEX ensembles more consistent.
-* Preprocessing for easy access to a homogenized CORDEX ensemble dataset.
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
-
-Meta data
-^^^^^^^^^
-Access to meta data should be automatic and machine readable to avoid humans to do boring, repetitiv tasks that are error prone.
-For that purpose, easy access to meta information should be guaranteed by tables collected `here <https://github.com/euro-cordex/tables>`_.
 
 Installation
 ------------
@@ -57,7 +53,6 @@ For instructions to install py-cordex from source, please have a look at the
 `contributing guide <https://py-cordex.readthedocs.io/en/stable/contributing.html>`_.
 If you want to contribute, please get in contact as early as possible, e.g.,
 using `draft pull requests <https://github.blog/2019-02-14-introducing-draft-pull-requests>`_.
-
 
 Credits
 -------
