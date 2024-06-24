@@ -30,11 +30,13 @@ Features
 * Utitlities for cmorization to make the CORDEX ensembles more consistent.
 
 You can use this package, e.g., to easily access CORDEX grid definitions, e.g.
-```python
-import cordex as cx
 
-cx.domain("EUR-11")
-```
+.. code-block:: console
+
+    import cordex as cx
+
+    cx.domain("EUR-11")
+
 creates an xarray Dataset:
 
 .. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/nblink/eur11-xarray.png
