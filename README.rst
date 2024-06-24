@@ -39,7 +39,7 @@ You can use this package, e.g., to easily access CORDEX grid definitions, e.g.
 
 creates an xarray Dataset:
 
-.. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/nblink/eur11-xarray.png
+.. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/nblink/docs/eur11-xarray.png
 
 For planned features, please have a look at the `issues <https://github.com/euro-cordex/py-cordex/issues>`_, grab one, and `contribute <https://py-cordex.readthedocs.io/en/latest/contributing.html>`_!
 
