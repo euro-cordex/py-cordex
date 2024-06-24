@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - docutils=0.20 # see https://github.com/euro-cordex/py-cordex/issues/243
+  - docutils
   - pint-xarray
   - matplotlib-base
   - xarray
@@ -13,7 +13,6 @@ dependencies:
   - pillow
   - pip
   - nbsphinx
-  - nbsphinx-link
   - ipython
   - cftime
   - pooch
@@ -27,6 +26,4 @@ dependencies:
   - pydata-sphinx-theme
   - sphinx-book-theme>=0.3.3
   - sphinx-autosummary-accessors
-  - pip:
-    - sphinxcontrib-mockautodoc
-    - myst_nb
+  - myst-nb
