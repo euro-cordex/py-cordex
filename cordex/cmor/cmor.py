@@ -144,7 +144,7 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names.get(time_cell_method, "time")
 
 
-def _define_axes(ds, table_id):
+def _define_grid(ds, table_id):
     if "domain_id" in ds.attrs:
         grid = cordex_domain(ds.attrs["domain_id"], bounds=True)
         lon_vertices = grid.lon_vertices.to_numpy()
@@ -164,6 +164,7 @@ def _define_axes(ds, table_id):
         coord_vals=ds.rlon.to_numpy(),
         units=ds.rlon.units,
     )
+
     cmorGrid = cmor.grid(
         [cmorLat, cmorLon],
         latitude=ds.lat.to_numpy(),
@@ -220,29 +221,51 @@ def _define_time(ds, table_id, time_cell_method=None):
     )
 
 
-def _define_grid(ds, table_ids, time_cell_method="point"):
-    cmorGrid = _define_axes(ds, table_ids["grid"])
+def _define_axis(ds, table_ids, time_cell_method="point"):
+    cmorGrid = _define_grid(ds, table_ids["grid"])
 
     if "time" in ds:
         cmorTime = _define_time(ds, table_ids["mip"], time_cell_method)
     else:
         cmorTime = None
 
-    return cmorTime, cmorGrid
-
-
-def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
-    cmor.set_table(table_id)
-    if cmorTime is None:
-        coords = [cmorGrid]
+    # add z axis if required
+    if "Z" in ds.cf.dims:
+        z = ds.cf["Z"]
+        bounds = ds.cf.add_bounds("Z").cf.get_bounds("Z").to_numpy()
+        cmorZ = cmor.axis(
+            table_entry=z.name,
+            coord_vals=z.to_numpy(),
+            units=z.attrs.get("units"),
+            cell_bounds=bounds,
+        )
     else:
-        coords = [cmorTime, cmorGrid]
+        cmorZ = None
+
+    return cmorTime, cmorZ, cmorGrid
+
+
+def _cmor_write(da, table_id, cmorTime, cmorZ, cmorGrid, file_name=True):
+    """write to netcdf via cmor python API"""
+
+    cmor.set_table(table_id)
+
+    # create coordinate ids
+    coords = []
+    if cmorTime:
+        coords.append(cmorTime)
+    if cmorZ:
+        coords.append(cmorZ)
+    coords.append(cmorGrid)
+
     cmor_var = cmor.variable(da.name, da.units, coords)
+
     if "time" in da.coords:
         ntimes_passed = da.time.size
     else:
         ntimes_passed = None
     cmor.write(cmor_var, da.to_numpy(), ntimes_passed=ntimes_passed)
+
     return cmor.close(cmor_var, file_name=file_name)
 
 
@@ -444,9 +467,11 @@ def cmorize_cmor(
         dataset_table_json, cmor_table_json, grids_table=grids_table, inpath=inpath
     )
 
-    cmorTime, cmorGrid = _define_grid(ds, table_ids, time_cell_method=time_cell_method)
+    cmorTime, cmorZ, cmorGrid = _define_axis(
+        ds, table_ids, time_cell_method=time_cell_method
+    )
 
-    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorGrid)
+    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorZ, cmorGrid)
 
 
 def prepare_variable(
@@ -470,6 +495,8 @@ def prepare_variable(
         mapping_table = {}
 
     ds = ds.copy(deep=False)
+    # use cf_xarray to guess coordinate meta data
+    ds = ds.cf.guess_coord_axis(verbose=True)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)
@@ -485,13 +512,12 @@ def prepare_variable(
     # ds = xr.decode_cf(ds, decode_coords="all")
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
-    if out_name not in mapping_table:
-        try:
-            var_ds = ds[[out_name]]
-        except Exception:
-            raise Exception(
-                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
-            )
+    if out_name in ds.data_vars:
+        var_ds = ds[[out_name]]
+    elif mapping_table and out_name not in mapping_table:
+        raise Exception(
+            f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
+        )
     else:
         varname = mapping_table[out_name]["varname"]
         # cf_name = varinfo["cf_name"]
@@ -565,6 +591,13 @@ def cmorize_variable(
 ):
     """Cmorizes a variable.
 
+    This functions call the python cmor API and creates a cmorized NetCDF file from the input
+    dataset. Coordinates of the input dataset should be understandable by ``cf_xarray`` if they
+    follow basic CF conventions. If a vertical coordinate is available, it should have an ``axis="Z"``
+    attribute so it can be understood by ``cf_xarray`` and it should be named after the unique key of the
+    coordinate in the cmor grids table (not the out_name), e.g., name it ``sdepth`` if you
+    need a soil layer coordinate instead of ``depth``.
+
     Parameters
     ----------
     ds : xr.Dataset
@@ -619,6 +652,27 @@ def cmorize_variable(
     -------
     filename
         Filepath to cmorized file.
+
+    Example
+    -------
+
+    To cmorize a dataset, you can use ,e.g.,::
+
+        import cordex as cx
+        from cordex.cmor import cmorize_variable
+        from cordex.tables import cordex_cmor_table
+
+        ds = cx.cordex_domain("EUR-11", dummy="topo").rename(topo="orog")
+        dataset_table = cordex_cmor_table(f"CORDEX-CMIP6_remo_example")
+
+        filename = cmorize_variable(
+            ds,
+            "orog",
+            cmor_table=cordex_cmor_table("CORDEX-CMIP6_fx"),
+            dataset_table=dataset_table,
+            replace_coords=True,
+            allow_units_convert=True,
+        )
 
     """
     ds = ds.copy()

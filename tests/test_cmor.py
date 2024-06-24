@@ -4,6 +4,7 @@ import os
 import cftime
 import cftime as cfdt
 import numpy as np
+import pandas as pd
 import pytest
 import xarray as xr
 
@@ -19,6 +20,20 @@ mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
 table_prefix = "CORDEX-CMIP6"
 
 cmor.set_options(table_prefix=table_prefix)
+
+
+def create_sdepth_ds():
+    ds = cx.domain("EUR-11", dummy="topo")
+    ds = ds.drop("topo").assign(
+        tsl=ds.topo.expand_dims(
+            time=pd.date_range("2000-01-01T12:00:00", periods=3, freq="D"),
+            sdepth=[0.05, 0.10, 0.2],
+        )
+    )
+    ds.tsl.attrs["units"] = "K"
+    ds.sdepth.attrs["axis"] = "Z"
+    ds.sdepth.attrs["units"] = "m"
+    return ds
 
 
 def test_cfdt():
@@ -201,6 +216,12 @@ def test_cmorizer_mon():
     output = xr.open_dataset(filename)
     assert output.dims["time"] == 12
     assert "tas" in output
+
+
+def test_cmorizer_mon_sdepth():
+    ds = create_sdepth_ds()
+    filename = run_cmorizer(ds, "tsl", "EUR-11", "day")
+    return filename
 
 
 @pytest.mark.parametrize("table_id, tdim", [("day", 3), ("1hr", 49)])

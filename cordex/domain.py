@@ -67,7 +67,6 @@ def domain_names(table_name=None):
 def domain(
     domain_id,
     dummy=False,
-    add_vertices=False,
     tables=None,
     attrs=None,
     mapping_name=None,
