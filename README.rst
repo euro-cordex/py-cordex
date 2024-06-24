@@ -45,7 +45,7 @@ and make a quick plot using the accessor:
 
 .. code-block:: python
 
-    cx.domain("EUR-11").cx.plot()
+    cx.domain("EUR-11").cx.map()
 
 .. image:: https://raw.githubusercontent.com/euro-cordex/py-cordex/main/docs/eur-11.png
 
