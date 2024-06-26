@@ -18,7 +18,7 @@ The cmor module was also updated to make more usage of ``cf_xarray``.
 New Features
 ~~~~~~~~~~~~
 
-- Cmor function :py:meth:`cmor.cmorize_variable` can now handle 3D fields if a Z-axis is available (:pull:`230`).
+- Cmor function :py:meth:`cmor.cmorize_variable` can now handle 3D fields if a Z-axis is available (:pull:`230`, :pull:`258`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
