@@ -232,12 +232,20 @@ def _define_axis(ds, table_ids, time_cell_method="point"):
     # add z axis if required
     if "Z" in ds.cf.dims:
         z = ds.cf["Z"]
-        bounds = ds.cf.add_bounds("Z").cf.get_bounds("Z").to_numpy()
+        print(ds.cf.bounds)
+        if "Z" not in ds.cf.bounds:
+            # try to add bounds via cf_xarray
+            warn("found not bounds for z-axis, trying to create bounds...")
+            ds = ds.cf.add_bounds("Z", output_dim="bnds")
+        bounds = ds.cf.get_bounds("Z")
+        if bounds.ndim != 1:
+            # transpose to bounds
+            bounds = cfxr.bounds_to_vertices(bounds, "bnds")
         cmorZ = cmor.axis(
             table_entry=z.name,
             coord_vals=z.to_numpy(),
             units=z.attrs.get("units"),
-            cell_bounds=bounds,
+            cell_bounds=bounds.to_numpy(),
         )
     else:
         cmorZ = None
@@ -402,7 +410,7 @@ def _add_time_bounds(ds, cf_freq):
     Take special care of monthly frequencies.
 
     """
-    # monthly time bounds are funny in ESGS, it seems that
+    # monthly time bounds are funny in ESGF, it seems that
     # they should always be the first of each month and first
     # of second month. This is not really the bounds you would get
     # from arithmetics but seems fine. We have to take special care
@@ -513,7 +521,7 @@ def prepare_variable(
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
     if out_name in ds.data_vars:
-        var_ds = ds[[out_name]]
+        var_ds = ds  # [[out_name]]
     elif mapping_table and out_name not in mapping_table:
         raise Exception(
             f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
@@ -521,7 +529,7 @@ def prepare_variable(
     else:
         varname = mapping_table[out_name]["varname"]
         # cf_name = varinfo["cf_name"]
-        var_ds = ds[[varname]]  # .to_dataset()
+        var_ds = ds  # [[varname]]  # .to_dataset()
         var_ds = var_ds.rename({varname: out_name})
     # remove point coordinates, e.g, height2m
     if squeeze is True:
