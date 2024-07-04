@@ -14,7 +14,7 @@ except Exception:
     warn("no python cmor package available, consider installing it")
 
 # import cordex as cx
-from .. import cordex_domain
+from ..domain import domain
 from .config import (
     freq_map,
     loffsets,
@@ -109,12 +109,16 @@ def _get_bnds(values):
     return bnds
 
 
-def _crop_to_cordex_domain(ds, domain):
-    domain = cordex_domain(domain)
+def _crop_to_cordex_domain(ds, domain_id, tolerance=1.0e-2):
+    """Crop data to official CORDEX domain"""
+    grid = domain(domain_id)
+    info = grid.cx.info()
+    rlon_tol = tolerance * info["dlon"]
+    rlat_tol = tolerance * info["dlat"]
     # the method=='nearest' approach does not work well with dask
     return ds.sel(
-        rlon=slice(domain.rlon.min(), domain.rlon.max()),
-        rlat=slice(domain.rlat.min(), domain.rlat.max()),
+        rlon=slice(grid.rlon.min() - rlon_tol, grid.rlon.max() + rlon_tol),
+        rlat=slice(grid.rlat.min() - rlat_tol, grid.rlat.max() + rlat_tol),
     )
 
 
@@ -146,7 +150,7 @@ def _get_time_axis_name(time_cell_method):
 
 def _define_grid(ds, table_id):
     if "domain_id" in ds.attrs:
-        grid = cordex_domain(ds.attrs["domain_id"], bounds=True)
+        grid = domain(ds.attrs["domain_id"], bounds=True)
         lon_vertices = grid.lon_vertices.to_numpy()
         lat_vertices = grid.lat_vertices.to_numpy()
     else:
@@ -539,7 +543,7 @@ def prepare_variable(
         var_ds = _crop_to_cordex_domain(var_ds, domain_id)
     if replace_coords is True:
         domain_id = domain_id or var_ds.cx.domain_id
-        grid = cordex_domain(domain_id, bounds=True)
+        grid = domain(domain_id, bounds=True)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
         var_ds = var_ds.assign_coords(
@@ -670,7 +674,7 @@ def cmorize_variable(
         from cordex.cmor import cmorize_variable
         from cordex.tables import cordex_cmor_table
 
-        ds = cx.cordex_domain("EUR-11", dummy="topo").rename(topo="orog")
+        ds = cx.domain("EUR-11", dummy="topo").rename(topo="orog")
         dataset_table = cordex_cmor_table(f"CORDEX-CMIP6_remo_example")
 
         filename = cmorize_variable(
