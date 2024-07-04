@@ -3,6 +3,14 @@
 What's new
 ==========
 
+v0.8.1 (Unreleased)
+-------------------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Added internal tolerance to domain cropping during cmorization (:pull:`262`).
+
 v0.8.0 (27 June 2024)
 ---------------------
 
