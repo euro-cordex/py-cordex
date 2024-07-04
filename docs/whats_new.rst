@@ -3,11 +3,12 @@
 What's new
 ==========
 
-v0.8.0 (UNRELEASED)
--------------------
+v0.8.0 (27 June 2024)
+---------------------
 
 This version introduces :py:meth:`domain` which should tighten the API call in the future.
-The cmor module was also updated to make more usage of ``cf_xarray``.
+The cmor module was also updated to make more usage of ``cf_xarray`` and allow handling
+of a Z-axis.
 
 .. note::
    This version introduces :py:meth:`domain` which is equivalent to the former
