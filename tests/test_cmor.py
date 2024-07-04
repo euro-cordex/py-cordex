@@ -12,6 +12,7 @@ import cordex as cx
 from cordex import cmor
 from cordex.cmor import utils
 from cordex.tables import cordex_cmor_table
+from cordex.cmor.cmor import _crop_to_cordex_domain
 
 from . import requires_pint_xarray
 
@@ -183,6 +184,24 @@ def test_month_bounds():
     mid = utils.month_bounds(time_axis)
 
     assert np.array_equal(mid, expect)
+
+
+@pytest.mark.parametrize("domain_id", ["EUR-11", "SAM-44", "AFR-22"])
+def test_crop_to_domain(domain_id):
+    ds = cx.domain(domain_id)
+
+    cropped = _crop_to_cordex_domain(ds, domain_id)
+    assert ds.equals(cropped)
+    # assert larger domain is correctly cropped
+    pad = ds.pad(rlon=(1, 1), rlat=(1, 1), mode="reflect", reflect_type="odd")
+    cropped = _crop_to_cordex_domain(pad, domain_id)
+    assert ds.equals(cropped)
+
+    # check for tolerance
+    cropped = _crop_to_cordex_domain(
+        pad.reindex(rlon=pad.rlon * 1.00001, method="nearest"), domain_id
+    ).assign_coords(rlon=ds.rlon, rlat=ds.rlat)
+    assert ds.equals(cropped)
 
 
 def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs):
