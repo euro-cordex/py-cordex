@@ -75,6 +75,86 @@ def map_crs(x, y, src_crs, trg_crs=None):
     return result
 
 
+def _transform_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
+    """Transform vector components from rotated coordinates"""
+    # RADDEG = 180.0 / np.pi
+    # DEGRAD = np.pi / 180.0
+
+    if lon is None:
+        lon = x.cf["longitude"]
+    if lat is None:
+        lat = x.cf["latitude"]
+
+    if pollon is None:
+        pollon = x.cf["grid_mapping"].grid_north_pole_longitude
+    if pollat is None:
+        pollat = x.cf["grid_mapping"].grid_north_pole_latitude
+
+    RLA = np.deg2rad(lon)
+    PHI = np.deg2rad(lat)
+
+    # ds = xr.open_dataset("e065020m200001.nc")
+    X = x
+    Y = y
+
+    ZRLA = RLA
+    ZPHI = PHI
+
+    zpollat = np.deg2rad(pollat)
+    zpollon = np.deg2rad(pollon)
+    pollond = pollon
+    ZSINPOL = np.sin(zpollat)
+    ZCOSPOL = np.cos(zpollat)
+    if pollon < 0.0:
+        pollond = 360.0 + pollon
+
+    # LAENGE IM ROTIERTEN SYSTEM BERECHNEN
+
+    ZZRLA = np.rad2deg(RLA)
+
+    ZZRLA = xr.where(ZZRLA > 180.0, ZZRLA - 360.0, ZZRLA)
+
+    ZZRLA = np.deg2rad(ZZRLA)
+    ZD1 = ZZRLA - zpollon
+    ZD2 = ZRLA - zpollon
+
+    ZARG1 = -np.sin(ZD1) * np.cos(ZPHI)
+    ZARG2 = -ZSINPOL * np.cos(ZPHI) * np.cos(ZD1) + ZCOSPOL * np.sin(ZPHI)
+
+    # IF(ABS(ZARG2).LT.1.E-20) ZARG2 = 1.E-20
+    ZARG2 = xr.where(abs(ZARG2) < 1.0e-20, 1.0e-20, ZARG2)
+    # ZARG2.clip(min=1.E-20)
+
+    # ZRLAS = np.arctan2(ZARG1.values,ZARG2.values)
+    ZRLAS = np.arctan2(ZARG1, ZARG2)
+    # ZRLAS = np.arctan2(ZARG2.values,ZARG1.values)
+
+    ZARG = -np.sin(zpollat) * np.sin(ZD2) * np.sin(ZRLAS) - np.cos(ZD2) * np.cos(ZRLAS)
+    # ZARG = MIN(1.0,  ZARG)
+    # ZARG = MAX(-1.0, ZARG)
+    ZARG = ZARG.clip(min=-1.0, max=1.0)
+
+    ZBETA = abs(np.arccos(ZARG))
+    # IF ( -((RLA(I,J)*RADDEG) - (pollond-180.0)) .LT. 0.   .AND.     &
+    #   -((RLA(I,J)*RADDEG) - (pollond-180.0)) .GE. -180.) THEN
+    #   ZBETA = -ZBETA
+    # ENDIF
+    cond = xr.where(
+        (-((np.rad2deg(RLA)) - (pollond - 180.0)) < 0.0)
+        & (-((np.rad2deg(RLA)) - (pollond - 180.0)) >= -180.0),
+        True,
+        False,
+    )
+    ZBETA = xr.where(cond, -ZBETA, ZBETA)
+
+    # U10 - WIND TRANSFORMIEREN
+    XER = X * np.cos(ZBETA) - Y * np.sin(ZBETA)
+    # V10 - WIND TRANSFORMIEREN
+    YER = X * np.sin(ZBETA) + Y * np.cos(ZBETA)
+
+    return XER, YER
+
+
 def _transform(x, y, src_crs, trg_crs):
     """helper function for transforming coordinates"""
     # always_xy=True
