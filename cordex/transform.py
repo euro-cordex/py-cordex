@@ -75,8 +75,38 @@ def map_crs(x, y, src_crs, trg_crs=None):
     return result
 
 
-def _transform_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
-    """Transform vector components from rotated coordinates"""
+def derotate_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
+    """Derotate vector components from rotated coordinates.
+
+    The function performs a backward transformation of, e.g., velocity components U and V
+    from a rotated spherical coordinate system to a geographical system. If only the
+    components x and y are provided, it is assumed, they are DataArrays containing
+    a rotated latitude longitude grid mapping and lon lat coordinates that are used
+    for the transformation.
+
+    Parameters
+    ----------
+    x : float or DataArray
+        x component of vector in rotated coordinate system.
+    y : float or DataArray
+        y component of vecotr in rotated coordinate system.
+    lon : float or DataArray
+        Longitude coordinates in which to transform the vector components.
+    lat : float or DataArray
+        Latitude coordinates in which to transform the vector components.
+    pollon : float
+        Longitude of north pole in geographical coordinate system.
+    pollat : float
+        Latitude of north pole in geographical coordinate system.
+
+    Returns
+    -------
+    xt : DataArray
+        Transformed x coordinate.
+    yt : DataArray
+        Transformed y coordinate.
+
+    """
 
     if lon is None:
         lon = x.cf["longitude"]
@@ -118,7 +148,6 @@ def _transform_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
     ZRLAS = np.arctan2(ZARG1, ZARG2)
     ZARG = -np.sin(zpollat) * np.sin(ZD2) * np.sin(ZRLAS) - np.cos(ZD2) * np.cos(ZRLAS)
     ZARG = ZARG.clip(min=-1.0, max=1.0)
-
     ZBETA = abs(np.arccos(ZARG))
 
     ZBETA = xr.where(

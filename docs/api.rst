@@ -19,6 +19,7 @@ Top-level functions
    transform
    transform_coords
    transform_bounds
+   derotate_vector
    cell_area
 
 Preprocessing
