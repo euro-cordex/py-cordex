@@ -118,47 +118,47 @@ def derotate_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
     if pollat is None:
         pollat = x.cf["grid_mapping"].grid_north_pole_latitude
 
-    RLA = np.deg2rad(lon)
-    PHI = np.deg2rad(lat)
-    ZRLA = RLA
-    ZPHI = PHI
+    rla = np.deg2rad(lon)
+    phi = np.deg2rad(lat)
+    zrla = rla
+    zphi = phi
 
     zpollat = np.deg2rad(pollat)
     zpollon = np.deg2rad(pollon)
     pollond = pollon
-    ZSINPOL = np.sin(zpollat)
-    ZCOSPOL = np.cos(zpollat)
+    zsinpol = np.sin(zpollat)
+    zcospol = np.cos(zpollat)
     if pollon < 0.0:
         pollond = 360.0 + pollon
 
     # compute vector abs in rotated coordinates
 
-    ZZRLA = np.rad2deg(RLA)
-    ZZRLA = xr.where(ZZRLA > 180.0, ZZRLA - 360.0, ZZRLA)
-    ZZRLA = np.deg2rad(ZZRLA)
-    ZD1 = ZZRLA - zpollon
-    ZD2 = ZRLA - zpollon
+    zzrla = np.rad2deg(rla)
+    zzrla = xr.where(zzrla > 180.0, zzrla - 360.0, zzrla)
+    zzrla = np.deg2rad(zzrla)
+    zd1 = zzrla - zpollon
+    zd2 = zrla - zpollon
 
-    # WINKEL ZBETA BERECHEN (SCHNITTWINKEL DER BREITENKREISE)
+    # winkel zbeta berechen (schnittwinkel der breitenkreise)
 
-    ZARG1 = -np.sin(ZD1) * np.cos(ZPHI)
-    ZARG2 = -ZSINPOL * np.cos(ZPHI) * np.cos(ZD1) + ZCOSPOL * np.sin(ZPHI)
+    zarg1 = -np.sin(zd1) * np.cos(zphi)
+    zarg2 = -zsinpol * np.cos(zphi) * np.cos(zd1) + zcospol * np.sin(zphi)
 
-    ZARG2 = xr.where(abs(ZARG2) < 1.0e-20, 1.0e-20, ZARG2)
-    ZRLAS = np.arctan2(ZARG1, ZARG2)
-    ZARG = -np.sin(zpollat) * np.sin(ZD2) * np.sin(ZRLAS) - np.cos(ZD2) * np.cos(ZRLAS)
-    ZARG = ZARG.clip(min=-1.0, max=1.0)
-    ZBETA = abs(np.arccos(ZARG))
+    zarg2 = xr.where(abs(zarg2) < 1.0e-20, 1.0e-20, zarg2)
+    zrlas = np.arctan2(zarg1, zarg2)
+    zarg = -np.sin(zpollat) * np.sin(zd2) * np.sin(zrlas) - np.cos(zd2) * np.cos(zrlas)
+    zarg = zarg.clip(min=-1.0, max=1.0)
+    zbeta = abs(np.arccos(zarg))
 
-    ZBETA = xr.where(
-        (-((np.rad2deg(RLA)) - (pollond - 180.0)) < 0.0)
-        & (-((np.rad2deg(RLA)) - (pollond - 180.0)) >= -180.0),
-        -ZBETA,
-        ZBETA,
+    zbeta = xr.where(
+        (-((np.rad2deg(rla)) - (pollond - 180.0)) < 0.0)
+        & (-((np.rad2deg(rla)) - (pollond - 180.0)) >= -180.0),
+        -zbeta,
+        zbeta,
     )
 
-    x1 = x * np.cos(ZBETA) - y * np.sin(ZBETA)
-    y1 = x * np.sin(ZBETA) + y * np.cos(ZBETA)
+    x1 = x * np.cos(zbeta) - y * np.sin(zbeta)
+    y1 = x * np.sin(zbeta) + y * np.cos(zbeta)
 
     return x1, y1
 
