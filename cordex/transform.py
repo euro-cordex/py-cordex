@@ -75,21 +75,21 @@ def map_crs(x, y, src_crs, trg_crs=None):
     return result
 
 
-def derotate_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
+def derotate_vector(u, v, lon=None, lat=None, pollon=None, pollat=None):
     """Derotate vector components from rotated coordinates.
 
-    The function performs a backward transformation of, e.g., velocity components U and V
+    The function performs a backward transformation of, e.g., velocity components u and v
     from a rotated spherical coordinate system to a geographical system. If only the
-    components x and y are provided, it is assumed, they are DataArrays containing
+    components u and v are provided, it is assumed, they are DataArrays containing
     a rotated latitude longitude grid mapping and lon lat coordinates that are used
     for the transformation.
 
     Parameters
     ----------
-    x : float or DataArray
-        x component of vector in rotated coordinate system.
-    y : float or DataArray
-        y component of vecotr in rotated coordinate system.
+    u : float or DataArray
+        u component of vector in rotated coordinate system.
+    v : float or DataArray
+        v component of vector in rotated coordinate system.
     lon : float or DataArray
         Longitude coordinates in which to transform the vector components.
     lat : float or DataArray
@@ -101,22 +101,22 @@ def derotate_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
 
     Returns
     -------
-    xt : DataArray
-        Transformed x coordinate.
-    yt : DataArray
-        Transformed y coordinate.
+    ut : DataArray
+        Transformed u vector component.
+    vt : DataArray
+        Transformed v vector component.
 
     """
 
     if lon is None:
-        lon = x.cf["longitude"]
+        lon = u.cf["longitude"]
     if lat is None:
-        lat = x.cf["latitude"]
+        lat = v.cf["latitude"]
 
     if pollon is None:
-        pollon = x.cf["grid_mapping"].grid_north_pole_longitude
+        pollon = u.cf["grid_mapping"].grid_north_pole_longitude
     if pollat is None:
-        pollat = x.cf["grid_mapping"].grid_north_pole_latitude
+        pollat = v.cf["grid_mapping"].grid_north_pole_latitude
 
     rla = np.deg2rad(lon)
     phi = np.deg2rad(lat)
@@ -157,8 +157,8 @@ def derotate_vector(x, y, lon=None, lat=None, pollon=None, pollat=None):
         zbeta,
     )
 
-    x1 = x * np.cos(zbeta) - y * np.sin(zbeta)
-    y1 = x * np.sin(zbeta) + y * np.cos(zbeta)
+    x1 = u * np.cos(zbeta) - v * np.sin(zbeta)
+    y1 = u * np.sin(zbeta) + v * np.cos(zbeta)
 
     return x1, y1
 
