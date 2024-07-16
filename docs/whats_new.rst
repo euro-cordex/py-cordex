@@ -3,8 +3,13 @@
 What's new
 ==========
 
-v0.8.1 (Unreleased)
--------------------
+(Unreleased)
+------------
+
+New Features
+~~~~~~~~~~~~
+
+- New function :py:meth:`derotate_vector` to transform vector components from rotated coordinate systems (:pull:`264`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~

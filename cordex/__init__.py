@@ -10,6 +10,7 @@ from .transform import (
     transform,
     transform_bounds,
     transform_coords,
+    derotate_vector,
 )
 from .utils import cell_area
 
@@ -36,6 +37,7 @@ __all__ = [
     "transform",
     "transform_coords",
     "transform_bounds",
+    "derotate_vector",
     "domains",
     "ecmwf",
     "cell_area",
