@@ -91,7 +91,7 @@ def _resample(
         if has_flox:
             mean_kwargs["engine"] = "flox"
             mean_kwargs["method"] = default_flox_method
-        return ds.resample(time=time, label=label, loffset=loffset, **kwargs).mean(
+        return ds.resample(time=time, label=label, offset=loffset, **kwargs).mean(
             **mean_kwargs
         )
     else:
