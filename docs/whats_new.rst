@@ -16,6 +16,11 @@ Internal Changes
 
 - Added internal tolerance to domain cropping during cmorization (:pull:`262`).
 
+Bugfixes
+~~~~~~~~
+
+- Fixed deprecated ``xarray`` keywords (:pull:`273`).
+
 v0.8.0 (27 June 2024)
 ---------------------
 
