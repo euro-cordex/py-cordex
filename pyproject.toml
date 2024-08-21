@@ -52,7 +52,7 @@ target-version = "py38"
 builtins = ["ellipsis"]
 exclude = [
     ".eggs",
-    "doc",
+    "docs",
 ]
 # E402: module level import not at top of file
 # E501: line too long - let black worry about that
