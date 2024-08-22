@@ -723,6 +723,9 @@ def cmorize_variable(
             )
         ds.attrs["domain_id"] = domain_id
 
+    if domain_id and crop is None:
+        crop = True
+
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
 
