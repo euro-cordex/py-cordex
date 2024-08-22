@@ -500,6 +500,7 @@ def prepare_variable(
     rewrite_time_axis=False,
     use_cftime=False,
     squeeze=True,
+    crop=None,
 ):
     """prepares a variable for cmorization."""
 
@@ -538,11 +539,11 @@ def prepare_variable(
     # remove point coordinates, e.g, height2m
     if squeeze is True:
         var_ds = var_ds.squeeze(drop=True)
-    if domain_id is not None:
-        var_ds.attrs["domain_id"] = domain_id
+    if crop is True:
+        # var_ds.attrs["domain_id"] = domain_id
         var_ds = _crop_to_cordex_domain(var_ds, domain_id)
     if replace_coords is True:
-        domain_id = domain_id or var_ds.cx.domain_id
+        # domain_id = domain_id or var_ds.cx.domain_id
         grid = domain(domain_id, bounds=True)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
@@ -596,6 +597,7 @@ def cmorize_variable(
     allow_resample=False,
     input_freq=None,
     domain_id=None,
+    crop=None,
     time_units=None,
     rewrite_time_axis=False,
     outpath=None,
@@ -632,7 +634,8 @@ def cmorize_variable(
         like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
     replace_coords: bool
         Replace coordinates from input file and create them from archive
-        specifications.
+        specifications. Only possible, if a domain identifier is given in the global
+        attributes or as a keyword argument, e.g., see the ``domain_id`` keyword.
     allow_units_convert: bool
         Allow units to be converted if they do not agree with the
         units in the cmor table. Defaults to ``False`` to make the user aware of having
@@ -646,8 +649,13 @@ def cmorize_variable(
         contains a time axis, the frequency will be determined automatically using
         ``pandas.infer_freq`` if possible.
     domain_id: str
-        Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
-        global attribute if available.
+        Cordex domain identifier. If ``None``, the domain will be determined by the ``domain_id``
+        global attribute if available. If ``domain_id`` is given as a keyword, it will override
+        a possible ``domain_id`` global attribute.
+    crop: bool
+        Crop dataset to official Cordex domain if it contains, e.g., a nudging zone. If set to ``None``,
+        cropping will be done if a domain identifier is given or the domain can be identified automatically.
+        Set to ``crop=False``, if you have an 'unofficial' domain_id.
     time_units: str
         Time units of the cmorized dataset (``ISO 8601``).
         If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
@@ -704,9 +712,15 @@ def cmorize_variable(
         except Exception as e:
             warn(e)
             warn(
-                "could not identify CORDEX domain, try to set the 'domain_id' argument"
+                "could not identify CORDEX domain, try to set the 'domain_id' if there is no domain identifier in global attributes."
             )
-    elif "domain_id" not in ds.attrs:
+            crop = False
+            replace_coords = False
+    else:
+        if "domain_id" in ds.attrs and ds.attrs.get("domain_id") != domain_id:
+            warn(
+                f"overwriting global attribute 'domain_id' with value '{ds.attrs['domain_id']}' with '{domain_id}' from keyword argument."
+            )
         ds.attrs["domain_id"] = domain_id
 
     if inpath is None:
@@ -730,6 +744,7 @@ def cmorize_variable(
         time_units=time_units,
         allow_resample=allow_resample,
         allow_units_convert=allow_units_convert,
+        crop=crop,
         **kwargs,
     )
 
