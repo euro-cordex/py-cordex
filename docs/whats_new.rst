@@ -14,6 +14,7 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Update grid rewriting in :py:meth:`cmor.cmorize_variable` (:pull:`276`) to allow for non registered domains.
 - Added internal tolerance to domain cropping during cmorization (:pull:`262`).
 
 Bugfixes
