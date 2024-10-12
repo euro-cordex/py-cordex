@@ -278,7 +278,14 @@ def _cmor_write(da, table_id, cmorTime, cmorZ, cmorGrid, file_name=True):
         coords.append(cmorZ)
     coords.append(cmorGrid)
 
-    cmor_var = cmor.variable(da.name, da.units, coords)
+    cmor_var_kwargs = {}
+    for kwarg in ["positive", "missing_value", "original_name", "history", "comment"]:
+        if kwarg in da.attrs:
+            cmor_var_kwargs[kwarg] = da.attrs[kwarg]
+
+    cmor_var = cmor.variable(
+        table_entry=da.name, units=da.units, axis_ids=coords, **cmor_var_kwargs
+    )
 
     if "time" in da.coords:
         ntimes_passed = da.time.size
