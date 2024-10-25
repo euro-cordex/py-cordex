@@ -625,8 +625,8 @@ def cmorize_variable(
     follow basic CF conventions. If a vertical coordinate is available, it should have an ``axis="Z"``
     attribute so it can be understood by ``cf_xarray`` and it should be named after the unique key of the
     coordinate in the cmor grids table (not the out_name), e.g., name it ``sdepth`` if you
-    need a soil layer coordinate instead of ``depth``. Variables may have one of the following attributes 
-    that are used as keyword arguments in the call to `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_, e.g., 
+    need a soil layer coordinate instead of ``depth``. Variables may have one of the following attributes
+    that are used as keyword arguments in the call to `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_, e.g.,
     ``positive``, ``missing_value``, ``original_name``, ``history`` or ``comment``.
 
     Parameters
