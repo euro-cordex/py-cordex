@@ -9,6 +9,7 @@ What's new
 New Features
 ~~~~~~~~~~~~
 
+- Variables attributes are recognized for cmorization in :py:meth:`cmor.cmorize_variable` (:pull:`282`).
 - New function :py:meth:`derotate_vector` to transform vector components from rotated coordinate systems (:pull:`264`).
 
 Internal Changes

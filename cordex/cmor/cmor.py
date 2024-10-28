@@ -278,7 +278,14 @@ def _cmor_write(da, table_id, cmorTime, cmorZ, cmorGrid, file_name=True):
         coords.append(cmorZ)
     coords.append(cmorGrid)
 
-    cmor_var = cmor.variable(da.name, da.units, coords)
+    cmor_var_kwargs = {}
+    for kwarg in ["positive", "missing_value", "original_name", "history", "comment"]:
+        if kwarg in da.attrs:
+            cmor_var_kwargs[kwarg] = da.attrs[kwarg]
+
+    cmor_var = cmor.variable(
+        table_entry=da.name, units=da.units, axis_ids=coords, **cmor_var_kwargs
+    )
 
     if "time" in da.coords:
         ntimes_passed = da.time.size
@@ -618,7 +625,9 @@ def cmorize_variable(
     follow basic CF conventions. If a vertical coordinate is available, it should have an ``axis="Z"``
     attribute so it can be understood by ``cf_xarray`` and it should be named after the unique key of the
     coordinate in the cmor grids table (not the out_name), e.g., name it ``sdepth`` if you
-    need a soil layer coordinate instead of ``depth``.
+    need a soil layer coordinate instead of ``depth``. Variables may have one of the following attributes
+    that are used as keyword arguments in the call to `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_, e.g.,
+    ``positive``, ``missing_value``, ``original_name``, ``history`` or ``comment``.
 
     Parameters
     ----------
