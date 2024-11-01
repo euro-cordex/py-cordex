@@ -36,7 +36,7 @@ jobs:
           echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
           echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
       - name: Create conda environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           cache-downloads: true
           cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}"
