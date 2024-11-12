@@ -10,7 +10,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: 'v0.7.2'
+    rev: 'v0.7.3'
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -21,7 +21,7 @@ repos:
     - id: black
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.7
+    rev: 1.9.1
     hooks:
       - id: nbqa-black
       - id: nbqa-pyupgrade
