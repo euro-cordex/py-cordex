@@ -3,8 +3,11 @@
 What's new
 ==========
 
-(Unreleased)
-------------
+v0.9.0 (18 November 2024)
+-------------------------
+
+This release mainly updates the cmor module and allows to cmorize for non-standard CORDEX domains. Some updates are introduced so that variables attributes can be used to control calls to the `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_ API.
+A new function :py:meth:`derotate_vector` to derotate vector components has also been introduced.
 
 New Features
 ~~~~~~~~~~~~
