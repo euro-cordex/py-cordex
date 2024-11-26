@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +10,9 @@ base_url = "https://raw.githubusercontent.com/euro-cordex/tables/main/"
 cache_url = "~/.py-cordex"
 
 _default_cache_dir_name = "py-cordex-tables"
+
+headers = {"User-Agent": f"py-cordex {sys.modules['py-cordex'].__version__}"}
+downloader = pooch.HTTPDownloader(headers=headers)
 
 
 def _construct_cache_dir(path):
@@ -79,7 +83,11 @@ def retrieve_cmor_table(table, url):
     else:
         fname = table
     return pooch.retrieve(
-        os.path.join(url, fname), known_hash=None, fname=fname, path=path
+        os.path.join(url, fname),
+        known_hash=None,
+        fname=fname,
+        path=path,
+        downloader=downloader,
     )
 
 
@@ -89,7 +97,7 @@ def fetch_remote_table(name, resource):
     """
 
     # the file will be downloaded automatically the first time this is run.
-    return resource.fetch(name)
+    return resource.fetch(name, downloader=downloader)
 
 
 def read_remote_table(name, resource, index_col=None):
