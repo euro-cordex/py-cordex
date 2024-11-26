@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 
 import pandas as pd
@@ -11,7 +10,7 @@ cache_url = "~/.py-cordex"
 
 _default_cache_dir_name = "py-cordex-tables"
 
-headers = {"User-Agent": f"py-cordex {sys.modules['py-cordex'].__version__}"}
+headers = {"User-Agent": "py-cordex"}
 downloader = pooch.HTTPDownloader(headers=headers)
 
 
