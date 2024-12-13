@@ -3,6 +3,16 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+New function  :py:meth:`cordex.rewrite_coords` that rewrites coordinates (X and Y axes) in a dataset to correct rounding errors.
+
+New Features
+~~~~~~~~~~~~
+
+- New function :py:meth:`cordex.rewrite_coords` (:pull:`282`).
+
 v0.9.0 (18 November 2024)
 -------------------------
 

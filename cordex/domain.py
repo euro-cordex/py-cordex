@@ -600,6 +600,7 @@ def rewrite_coords(ds, coords="xy", domain_id=None, mip_era="CMIP5", method="nea
     ):
         domain_id = ds.cx.domain_id
     if domain_id:
+        # we use "official" grid information
         grid_info = domain_info(domain_id)
         dx = grid_info["dlon"]
         dy = grid_info["dlat"]
@@ -608,6 +609,7 @@ def rewrite_coords(ds, coords="xy", domain_id=None, mip_era="CMIP5", method="nea
         nx = grid_info["nlon"]
         ny = grid_info["nlat"]
     else:
+        # we use the grid information from the dataset
         x = ds.cf["X"].data
         y = ds.cf["Y"].data
         nx = x.size
@@ -624,6 +626,8 @@ def rewrite_coords(ds, coords="xy", domain_id=None, mip_era="CMIP5", method="nea
         ds = ds.cf.reindex(X=xn, Y=yn, method=method)
 
     if coords == "lonlat" or coords == "all":
+        # check if the dataset already has longitude and latitude coordinates
+        # if so, overwrite them (take care to keep attributes though)
         try:
             trg_dims = (ds.cf["longitude"].name, ds.cf["latitude"].name)
             overwrite = True
