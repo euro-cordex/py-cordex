@@ -186,20 +186,20 @@ vocabulary = {
                 "long_name": "latitude in rotated pole grid",
                 "units": "degrees",
             },
-            "longitude": {
+            "lon": {
                 "standard_name": "longitude",
                 "long_name": "longitude",
                 "units": "degrees_east",
             },
-            "latitude": {
+            "lat": {
                 "standard_name": "latitude",
                 "long_name": "latitude",
                 "units": "degrees_north",
             },
-            "lon_vertices": {
+            "vertices_lon": {
                 "units": "degrees_east",
             },
-            "lat_vertices": {
+            "vertices_lat": {
                 "units": "degrees_north",
             },
         },

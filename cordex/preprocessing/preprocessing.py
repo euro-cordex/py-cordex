@@ -271,7 +271,7 @@ def replace_rlon_rlat(ds, domain=None):
     """
     ds = ds.copy()
     if domain is None:
-        domain = ds.attrs.get("CORDEX_domain", None)
+        domain = ds.cx.domain_id
     dm = cordex_domain(domain)
     for coord in ["rlon", "rlat"]:
         if coord in ds.coords:
@@ -327,7 +327,7 @@ def replace_lon_lat(ds, domain=None):
     """
     ds = ds.copy()
     if domain is None:
-        domain = ds.attrs.get("CORDEX_domain", None)
+        domain = ds.cx.domain_id
     dm = cordex_domain(domain)
     for coord in ["lon", "lat"]:
         if coord in ds.coords:
