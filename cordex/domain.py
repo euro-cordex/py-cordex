@@ -662,7 +662,6 @@ def rewrite_coords(
         else:
             lon_bounds = ds.cf.bounds["longitude"]
             lat_bounds = ds.cf.bounds["latitude"]
-            print(lon_bounds, lat_bounds)
             ds[lon_bounds[0]][:] = dst.cf.get_bounds("longitude")
             ds[lat_bounds[0]][:] = dst.cf.get_bounds("latitude")
 
