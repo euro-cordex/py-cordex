@@ -92,12 +92,22 @@ class CordexAccessor:
 
     @property
     def domain_id(self, guess=True):
-        """Returns the domain_id.
+        """
+        Returns the domain_id.
 
         This property will return the ``CORDEX_domain`` or ``domain_id`` global
         attribute if present. If none of those attributes are found, the
         domain information will be guessed.
 
+        Parameters
+        ----------
+        guess : bool, optional
+            If True, the domain information will be guessed if not found. Default is True.
+
+        Returns
+        -------
+        str
+            The domain_id.
         """
         if self._domain_id is None:
             self._domain_id = _get_domain_id(self._obj)
@@ -107,27 +117,35 @@ class CordexAccessor:
 
     @property
     def grid_mapping(self):
-        """Returns the grid_mapping variable."""
+        """
+        Returns the grid_mapping variable.
+
+        Returns
+        -------
+        xarray.DataArray
+            The grid_mapping variable from the xarray object.
+        """
         return self._obj.cf["grid_mapping"]
 
     def info(self):
-        """Return domain info in CORDEX format.
+        """
+        Return domain info in CORDEX format.
 
         The function returns a dictionary containing domain
         information in the format of the CORDEX archive specifications.
 
         Returns
         -------
-        domain info : dict
+        dict
             A dictionary that contains domain information.
-
         """
         if self._info is None:
             self._info = _get_info(self._obj)
         return self._info
 
     def guess(self):
-        """Guess which domain this could be.
+        """
+        Guess which domain this could be.
 
         Compares the coordinate axis information to known
         coordinates of known CORDEX domains to guess the
@@ -135,9 +153,8 @@ class CordexAccessor:
 
         Returns
         -------
-        domain info : dict
-            A dictionary that contains domain information.
-
+        dict
+            A dictionary containing the guessed domain information.
         """
         if self._guess is None:
             self._guess = _guess_domain(self._obj)
