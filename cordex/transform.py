@@ -265,7 +265,9 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
     return ds.assign_coords({trg_dims[0]: xt, trg_dims[1]: yt})
 
 
-def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None):
+def transform_bounds(
+    ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None, keep_xy_bounds=False
+):
     """Transform linear X and Y bounds of a Dataset.
 
     Transformation of of the bounds of linear X and Y coordinates
@@ -315,7 +317,7 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
     if bnds_dim is None:
         bnds_dim = cf.BOUNDS_DIM
 
-    bnds = ds.cf.add_bounds((ds.cf["X"].name, ds.cf["Y"].name))
+    bnds = ds.cf.add_bounds(("X", "Y"))
     x_bnds = bnds.cf.get_bounds("X").drop(bnds.cf.bounds["X"])
     y_bnds = bnds.cf.get_bounds("Y").drop(bnds.cf.bounds["Y"])
 
@@ -338,8 +340,8 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
-    ds.cf["longitude"].attrs["bounds"] = cf.LON_BOUNDS
-    ds.cf["latitude"].attrs["bounds"] = cf.LAT_BOUNDS
+    ds[ds.cf["longitude"].name].attrs["bounds"] = cf.LON_BOUNDS
+    ds[ds.cf["latitude"].name].attrs["bounds"] = cf.LAT_BOUNDS
 
     return ds.assign_coords(
         {

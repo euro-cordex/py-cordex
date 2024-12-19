@@ -165,12 +165,12 @@ vocabulary = {
     "CMIP6": dict(
         domain_id="domain_id",
         dims={
-            "LAT": "latitude",
-            "LON": "longitude",
+            "LAT": "lat",
+            "LON": "lon",
             "Y": "rlat",
             "X": "rlon",
-            "LON_BOUNDS": "lon_vertices",
-            "LAT_BOUNDS": "lat_vertices",
+            "LON_BOUNDS": "vertices_lon",
+            "LAT_BOUNDS": "vertices_lat",
             "BOUNDS_DIM": "vertices",
         },
         coords={
