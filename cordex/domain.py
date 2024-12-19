@@ -568,9 +568,11 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
 
 def rewrite_coords(ds, coords="xy", domain_id=None, mip_era="CMIP5", method="nearest"):
     """
-    Rewrite the linear coordinates (X and Y axes) in a dataset to correct rounding errors.
+    Rewrite coordinates in a dataset to correct rounding errors.
 
-    This function is useful for ensuring that the coordinates in a dataset are consistent and can be compared to other datasets. It can reindex the dataset based on specified coordinates or domain information.
+    This function is useful for ensuring that the coordinates in a dataset are consistent and
+    can be compared to other datasets. It can reindex the dataset based on specified coordinates
+    or domain information by trying to keep the original coordinate attributes.
 
     Parameters
     ----------
