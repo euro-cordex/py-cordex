@@ -269,6 +269,11 @@ def replace_rlon_rlat(ds, domain=None):
         Dataset with updated rlon, rlat.
 
     """
+    warn(
+        "replace_rlon_rlat is deprecated, please use rewrite_coords instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ds = ds.copy()
     if domain is None:
         domain = ds.cx.domain_id
@@ -297,6 +302,11 @@ def replace_vertices(ds, domain=None):
         Dataset with updated vertices.
 
     """
+    warn(
+        "replace_vertices is deprecated, please use rewrite_coords instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ds = ds.copy()
     if domain is None:
         domain = ds.attrs.get("CORDEX_domain", None)
@@ -325,6 +335,11 @@ def replace_lon_lat(ds, domain=None):
         Dataset with updated lon, lat.
 
     """
+    warn(
+        "replace_lon_lat is deprecated, please use rewrite_coords instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ds = ds.copy()
     if domain is None:
         domain = ds.cx.domain_id
@@ -355,6 +370,11 @@ def replace_coords(ds, domain=None):
 
 
     """
+    warn(
+        "replace_coords is deprecated, please use rewrite_coords instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ds = ds.copy()
     ds = replace_rlon_rlat(ds, domain)
     ds = replace_lon_lat(ds, domain)
@@ -380,6 +400,11 @@ def replace_grid(ds, domain=None):
 
 
     """
+    warn(
+        "replace_grid is deprecated, please use rewrite_coords instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ds = ds.copy()
     ds = replace_rlon_rlat(ds, domain)
     ds = replace_lon_lat(ds, domain)

@@ -170,3 +170,19 @@ def test_rewrite_coords(domain_id):
     np.testing.assert_array_equal(rewritten_data.lon, grid.lon)
     np.testing.assert_array_equal(rewritten_data.lat, grid.lat)
     xr.testing.assert_identical(rewritten_data, grid)
+
+    grid = cx.domain(domain_id, bounds=True, mip_era="CMIP6")
+    grid["vertices_lon"][:] = 0.0
+    grid["vertices_lat"][:] = 0.0
+    grid.vertices_lon.attrs["hello"] = "world"
+    grid.vertices_lat.attrs["hello"] = "world"
+
+    rewritten_data = cx.rewrite_coords(grid, bounds=True)
+    grid = cx.domain(domain_id, bounds=True, mip_era="CMIP6")
+
+    np.testing.assert_array_equal(rewritten_data.vertices_lon, grid.vertices_lon)
+    np.testing.assert_array_equal(rewritten_data.vertices_lat, grid.vertices_lat)
+
+    # check if attributes are now overwritten
+    assert rewritten_data.vertices_lon.attrs["hello"] == "world"
+    assert rewritten_data.vertices_lat.attrs["hello"] == "world"
