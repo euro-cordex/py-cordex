@@ -89,7 +89,6 @@ def test_derotate_vector():
     assert np.allclose(v1, v1_expect)
 
 
-@requires_cartopy
 def test_bounds():
     # assert that we get the same bounds as before
     ds = domain("EUR-11", bounds=True)
