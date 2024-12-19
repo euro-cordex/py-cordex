@@ -12,7 +12,12 @@ rounding errors. This version drops python3.8 support.
 New Features
 ~~~~~~~~~~~~
 
-- New function :py:meth:`cordex.rewrite_coords` (:pull:`306`, :pull:`307`).
+- New function :py:meth:`cordex.rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update of API documentation in accessor (:pull:`308`).
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
