@@ -108,3 +108,4 @@ Methods
     Dataset.cx.info
     Dataset.cx.guess
     Dataset.cx.map
+    Dataset.cx.rewrite_coords

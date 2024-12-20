@@ -5,6 +5,7 @@ from .config import nround
 
 # from .utils import _get_info, _guess_domain
 from .tables import domains
+from .domain import rewrite_coords
 
 IDS = ["domain_id", "CORDEX_domain"]
 
@@ -91,12 +92,22 @@ class CordexAccessor:
 
     @property
     def domain_id(self, guess=True):
-        """Returns the domain_id.
+        """
+        Returns the domain_id.
 
         This property will return the ``CORDEX_domain`` or ``domain_id`` global
         attribute if present. If none of those attributes are found, the
         domain information will be guessed.
 
+        Parameters
+        ----------
+        guess : bool, optional
+            If True, the domain information will be guessed if not found. Default is True.
+
+        Returns
+        -------
+        str
+            The domain_id.
         """
         if self._domain_id is None:
             self._domain_id = _get_domain_id(self._obj)
@@ -106,37 +117,44 @@ class CordexAccessor:
 
     @property
     def grid_mapping(self):
-        """Returns the grid_mapping variable."""
+        """
+        Returns the grid_mapping variable.
+
+        Returns
+        -------
+        xarray.DataArray
+            The grid_mapping variable from the xarray object.
+        """
         return self._obj.cf["grid_mapping"]
 
     def info(self):
-        """Return domain info in CORDEX format.
+        """
+        Return domain info in CORDEX format.
 
         The function returns a dictionary containing domain
         information in the format of the CORDEX archive specifications.
 
         Returns
         -------
-        domain info : dict
+        dict
             A dictionary that contains domain information.
-
         """
         if self._info is None:
             self._info = _get_info(self._obj)
         return self._info
 
     def guess(self):
-        """Guess which domain this could be.
+        """
+        Guess which domain this could be.
 
-        Compares the coordinate axis information to known the
+        Compares the coordinate axis information to known
         coordinates of known CORDEX domains to guess the
         ``domain_id``.
 
         Returns
         -------
-        domain info : dict
-            A dictionary that contains domain information.
-
+        dict
+            A dictionary containing the guessed domain information.
         """
         if self._guess is None:
             self._guess = _guess_domain(self._obj)
@@ -208,6 +226,56 @@ class CordexAccessor:
 
         return ax
         # ax.set_title(CORDEX_domain)
+
+    def rewrite_coords(
+        self,
+        coords="xy",
+        bounds=False,
+        domain_id=None,
+        mip_era="CMIP5",
+        method="nearest",
+    ):
+        """
+        Rewrite coordinates in a dataset.
+
+        This function ensures that the coordinates in a dataset are consistent and can be
+        compared to other datasets. It can reindex the dataset based on specified coordinates
+        or domain information while trying to keep the original coordinate attributes.
+
+        Parameters
+        ----------
+        coords : str, optional
+            Specifies which coordinates to rewrite. Options are:
+            - "xy": Rewrite only the X and Y coordinates.
+            - "lonlat": Rewrite only the longitude and latitude coordinates.
+            - "all": Rewrite both X, Y, longitude, and latitude coordinates.
+            Default is "xy". If longitude and latitude coordinates are not present in the dataset, they will be added.
+            Rewriting longitude and latitude coordinates is only possible if the dataset contains a grid mapping variable.
+        bounds : bool, optional
+            If True, the function will also handle the bounds of the coordinates. If the dataset already has bounds,
+            they will be updated while preserving attributes and shape. If not, the bounds will be assigned.
+        domain_id : str, optional
+            The domain identifier used to obtain grid information. If not provided, the function will attempt
+            to use the domain_id attribute from the dataset.
+        mip_era : str, optional
+            The MIP era (e.g., "CMIP5", "CMIP6") used to determine coordinate attributes. Default is "CMIP5".
+            Only used if the dataset does not already contain coordinate attributes.
+        method : str, optional
+            The method used for reindexing the X and Y axis. Options include "nearest", "linear", etc. Default is "nearest".
+
+        Returns
+        -------
+        ds : xr.Dataset
+            The dataset with rewritten coordinates.
+        """
+        return rewrite_coords(
+            self._obj,
+            coords=coords,
+            bounds=bounds,
+            domain_id=domain_id,
+            mip_era=mip_era,
+            method=method,
+        )
 
 
 @xr.register_dataset_accessor("cx")
