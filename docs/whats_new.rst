@@ -6,13 +6,13 @@ What's new
 v0.10.0 (Unreleased)
 --------------------
 
-New function  :py:meth:`cordex.rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
+New function  :py:meth:`rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
 rounding errors. This version drops python3.8 support.
 
 New Features
 ~~~~~~~~~~~~
 
-- New function :py:meth:`cordex.rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
+- New function :py:meth:`rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -27,12 +27,7 @@ Breaking Changes
 Deprecations
 ~~~~~~~~~~~~
 
-- Following functions are deprecated in favour of :py:meth:`cordex.rewrite_coords`:
-   - :py:meth:`preprocessing.replace_coords`
-   - :py:meth:`preprocessing.replace_grids`
-   - :py:meth:`preprocessing.replace_lon_lat`
-   - :py:meth:`preprocessing.replace_rlon_rlat`
-   - :py:meth:`preprocessing.replace_vertices`
+- :py:meth:`preprocessing.replace_coords` is deprecated in favour of :py:meth:`rewrite_coords`.
 
 
 v0.9.0 (18 November 2024)
