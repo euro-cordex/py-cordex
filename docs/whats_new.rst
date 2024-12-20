@@ -24,6 +24,17 @@ Breaking Changes
 
 - Drop python3.8 support (:pull:`306`).
 
+Deprecations
+~~~~~~~~~~~~
+
+- Following functions are deprecated in favour of :py:meth:`cordex.rewrite_coords`:
+   - :py:meth:`preprocessing.replace_coords`
+   - :py:meth:`preprocessing.replace_grids`
+   - :py:meth:`preprocessing.replace_lon_lat`
+   - :py:meth:`preprocessing.replace_rlon_rlat`
+   - :py:meth:`preprocessing.replace_vertices`
+
+
 v0.9.0 (18 November 2024)
 -------------------------
 
