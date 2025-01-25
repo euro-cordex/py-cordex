@@ -340,8 +340,8 @@ def transform_bounds(
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
-    ds[ds.cf["longitude"].name].attrs["bounds"] = cf.LON_BOUNDS
-    ds[ds.cf["latitude"].name].attrs["bounds"] = cf.LAT_BOUNDS
+    ds[ds.cf["longitude"].name].attrs["bounds"] = trg_dims[0]
+    ds[ds.cf["latitude"].name].attrs["bounds"] = trg_dims[1]
 
     return ds.assign_coords(
         {
