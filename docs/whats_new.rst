@@ -17,7 +17,12 @@ New Features
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Update of API documentation in accessor (:pull:`308`).
+- Fix coordinate bounds attribute in :py:meth:`transform_bounds` (:pull:`314`).
+
+Bugfixes
+~~~~~~~~
+
+- Fixed deprecated ``xarray`` keywords (:pull:`273`).
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
