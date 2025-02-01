@@ -40,11 +40,10 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
-    "sphinxcontrib.mockautodoc",
+    #    "sphinxcontrib.mockautodoc",
     "numpydoc",
     "sphinx_autosummary_accessors",
     "nbsphinx",
-    "nbsphinx_link",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
 ]
@@ -54,8 +53,6 @@ extlinks = {
     "issue": ("https://github.com/euro-cordex/py-cordex/issues/%s", "#%s"),
     "pull": ("https://github.com/euro-cordex/py-cordex/pull/%s", "#%s"),
 }
-
-autodoc_mock_imports = ["cartopy", "xesmf", "geopandas", "matplotlib", "regionmask"]
 
 autosummary_generate = True
 

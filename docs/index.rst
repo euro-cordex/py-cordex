@@ -6,7 +6,7 @@
    :caption: Tutorial
 
    notebooks/introduction
-   prudence
+   notebooks/prudence
 
 .. toctree::
    :maxdepth: 2

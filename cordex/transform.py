@@ -75,6 +75,94 @@ def map_crs(x, y, src_crs, trg_crs=None):
     return result
 
 
+def derotate_vector(u, v, lon=None, lat=None, pollon=None, pollat=None):
+    """Derotate vector components from rotated coordinates.
+
+    The function performs a backward transformation of, e.g., velocity components u and v
+    from a rotated spherical coordinate system to a geographical system. If only the
+    components u and v are provided, it is assumed, they are DataArrays containing
+    a rotated latitude longitude grid mapping and lon lat coordinates that are used
+    for the transformation.
+
+    Parameters
+    ----------
+    u : float or DataArray
+        u component of vector in rotated coordinate system.
+    v : float or DataArray
+        v component of vector in rotated coordinate system.
+    lon : float or DataArray
+        Longitude coordinates in which to transform the vector components.
+    lat : float or DataArray
+        Latitude coordinates in which to transform the vector components.
+    pollon : float
+        Longitude of north pole in geographical coordinate system.
+    pollat : float
+        Latitude of north pole in geographical coordinate system.
+
+    Returns
+    -------
+    ut : DataArray
+        Transformed u vector component.
+    vt : DataArray
+        Transformed v vector component.
+
+    """
+
+    if lon is None:
+        lon = u.cf["longitude"]
+    if lat is None:
+        lat = v.cf["latitude"]
+
+    if pollon is None:
+        pollon = u.cf["grid_mapping"].grid_north_pole_longitude
+    if pollat is None:
+        pollat = v.cf["grid_mapping"].grid_north_pole_latitude
+
+    rla = np.deg2rad(lon)
+    phi = np.deg2rad(lat)
+    zrla = rla
+    zphi = phi
+
+    zpollat = np.deg2rad(pollat)
+    zpollon = np.deg2rad(pollon)
+    pollond = pollon
+    zsinpol = np.sin(zpollat)
+    zcospol = np.cos(zpollat)
+    if pollon < 0.0:
+        pollond = 360.0 + pollon
+
+    # compute vector abs in rotated coordinates
+
+    zzrla = np.rad2deg(rla)
+    zzrla = xr.where(zzrla > 180.0, zzrla - 360.0, zzrla)
+    zzrla = np.deg2rad(zzrla)
+    zd1 = zzrla - zpollon
+    zd2 = zrla - zpollon
+
+    # winkel zbeta berechen (schnittwinkel der breitenkreise)
+
+    zarg1 = -np.sin(zd1) * np.cos(zphi)
+    zarg2 = -zsinpol * np.cos(zphi) * np.cos(zd1) + zcospol * np.sin(zphi)
+
+    zarg2 = xr.where(abs(zarg2) < 1.0e-20, 1.0e-20, zarg2)
+    zrlas = np.arctan2(zarg1, zarg2)
+    zarg = -np.sin(zpollat) * np.sin(zd2) * np.sin(zrlas) - np.cos(zd2) * np.cos(zrlas)
+    zarg = zarg.clip(min=-1.0, max=1.0)
+    zbeta = abs(np.arccos(zarg))
+
+    zbeta = xr.where(
+        (-((np.rad2deg(rla)) - (pollond - 180.0)) < 0.0)
+        & (-((np.rad2deg(rla)) - (pollond - 180.0)) >= -180.0),
+        -zbeta,
+        zbeta,
+    )
+
+    x1 = u * np.cos(zbeta) - v * np.sin(zbeta)
+    y1 = u * np.sin(zbeta) + v * np.cos(zbeta)
+
+    return x1, y1
+
+
 def _transform(x, y, src_crs, trg_crs):
     """helper function for transforming coordinates"""
     # always_xy=True
@@ -177,7 +265,9 @@ def transform_coords(ds, src_crs=None, trg_crs=None, trg_dims=None):
     return ds.assign_coords({trg_dims[0]: xt, trg_dims[1]: yt})
 
 
-def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None):
+def transform_bounds(
+    ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=None, keep_xy_bounds=False
+):
     """Transform linear X and Y bounds of a Dataset.
 
     Transformation of of the bounds of linear X and Y coordinates
@@ -227,7 +317,7 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
     if bnds_dim is None:
         bnds_dim = cf.BOUNDS_DIM
 
-    bnds = ds.cf.add_bounds((ds.cf["X"].name, ds.cf["Y"].name))
+    bnds = ds.cf.add_bounds(("X", "Y"))
     x_bnds = bnds.cf.get_bounds("X").drop(bnds.cf.bounds["X"])
     y_bnds = bnds.cf.get_bounds("Y").drop(bnds.cf.bounds["Y"])
 
@@ -250,8 +340,8 @@ def transform_bounds(ds, src_crs=None, trg_crs=None, trg_dims=None, bnds_dim=Non
         ds.cf["Y"].dims[0], ds.cf["X"].dims[0], bnds_dim
     )
 
-    ds.cf["longitude"].attrs["bounds"] = cf.LON_BOUNDS
-    ds.cf["latitude"].attrs["bounds"] = cf.LAT_BOUNDS
+    ds[ds.cf["longitude"].name].attrs["bounds"] = trg_dims[0]
+    ds[ds.cf["latitude"].name].attrs["bounds"] = trg_dims[1]
 
     return ds.assign_coords(
         {

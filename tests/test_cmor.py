@@ -4,6 +4,7 @@ import os
 import cftime
 import cftime as cfdt
 import numpy as np
+import pandas as pd
 import pytest
 import xarray as xr
 
@@ -11,6 +12,7 @@ import cordex as cx
 from cordex import cmor
 from cordex.cmor import utils
 from cordex.tables import cordex_cmor_table
+from cordex.cmor.cmor import _crop_to_cordex_domain
 
 from . import requires_pint_xarray
 
@@ -19,6 +21,20 @@ mapping_table = {"orog": {"varname": "topo"}, "tas": {"varname": "TEMP2"}}
 table_prefix = "CORDEX-CMIP6"
 
 cmor.set_options(table_prefix=table_prefix)
+
+
+def create_sdepth_ds():
+    ds = cx.domain("EUR-11", dummy="topo")
+    ds = ds.drop("topo").assign(
+        tsl=ds.topo.expand_dims(
+            time=pd.date_range("2000-01-01T12:00:00", periods=3, freq="D"),
+            sdepth=[0.05, 0.10, 0.2],
+        )
+    )
+    ds.tsl.attrs["units"] = "K"
+    ds.sdepth.attrs["axis"] = "Z"
+    ds.sdepth.attrs["units"] = "m"
+    return ds
 
 
 def test_cfdt():
@@ -170,6 +186,24 @@ def test_month_bounds():
     assert np.array_equal(mid, expect)
 
 
+@pytest.mark.parametrize("domain_id", ["EUR-11", "SAM-44", "AFR-22"])
+def test_crop_to_domain(domain_id):
+    ds = cx.domain(domain_id)
+
+    cropped = _crop_to_cordex_domain(ds, domain_id)
+    assert ds.equals(cropped)
+    # assert larger domain is correctly cropped
+    pad = ds.pad(rlon=(1, 1), rlat=(1, 1), mode="reflect", reflect_type="odd")
+    cropped = _crop_to_cordex_domain(pad, domain_id)
+    assert ds.equals(cropped)
+
+    # check for tolerance
+    cropped = _crop_to_cordex_domain(
+        pad.reindex(rlon=pad.rlon * 1.00001, method="nearest"), domain_id
+    ).assign_coords(rlon=ds.rlon, rlat=ds.rlat)
+    assert ds.equals(cropped)
+
+
 def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs):
     if dataset_table is None:
         dataset_table = cordex_cmor_table(f"{table_prefix}_remo_example")
@@ -180,7 +214,7 @@ def run_cmorizer(ds, out_name, domain_id, table_id, dataset_table=None, **kwargs
         cmor_table=cordex_cmor_table(f"{table_prefix}_{table_id}"),
         dataset_table=dataset_table,
         grids_table=cordex_cmor_table(f"{table_prefix}_grids"),
-        CORDEX_domain=domain_id,
+        domain_id=domain_id,
         replace_coords=True,
         allow_units_convert=True,
         allow_resample=True,
@@ -201,6 +235,12 @@ def test_cmorizer_mon():
     output = xr.open_dataset(filename)
     assert output.dims["time"] == 12
     assert "tas" in output
+
+
+def test_cmorizer_mon_sdepth():
+    ds = create_sdepth_ds()
+    filename = run_cmorizer(ds, "tsl", "EUR-11", "day")
+    return filename
 
 
 @pytest.mark.parametrize("table_id, tdim", [("day", 3), ("1hr", 49)])

@@ -2,7 +2,14 @@ import pkg_resources
 
 from . import regions, tables, tutorial
 from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
-from .domain import cordex_domain, create_dataset, domain_info, vertices
+from .domain import (
+    cordex_domain,
+    create_dataset,
+    domain,
+    domain_info,
+    vertices,
+    rewrite_coords,
+)
 from .tables import domains, ecmwf
 from .transform import (
     map_crs,
@@ -10,6 +17,7 @@ from .transform import (
     transform,
     transform_bounds,
     transform_coords,
+    derotate_vector,
 )
 from .utils import cell_area
 
@@ -26,6 +34,7 @@ __all__ = [
     "regions",
     "tables",
     "tutorial",
+    "domain",
     "cordex_domain",
     "create_dataset",
     "domain_info",
@@ -35,7 +44,9 @@ __all__ = [
     "transform",
     "transform_coords",
     "transform_bounds",
+    "derotate_vector",
     "domains",
     "ecmwf",
     "cell_area",
+    "rewrite_coords",
 ]

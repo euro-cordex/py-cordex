@@ -13,12 +13,14 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
-   cordex_domain
+   domain
    domain_info
    create_dataset
    transform
    transform_coords
    transform_bounds
+   rewrite_coords
+   derotate_vector
    cell_area
 
 Preprocessing
@@ -28,7 +30,6 @@ Preprocessing
    :toctree: generated/
 
    preprocessing.rename_cordex
-   preprocessing.replace_coords
    preprocessing.cordex_dataset_id
    preprocessing.promote_empty_dims
    preprocessing.remap_lambert_conformal
@@ -106,3 +107,4 @@ Methods
     Dataset.cx.info
     Dataset.cx.guess
     Dataset.cx.map
+    Dataset.cx.rewrite_coords

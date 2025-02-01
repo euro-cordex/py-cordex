@@ -1,5 +1,6 @@
 import pytest
 import xarray as xr
+import numpy as np
 
 import cordex as cx
 from cordex.accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
@@ -33,3 +34,25 @@ def test_guess_info(domain_id):
 def test_dataset_guess(filename):
     ds = cx.tutorial.open_dataset(filename)
     assert ds.cx.guess() == cx.domain_info(ds.cx.domain_id)
+
+
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-44", "SAM-44", "AFR-22"])
+def test_rewrite_coords(domain_id):
+    # Create a sample dataset
+    grid = cx.domain(domain_id)
+
+    # Create typical coordinate precision issue by adding random noise
+    rlon_noise = np.random.randn(*grid.rlon.shape) * np.finfo("float32").eps
+    rlat_noise = np.random.randn(*grid.rlat.shape) * np.finfo("float32").eps
+    # lon_noise = np.random.randn(*grid.lon.shape) * np.finfo("float32").eps
+    # lat_noise = np.random.randn(*grid.lat.shape) * np.finfo("float32").eps
+
+    # Call the rewrite_coords function for "xy" coordinates
+    grid_noise = grid.assign_coords(
+        rlon=grid.rlon + rlon_noise, rlat=grid.rlat + rlat_noise
+    )
+    rewritten_data = grid_noise.cx.rewrite_coords(coords="xy")
+
+    np.testing.assert_array_equal(rewritten_data.rlon, grid.rlon)
+    np.testing.assert_array_equal(rewritten_data.rlat, grid.rlat)
+    xr.testing.assert_identical(rewritten_data, grid)

@@ -14,7 +14,8 @@ except Exception:
     warn("no python cmor package available, consider installing it")
 
 # import cordex as cx
-from .. import cordex_domain
+from .. import create_dataset
+from ..domain import domain
 from .config import (
     freq_map,
     loffsets,
@@ -30,7 +31,6 @@ from .utils import (
     _encode_time,
     _get_cfvarinfo,
     _get_cordex_pole,
-    _get_pole,
     _read_table,
     _strip_time_cell_method,
     _tmp_table,
@@ -91,7 +91,7 @@ def _resample(
         if has_flox:
             mean_kwargs["engine"] = "flox"
             mean_kwargs["method"] = default_flox_method
-        return ds.resample(time=time, label=label, loffset=loffset, **kwargs).mean(
+        return ds.resample(time=time, label=label, offset=loffset, **kwargs).mean(
             **mean_kwargs
         )
     else:
@@ -109,12 +109,16 @@ def _get_bnds(values):
     return bnds
 
 
-def _crop_to_cordex_domain(ds, domain):
-    domain = cordex_domain(domain)
+def _crop_to_cordex_domain(ds, domain_id, tolerance=1.0e-2):
+    """Crop data to official CORDEX domain"""
+    grid = domain(domain_id)
+    info = grid.cx.info()
+    rlon_tol = tolerance * info["dlon"]
+    rlat_tol = tolerance * info["dlat"]
     # the method=='nearest' approach does not work well with dask
     return ds.sel(
-        rlon=slice(domain.rlon.min(), domain.rlon.max()),
-        rlat=slice(domain.rlat.min(), domain.rlat.max()),
+        rlon=slice(grid.rlon.min() - rlon_tol, grid.rlon.max() + rlon_tol),
+        rlat=slice(grid.rlat.min() - rlat_tol, grid.rlat.max() + rlat_tol),
     )
 
 
@@ -141,37 +145,46 @@ def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
 
 def _get_time_axis_name(time_cell_method):
     """Get the name of the CMOR time coordinate"""
-    return time_axis_names[time_cell_method]
+    return time_axis_names.get(time_cell_method, "time")
 
 
-def _define_axes(ds, table_id):
-    if "CORDEX_domain" in ds.attrs:
-        grid = cordex_domain(ds.attrs["CORDEX_domain"], bounds=True)
-        lon_vertices = grid.lon_vertices.to_numpy()
-        lat_vertices = grid.lat_vertices.to_numpy()
-    else:
-        lon_vertices = None
-        lat_vertices = None
+def _define_grid(ds, table_id):
+    grid_attrs = ds.cx.info()
+    grid = create_dataset(**grid_attrs, bounds=True)
+    # if "domain_id" in ds.attrs:
+    #     try:
+    #         grid = domain(ds.attrs["domain_id"], bounds=True)
+    #         lon_vertices = grid.lon_vertices.to_numpy()
+    #         lat_vertices = grid.lat_vertices.to_numpy()
+    #     except KeyError:
+    #         warn(f"Unknown domain: {ds.attrs['domain_id']}")
+    # else:
+    #     lon_vertices = None
+    #     lat_vertices = None
+
+    # if "longitude" not in ds.cf.coords or "latitude" not in ds.cf.coords:
+    #     ds = cx.transform_coords(ds, trg_dims=("lon", "lat"))
 
     cmor.set_table(table_id)
     cmorLat = cmor.axis(
         table_entry="grid_latitude",
-        coord_vals=ds.rlat.to_numpy(),
-        units=ds.rlat.units,
+        coord_vals=grid.cf["Y"].to_numpy(),
+        units=grid.cf["Y"].units,
     )
     cmorLon = cmor.axis(
         table_entry="grid_longitude",
-        coord_vals=ds.rlon.to_numpy(),
-        units=ds.rlon.units,
+        coord_vals=grid.cf["X"].to_numpy(),
+        units=grid.cf["X"].units,
     )
+
     cmorGrid = cmor.grid(
         [cmorLat, cmorLon],
-        latitude=ds.lat.to_numpy(),
-        longitude=ds.lon.to_numpy(),
-        latitude_vertices=lat_vertices,
-        longitude_vertices=lon_vertices,
+        latitude=grid.cf["latitude"].to_numpy(),
+        longitude=grid.cf["longitude"].to_numpy(),
+        latitude_vertices=grid.cf.get_bounds("latitude").to_numpy(),
+        longitude_vertices=grid.cf.get_bounds("longitude").to_numpy(),
     )
-    pole = _get_pole(ds)
+    pole = ds.cf["grid_mapping"]
     pole_dict = {
         "grid_north_pole_latitude": pole.grid_north_pole_latitude,
         "grid_north_pole_longitude": pole.grid_north_pole_longitude,
@@ -196,15 +209,15 @@ def _define_time(ds, table_id, time_cell_method=None):
     cmor.set_table(table_id)
 
     if time_cell_method is None:
-        warn("no time_cell_method given, assuming: point")
-        time_cell_method = "point"
+        warn("no time_cell_method given, assuming: mean")
+        time_cell_method = "mean"
 
     # encode time and time bounds
 
     time_axis_encode = _encode_time(ds.time).to_numpy()
     time_axis_name = _get_time_axis_name(time_cell_method)
 
-    if time_cell_method == "mean":
+    if time_cell_method != "point":
         time_bounds = _time_bounds(ds)
         time_bounds.encoding = ds.time.encoding
         time_bounds_encode = _encode_time(time_bounds).to_numpy()
@@ -220,29 +233,66 @@ def _define_time(ds, table_id, time_cell_method=None):
     )
 
 
-def _define_grid(ds, table_ids, time_cell_method="point"):
-    cmorGrid = _define_axes(ds, table_ids["grid"])
+def _define_axis(ds, table_ids, time_cell_method="point"):
+    cmorGrid = _define_grid(ds, table_ids["grid"])
 
     if "time" in ds:
         cmorTime = _define_time(ds, table_ids["mip"], time_cell_method)
     else:
         cmorTime = None
 
-    return cmorTime, cmorGrid
-
-
-def _cmor_write(da, table_id, cmorTime, cmorGrid, file_name=True):
-    cmor.set_table(table_id)
-    if cmorTime is None:
-        coords = [cmorGrid]
+    # add z axis if required
+    if "Z" in ds.cf.dims:
+        z = ds.cf["Z"]
+        print(ds.cf.bounds)
+        if "Z" not in ds.cf.bounds:
+            # try to add bounds via cf_xarray
+            warn("found not bounds for z-axis, trying to create bounds...")
+            ds = ds.cf.add_bounds("Z", output_dim="bnds")
+        bounds = ds.cf.get_bounds("Z")
+        if bounds.ndim != 1:
+            # transpose to bounds
+            bounds = cfxr.bounds_to_vertices(bounds, "bnds")
+        cmorZ = cmor.axis(
+            table_entry=z.name,
+            coord_vals=z.to_numpy(),
+            units=z.attrs.get("units"),
+            cell_bounds=bounds.to_numpy(),
+        )
     else:
-        coords = [cmorTime, cmorGrid]
-    cmor_var = cmor.variable(da.name, da.units, coords)
+        cmorZ = None
+
+    return cmorTime, cmorZ, cmorGrid
+
+
+def _cmor_write(da, table_id, cmorTime, cmorZ, cmorGrid, file_name=True):
+    """write to netcdf via cmor python API"""
+
+    cmor.set_table(table_id)
+
+    # create coordinate ids
+    coords = []
+    if cmorTime:
+        coords.append(cmorTime)
+    if cmorZ:
+        coords.append(cmorZ)
+    coords.append(cmorGrid)
+
+    cmor_var_kwargs = {}
+    for kwarg in ["positive", "missing_value", "original_name", "history", "comment"]:
+        if kwarg in da.attrs:
+            cmor_var_kwargs[kwarg] = da.attrs[kwarg]
+
+    cmor_var = cmor.variable(
+        table_entry=da.name, units=da.units, axis_ids=coords, **cmor_var_kwargs
+    )
+
     if "time" in da.coords:
         ntimes_passed = da.time.size
     else:
         ntimes_passed = None
     cmor.write(cmor_var, da.to_numpy(), ntimes_passed=ntimes_passed)
+
     return cmor.close(cmor_var, file_name=file_name)
 
 
@@ -379,7 +429,7 @@ def _add_time_bounds(ds, cf_freq):
     Take special care of monthly frequencies.
 
     """
-    # monthly time bounds are funny in ESGS, it seems that
+    # monthly time bounds are funny in ESGF, it seems that
     # they should always be the first of each month and first
     # of second month. This is not really the bounds you would get
     # from arithmetics but seems fine. We have to take special care
@@ -444,9 +494,11 @@ def cmorize_cmor(
         dataset_table_json, cmor_table_json, grids_table=grids_table, inpath=inpath
     )
 
-    cmorTime, cmorGrid = _define_grid(ds, table_ids, time_cell_method=time_cell_method)
+    cmorTime, cmorZ, cmorGrid = _define_axis(
+        ds, table_ids, time_cell_method=time_cell_method
+    )
 
-    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorGrid)
+    return _cmor_write(ds[out_name], table_ids["mip"], cmorTime, cmorZ, cmorGrid)
 
 
 def prepare_variable(
@@ -458,11 +510,12 @@ def prepare_variable(
     allow_units_convert=False,
     allow_resample=False,
     input_freq=None,
-    CORDEX_domain=None,
+    domain_id=None,
     time_units=None,
     rewrite_time_axis=False,
     use_cftime=False,
     squeeze=True,
+    crop=None,
 ):
     """prepares a variable for cmorization."""
 
@@ -470,6 +523,8 @@ def prepare_variable(
         mapping_table = {}
 
     ds = ds.copy(deep=False)
+    # use cf_xarray to guess coordinate meta data
+    ds = ds.cf.guess_coord_axis(verbose=True)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)
@@ -485,26 +540,26 @@ def prepare_variable(
     # ds = xr.decode_cf(ds, decode_coords="all")
 
     # no mapping table provided, we assume datasets has already correct out_names and units.
-    if out_name not in mapping_table:
-        try:
-            var_ds = ds[[out_name]]
-        except Exception:
-            raise Exception(
-                f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
-            )
+    if out_name in ds.data_vars:
+        var_ds = ds  # [[out_name]]
+    elif mapping_table and out_name not in mapping_table:
+        raise Exception(
+            f"Could not find {out_name} in dataset. Please make sure, variable names and units have CF standard or pass a mapping table."
+        )
     else:
         varname = mapping_table[out_name]["varname"]
         # cf_name = varinfo["cf_name"]
-        var_ds = ds[[varname]]  # .to_dataset()
+        var_ds = ds  # [[varname]]  # .to_dataset()
         var_ds = var_ds.rename({varname: out_name})
     # remove point coordinates, e.g, height2m
     if squeeze is True:
         var_ds = var_ds.squeeze(drop=True)
-    if CORDEX_domain is not None:
-        var_ds.attrs["CORDEX_domain"] = CORDEX_domain
-        var_ds = _crop_to_cordex_domain(var_ds, CORDEX_domain)
+    if crop is True:
+        # var_ds.attrs["domain_id"] = domain_id
+        var_ds = _crop_to_cordex_domain(var_ds, domain_id)
     if replace_coords is True:
-        grid = cordex_domain(CORDEX_domain, bounds=True)
+        # domain_id = domain_id or var_ds.cx.domain_id
+        grid = domain(domain_id, bounds=True)
         var_ds = var_ds.assign_coords(rlon=grid.rlon, rlat=grid.rlat)
         var_ds = var_ds.assign_coords(lon=grid.lon, lat=grid.lat)
         var_ds = var_ds.assign_coords(
@@ -518,7 +573,7 @@ def prepare_variable(
             var_ds = _adjust_frequency(var_ds, cf_freq, input_freq, time_cell_method)
         if rewrite_time_axis is True:
             var_ds = _rewrite_time_axis(var_ds, cf_freq)
-        if "time" not in ds.cf.bounds and time_cell_method == "mean":
+        if "time" not in ds.cf.bounds and time_cell_method != "point":
             warn("adding time bounds")
             var_ds = _add_time_bounds(var_ds, cf_freq)
         if use_cftime is False:
@@ -533,8 +588,8 @@ def prepare_variable(
     try:
         mapping = ds.cf["grid_mapping"]  # _get_pole(ds)
     except KeyError:
-        warn(f"adding pole from archive specs: {CORDEX_domain}")
-        mapping = _get_cordex_pole(CORDEX_domain)
+        warn(f"adding pole from archive specs: {domain_id}")
+        mapping = _get_cordex_pole(domain_id)
 
     if "time" in mapping.coords:
         raise Exception("grid_mapping variable should have no time coordinate!")
@@ -556,13 +611,23 @@ def cmorize_variable(
     allow_units_convert=False,
     allow_resample=False,
     input_freq=None,
-    CORDEX_domain=None,
+    domain_id=None,
+    crop=None,
     time_units=None,
     rewrite_time_axis=False,
     outpath=None,
     **kwargs,
 ):
     """Cmorizes a variable.
+
+    This functions call the python cmor API and creates a cmorized NetCDF file from the input
+    dataset. Coordinates of the input dataset should be understandable by ``cf_xarray`` if they
+    follow basic CF conventions. If a vertical coordinate is available, it should have an ``axis="Z"``
+    attribute so it can be understood by ``cf_xarray`` and it should be named after the unique key of the
+    coordinate in the cmor grids table (not the out_name), e.g., name it ``sdepth`` if you
+    need a soil layer coordinate instead of ``depth``. Variables may have one of the following attributes
+    that are used as keyword arguments in the call to `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_, e.g.,
+    ``positive``, ``missing_value``, ``original_name``, ``history`` or ``comment``.
 
     Parameters
     ----------
@@ -586,7 +651,8 @@ def cmorize_variable(
         like ``CMIP6_coordinates``, ``CMIP6_grids`` etc.
     replace_coords: bool
         Replace coordinates from input file and create them from archive
-        specifications.
+        specifications. Only possible, if a domain identifier is given in the global
+        attributes or as a keyword argument, e.g., see the ``domain_id`` keyword.
     allow_units_convert: bool
         Allow units to be converted if they do not agree with the
         units in the cmor table. Defaults to ``False`` to make the user aware of having
@@ -599,9 +665,14 @@ def cmorize_variable(
         The frequency of the input dataset in pandas notation. It ``None`` and the dataset
         contains a time axis, the frequency will be determined automatically using
         ``pandas.infer_freq`` if possible.
-    CORDEX_domain: str
-        Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
-        global attribute if available.
+    domain_id: str
+        Cordex domain identifier. If ``None``, the domain will be determined by the ``domain_id``
+        global attribute if available. If ``domain_id`` is given as a keyword, it will override
+        a possible ``domain_id`` global attribute.
+    crop: bool
+        Crop dataset to official Cordex domain if it contains, e.g., a nudging zone. If set to ``None``,
+        cropping will be done if a domain identifier is given or the domain can be identified automatically.
+        Set to ``crop=False``, if you have an 'unofficial' domain_id.
     time_units: str
         Time units of the cmorized dataset (``ISO 8601``).
         If ``None``, time units will be set to default (``"days since 1950-01-01T00:00:00"``).
@@ -619,18 +690,58 @@ def cmorize_variable(
     filename
         Filepath to cmorized file.
 
+    Example
+    -------
+
+    To cmorize a dataset, you can use ,e.g.,::
+
+        import cordex as cx
+        from cordex.cmor import cmorize_variable
+        from cordex.tables import cordex_cmor_table
+
+        ds = cx.domain("EUR-11", dummy="topo").rename(topo="orog")
+        dataset_table = cordex_cmor_table(f"CORDEX-CMIP6_remo_example")
+
+        filename = cmorize_variable(
+            ds,
+            "orog",
+            cmor_table=cordex_cmor_table("CORDEX-CMIP6_fx"),
+            dataset_table=dataset_table,
+            replace_coords=True,
+            allow_units_convert=True,
+        )
+
     """
     ds = ds.copy()
 
-    if CORDEX_domain is None:
+    if "CORDEX_domain" in kwargs:
+        warn(
+            "'CORDEX_domain' keyword is deprecated, please use the 'domain_id' keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        domain_id = kwargs["CORDEX_domain"]
+        del kwargs["CORDEX_domain"]
+
+    if domain_id is None:
         try:
-            CORDEX_domain = ds.CORDEX_domain
-        except Exception:
+            domain_id = ds.cx.domain_id
+        except Exception as e:
+            warn(e)
             warn(
-                "could not identify CORDEX domain, try to set the 'CORDEX_domain' argument"
+                "could not identify CORDEX domain, try to set the 'domain_id' if there is no domain identifier in global attributes."
             )
-    elif "CORDEX_domain" not in ds.attrs:
-        ds.attrs["CORDEX_domain"] = CORDEX_domain
+            crop = False
+            replace_coords = False
+    else:
+        if "domain_id" in ds.attrs and ds.attrs.get("domain_id") != domain_id:
+            warn(
+                f"overwriting global attribute 'domain_id' with value '{ds.attrs['domain_id']}' with '{domain_id}' from keyword argument."
+            )
+        ds.attrs["domain_id"] = domain_id
+
+    if domain_id and crop is None:
+        crop = True
 
     if inpath is None:
         inpath = os.path.dirname(cmor_table)
@@ -645,7 +756,7 @@ def cmorize_variable(
         ds,
         out_name,
         cmor_table,
-        CORDEX_domain=CORDEX_domain,
+        domain_id=domain_id,
         mapping_table=mapping_table,
         replace_coords=replace_coords,
         input_freq=input_freq,
@@ -653,6 +764,7 @@ def cmorize_variable(
         time_units=time_units,
         allow_resample=allow_resample,
         allow_units_convert=allow_units_convert,
+        crop=crop,
         **kwargs,
     )
 
@@ -677,7 +789,7 @@ class Cmorizer(CmorizerBase):
         allow_units_convert=False,
         allow_resample=False,
         input_freq=None,
-        CORDEX_domain=None,
+        domain_id=None,
         time_units=None,
         rewrite_time_axis=False,
         outpath=None,
@@ -712,8 +824,8 @@ class Cmorizer(CmorizerBase):
             The frequency of the input dataset in pandas notation. It ``None`` and the dataset
             contains a time axis, the frequency will be determined automatically using
             ``pandas.infer_freq`` if possible.
-        CORDEX_domain: str
-            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+        domain_id: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
             global attribute if available.
         time_units: str
             Time units of the cmorized dataset (``ISO 8601``).
@@ -734,7 +846,7 @@ class Cmorizer(CmorizerBase):
         self.replace_coords = replace_coords
         self.allow_units_convert = allow_units_convert
         self.allow_resample = allow_resample
-        self.CORDEX_domain = CORDEX_domain
+        self.domain_id = domain_id
         self.time_units = time_units
         self.rewrite_time_axis = rewrite_time_axis
         self.outpath = outpath
@@ -754,7 +866,7 @@ class Cmorizer(CmorizerBase):
         allow_units_convert=False,
         allow_resample=False,
         input_freq=None,
-        CORDEX_domain=None,
+        domain_id=None,
         time_units=None,
         rewrite_time_axis=False,
         use_cftime=False,
@@ -770,7 +882,7 @@ class Cmorizer(CmorizerBase):
             allow_units_convert=allow_units_convert or self.allow_units_convert,
             allow_resample=allow_resample or self.allow_resample,
             input_freq=input_freq,
-            CORDEX_domain=CORDEX_domain or self.CORDEX_domain,
+            domain_id=domain_id or self.domain_id,
             time_units=time_units or self.time_units,
             rewrite_time_axis=rewrite_time_axis or self.rewrite_time_axis,
             use_cftime=use_cftime,
@@ -820,8 +932,8 @@ class Cmorizer(CmorizerBase):
             The frequency of the input dataset in pandas notation. It ``None`` and the dataset
             contains a time axis, the frequency will be determined automatically using
             ``pandas.infer_freq`` if possible.
-        CORDEX_domain: str
-            Cordex domain short name. If ``None``, the domain will be determined by the ``CORDEX_domain``
+        domain_id: str
+            Cordex domain short name. If ``None``, the domain will be determined by the ``domain_id``
             global attribute if available.
         time_units: str
             Time units of the cmorized dataset (``ISO 8601``).

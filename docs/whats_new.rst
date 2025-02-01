@@ -1,12 +1,103 @@
 .. currentmodule:: cordex
 
-What's New
+What's new
 ==========
 
-UNRELEASED
-----------
+v0.10.0 (Unreleased)
+--------------------
 
-This release introduces the :py:meth:`cell_area` function and adds the ``cell_area`` keyword in :py:meth:`cordex_domain`.
+New function  :py:meth:`rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
+rounding errors. This version drops python3.8 support.
+
+New Features
+~~~~~~~~~~~~
+
+- New function :py:meth:`rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Fix coordinate bounds attribute in :py:meth:`transform_bounds` (:pull:`314`).
+
+Bugfixes
+~~~~~~~~
+
+- Fixed deprecated ``xarray`` keywords (:pull:`273`).
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Drop python3.8 support (:pull:`306`).
+
+Deprecations
+~~~~~~~~~~~~
+
+- :py:meth:`preprocessing.replace_coords` is deprecated in favour of :py:meth:`rewrite_coords`.
+
+
+v0.9.0 (18 November 2024)
+-------------------------
+
+This release mainly updates the cmor module and allows to cmorize for non-standard CORDEX domains. Some updates are introduced so that variables attributes can be used to control calls to the `cmor_variable <https://cmor.llnl.gov/mydoc_cmor3_api/#cmor_variable>`_ API.
+A new function :py:meth:`derotate_vector` to derotate vector components has also been introduced.
+
+New Features
+~~~~~~~~~~~~
+
+- Variables attributes are recognized for cmorization in :py:meth:`cmor.cmorize_variable` (:pull:`282`).
+- New function :py:meth:`derotate_vector` to transform vector components from rotated coordinate systems (:pull:`264`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update grid rewriting in :py:meth:`cmor.cmorize_variable` (:pull:`276`) to allow for non registered domains.
+- Added internal tolerance to domain cropping during cmorization (:pull:`262`).
+
+Bugfixes
+~~~~~~~~
+
+- Fixed deprecated ``xarray`` keywords (:pull:`273`).
+
+v0.8.0 (27 June 2024)
+---------------------
+
+This version introduces :py:meth:`domain` which should tighten the API call in the future.
+The cmor module was also updated to make more usage of ``cf_xarray`` and allow handling
+of a Z-axis.
+
+.. note::
+   This version introduces :py:meth:`domain` which is equivalent to the former
+   ``cordex_domain`` function. Both API calls are available, however, future
+   improvements might only be done on the new ``domain`` API and it is
+   recommended to use :py:meth:`domain` in the future.
+
+New Features
+~~~~~~~~~~~~
+
+- Cmor function :py:meth:`cmor.cmorize_variable` can now handle 3D fields if a Z-axis is available (:pull:`230`, :pull:`258`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Removed ``nbspinx_link`` dependency from documentation (:pull:`256`).
+- Added :py:meth:`domain` which is equivalent to earlier ``cordex_domain`` (:pull:`254`).
+- Changed ``CORDEX_domain`` keyword to ``domain_id`` in :py:meth:`cmor.cmorize_variable`, added deprecation warning (:pull:`252`).
+- Pin ``pint!=0.24`` due to breaking changes that affect ``cf_xarray`` (:pull:`249`).
+
+v0.7.1 (4 June 2024)
+--------------------
+
+Patch release.
+
+Bugfixes
+~~~~~~~~
+
+- Fix cmor time axis issue (:pull:`236`).
+
+v0.7.0 (25 February 2024)
+-------------------------
+
+This release introduces the :py:meth:`cell_area` function and adds the ``cell_area`` keyword in :py:meth:`cordex_domain`. Includes internal updates for CORDEX-CMIP6 cmorization.
 
 New Features
 ~~~~~~~~~~~~

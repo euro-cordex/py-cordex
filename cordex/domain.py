@@ -9,7 +9,7 @@ from pyproj import CRS
 from . import cf
 from .config import nround
 from .tables import domains
-from .transform import grid_mapping, transform, transform_bounds
+from .transform import grid_mapping, transform, transform_coords, transform_bounds
 from .utils import cell_area, get_tempfile
 
 
@@ -64,10 +64,9 @@ def domain_names(table_name=None):
         return list(domains.table.index)
 
 
-def cordex_domain(
+def domain(
     domain_id,
     dummy=False,
-    add_vertices=False,
     tables=None,
     attrs=None,
     mapping_name=None,
@@ -119,16 +118,9 @@ def cordex_domain(
 
         import cordex as cx
 
-        eur11 = cx.cordex_domain('EUR-11')
+        eur11 = cx.domain('EUR-11')
 
     """
-    if add_vertices is True:
-        warn(
-            "add_vertices keyword is deprecated, please use the bounds keyword instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        bounds = True
 
     if attrs is None:
         attrs = {}
@@ -144,6 +136,85 @@ def cordex_domain(
         # domain_id=domain_id,
         dummy=dummy,
         add_vertices=False,
+        attrs=attrs,
+        mapping_name=mapping_name,
+        bounds=bounds,
+        mip_era=mip_era,
+        cell_area=cell_area,
+    )
+
+
+def cordex_domain(
+    domain_id,
+    dummy=False,
+    add_vertices=False,
+    tables=None,
+    attrs=None,
+    mapping_name=None,
+    bounds=False,
+    mip_era="CMIP5",
+    cell_area=False,
+):
+    """Creates an xarray dataset containg coordinates and meta data of a CORDEX grid.
+
+    Parameters
+    ----------
+    domain_id : str
+        Domain identifier.
+    dummy : str or logical
+        Name of dummy field, if dummy=topo, the cdo topo operator will be
+        used to create some dummy topography data. dummy data is useful for
+        looking at the domain with ncview.
+    tables : dataframe or list of dataframes, default: cordex_tables
+        Tables from which to look up the grid information. Index in the table
+        should be the short name of the domain, e.g., `EUR-11`. If no table is
+        provided, all standard tables will be searched.
+    attrs : str or dict
+        Global attributes that should be added to the dataset. If `attrs='CORDEX'`
+        a set of standard CF global attributes.
+    mapping_name : str
+        Variable name of the grid mapping, if mapping_name is `None`, the CF standard
+        variable name is used.
+    bounds : bool
+        Add spatial bounds to longitude and latitude coordinates.
+    mip_era : str
+        The mip_era keyword determines the vocabulary for dimensions, coordinates and
+        attributes.
+    cell_area: logical
+        Add a grid-cell area coordinate variable.
+
+    Returns
+    -------
+    Grid : xr.Dataset
+        Dataset containing a CORDEX grid.
+
+    References
+    ----------
+    Please refer to the CF conventions document : https://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html#grid-mappings-and-projections
+
+    Example
+    -------
+
+    To create a cordex rotated pole domain dataset, you can use ,e.g.,::
+
+        import cordex as cx
+
+        eur11 = cx.cordex_domain('EUR-11')
+
+    """
+
+    if add_vertices is True:
+        warn(
+            "add_vertices keyword is deprecated, please use the bounds keyword instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bounds = True
+
+    return domain(
+        domain_id,
+        dummy=dummy,
+        tables=tables,
         attrs=attrs,
         mapping_name=mapping_name,
         bounds=bounds,
@@ -493,6 +564,111 @@ def vertices(rlon, rlat, src_crs, trg_crs=None):
     lon_vertices.attrs = cf.coords[cf.LON_BOUNDS]
     lat_vertices.attrs = cf.coords[cf.LAT_BOUNDS]
     return xr.merge([lat_vertices, lon_vertices])
+
+
+def rewrite_coords(
+    ds, coords="xy", bounds=False, domain_id=None, mip_era="CMIP5", method="nearest"
+):
+    """
+    Rewrite coordinates in a dataset.
+
+    This function ensures that the coordinates in a dataset are consistent and can be
+    compared to other datasets. It can reindex the dataset based on specified coordinates
+    or domain information while trying to keep the original coordinate attributes.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The dataset containing the grid to be rewritten.
+    coords : str, optional
+        Specifies which coordinates to rewrite. Options are:
+        - "xy": Rewrite only the X and Y coordinates.
+        - "lonlat": Rewrite only the longitude and latitude coordinates.
+        - "all": Rewrite both X, Y, longitude, and latitude coordinates.
+        Default is "xy". If longitude and latitude coordinates are not present in the dataset, they will be added.
+        Rewriting longitude and latitude coordinates is only possible if the dataset contains a grid mapping variable.
+    bounds : bool, optional
+        If True, the function will also handle the bounds of the coordinates. If the dataset already has bounds,
+        they will be updated while preserving attributes and shape. If not, the bounds will be assigned.
+    domain_id : str, optional
+        The domain identifier used to obtain grid information. If not provided, the function will attempt
+        to use the domain_id attribute from the dataset.
+    mip_era : str, optional
+        The MIP era (e.g., "CMIP5", "CMIP6") used to determine coordinate attributes. Default is "CMIP5".
+        Only used if the dataset does not already contain coordinate attributes.
+    method : str, optional
+        The method used for reindexing the X and Y axis. Options include "nearest", "linear", etc. Default is "nearest".
+
+    Returns
+    -------
+    ds : xr.Dataset
+        The dataset with rewritten coordinates.
+    """
+    if (
+        domain_id is None
+        and ds.cf["grid_mapping"].grid_mapping_name == "rotated_latitude_longitude"
+    ):
+        domain_id = ds.cx.domain_id
+    if domain_id:
+        # we use "official" grid information
+        grid_info = domain_info(domain_id)
+        dx = grid_info["dlon"]
+        dy = grid_info["dlat"]
+        x0 = grid_info["ll_lon"]
+        y0 = grid_info["ll_lat"]
+        nx = grid_info["nlon"]
+        ny = grid_info["nlat"]
+    else:
+        # we use the grid information from the dataset
+        x = ds.cf["X"].data
+        y = ds.cf["Y"].data
+        nx = x.size
+        ny = y.size
+        dx = (x[1] - x[0]).round(5)
+        dy = (y[1] - y[0]).round(5)
+        x0 = x[0].round(nround)
+        y0 = y[0].round(nround)
+
+    xn = _lin_coord(nx, dx, x0)
+    yn = _lin_coord(ny, dy, y0)
+
+    if coords == "xy" or coords == "all":
+        ds = ds.cf.reindex(X=xn, Y=yn, method=method)
+
+    if coords == "lonlat" or coords == "all":
+        # check if the dataset already has longitude and latitude coordinates
+        # if so, overwrite them (take care to keep attributes though)
+        try:
+            trg_dims = (ds.cf["longitude"].name, ds.cf["latitude"].name)
+            overwrite = True
+        except KeyError:
+            trg_dims = ("lon", "lat")
+            overwrite = False
+        dst = transform_coords(ds, trg_dims=trg_dims)
+        if overwrite is False:
+            ds = ds.assign_coords(
+                {trg_dims[0]: dst[trg_dims[0]], trg_dims[1]: dst[trg_dims[1]]}
+            )
+            ds[trg_dims[0]].attrs = cf.vocabulary[mip_era]["coords"][trg_dims[0]]
+            ds[trg_dims[1]].attrs = cf.vocabulary[mip_era]["coords"][trg_dims[1]]
+        else:
+            ds[trg_dims[0]][:] = dst[trg_dims[0]]
+            ds[trg_dims[1]][:] = dst[trg_dims[1]]
+
+    if bounds is True:
+        # check if the dataset already has bounds
+        # if so, overwrite them (take care to keep attributes though)
+        overwrite = "longitude" in ds.cf.bounds and "latitude" in ds.cf.bounds
+        dst = transform_bounds(ds)
+        if overwrite is False:
+            ds = dst
+        else:
+            lon_bounds = ds.cf.bounds["longitude"]
+            lat_bounds = ds.cf.bounds["latitude"]
+            ds[lon_bounds[0]][:] = dst.cf.get_bounds("longitude")
+            ds[lat_bounds[0]][:] = dst.cf.get_bounds("latitude")
+
+    return ds
 
 
 def _crop_to_domain(ds, domain_id, drop=True):

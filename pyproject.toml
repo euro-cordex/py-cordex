@@ -11,7 +11,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -52,11 +51,12 @@ target-version = "py38"
 builtins = ["ellipsis"]
 exclude = [
     ".eggs",
-    "doc",
+    "docs",
 ]
 # E402: module level import not at top of file
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
+[lint]
 ignore = [
     "E402",
     "E501",

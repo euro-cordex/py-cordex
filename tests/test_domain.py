@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 import xarray as xr
+import pandas as pd
 
 import cordex as cx
 
@@ -78,7 +79,6 @@ def test_constructor():
 @pytest.mark.parametrize("bounds", [False, True])
 # @pytest.mark.parametrize("", [2, 3])
 def test_domain_info(bounds):
-    import pandas as pd
 
     info = {
         "short_name": "EUR-11",
@@ -113,3 +113,76 @@ def test_vertices():
         eur11.rotated_latitude_longitude.grid_north_pole_latitude,
     )
     cx.vertices(eur11.rlon, eur11.rlat, src_crs=ccrs.RotatedPole(*pole))
+
+
+@pytest.mark.parametrize("domain_id", ["EUR-11", "EUR-44", "SAM-44", "AFR-22"])
+def test_rewrite_coords(domain_id):
+    """
+    Test the rewrite_coords function for different domains.
+
+    This function tests the rewrite_coords function by creating a sample dataset
+    with typical coordinate precision issues (random noise) and verifying that
+    the coordinates are correctly rewritten.
+
+    Parameters
+    ----------
+    domain_id : str
+        The domain identifier used to obtain grid information for testing.
+    """
+    # Create a sample dataset
+    grid = cx.domain(domain_id)
+
+    # Create typical coordinate precision issue by adding random noise
+    rlon_noise = np.random.randn(*grid.rlon.shape) * np.finfo("float32").eps
+    rlat_noise = np.random.randn(*grid.rlat.shape) * np.finfo("float32").eps
+    lon_noise = np.random.randn(*grid.lon.shape) * np.finfo("float32").eps
+    lat_noise = np.random.randn(*grid.lat.shape) * np.finfo("float32").eps
+
+    # Call the rewrite_coords function for "xy" coordinates
+    grid_noise = grid.assign_coords(
+        rlon=grid.rlon + rlon_noise, rlat=grid.rlat + rlat_noise
+    )
+    rewritten_data = cx.rewrite_coords(grid_noise, coords="xy")
+
+    np.testing.assert_array_equal(rewritten_data.rlon, grid.rlon)
+    np.testing.assert_array_equal(rewritten_data.rlat, grid.rlat)
+    xr.testing.assert_identical(rewritten_data, grid)
+
+    # Call the rewrite_coords function for "lonlat" coordinates
+    grid_noise = grid.assign_coords(lon=grid.lon + lon_noise, lat=grid.lat + lat_noise)
+    rewritten_data = cx.rewrite_coords(grid_noise, coords="lonlat")
+
+    np.testing.assert_array_equal(rewritten_data.lon, grid.lon)
+    np.testing.assert_array_equal(rewritten_data.lat, grid.lat)
+    xr.testing.assert_identical(rewritten_data, grid)
+
+    # Call the rewrite_coords function for "all" coordinates
+    grid_noise = grid.assign_coords(
+        rlon=grid.rlon + rlon_noise,
+        rlat=grid.rlat + rlat_noise,
+        lon=grid.lon + lon_noise,
+        lat=grid.lat + lat_noise,
+    )
+    rewritten_data = cx.rewrite_coords(grid_noise, coords="all")
+
+    np.testing.assert_array_equal(rewritten_data.rlon, grid.rlon)
+    np.testing.assert_array_equal(rewritten_data.rlat, grid.rlat)
+    np.testing.assert_array_equal(rewritten_data.lon, grid.lon)
+    np.testing.assert_array_equal(rewritten_data.lat, grid.lat)
+    xr.testing.assert_identical(rewritten_data, grid)
+
+    grid = cx.domain(domain_id, bounds=True, mip_era="CMIP6")
+    grid["vertices_lon"][:] = 0.0
+    grid["vertices_lat"][:] = 0.0
+    grid.vertices_lon.attrs["hello"] = "world"
+    grid.vertices_lat.attrs["hello"] = "world"
+
+    rewritten_data = cx.rewrite_coords(grid, bounds=True)
+    grid = cx.domain(domain_id, bounds=True, mip_era="CMIP6")
+
+    np.testing.assert_array_equal(rewritten_data.vertices_lon, grid.vertices_lon)
+    np.testing.assert_array_equal(rewritten_data.vertices_lat, grid.vertices_lat)
+
+    # check if attributes are now overwritten
+    assert rewritten_data.vertices_lon.attrs["hello"] == "world"
+    assert rewritten_data.vertices_lat.attrs["hello"] == "world"

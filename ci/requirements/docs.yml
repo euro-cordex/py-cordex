@@ -3,6 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
+  - docutils
   - pint-xarray
   - matplotlib-base
   - xarray
@@ -12,7 +13,6 @@ dependencies:
   - pillow
   - pip
   - nbsphinx
-  - nbsphinx-link
   - ipython
   - cftime
   - pooch
@@ -26,6 +26,4 @@ dependencies:
   - pydata-sphinx-theme
   - sphinx-book-theme>=0.3.3
   - sphinx-autosummary-accessors
-  - pip:
-    - sphinxcontrib-mockautodoc
-    - myst_nb
+  - myst-nb
