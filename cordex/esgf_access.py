@@ -1,5 +1,4 @@
-"""this module should help on managing ESGF metadata
-"""
+"""this module should help on managing ESGF metadata"""
 
 import pandas as pd
 
@@ -132,7 +131,7 @@ def get_opendap_urls(attrs, conn=None, agg=False, verbose=False):
 
 def _split_dataset_id(dataset_id):
     """splits a dataset id into list of values."""
-    return dataset_id.split("|")[0].split(".") + [(dataset_id.split("|")[1])]
+    return dataset_id.split("|")[0].split(".") + [dataset_id.split("|")[1]]
 
 
 def _get_columns(columns=None):

@@ -1,5 +1,4 @@
-"""CORDEX Cmorization utilities.
-"""
+"""CORDEX Cmorization utilities."""
 
 import datetime as dt
 import json
