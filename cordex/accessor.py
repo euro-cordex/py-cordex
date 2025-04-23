@@ -186,13 +186,20 @@ class CordexAccessor:
 
         obj = self._obj
 
+        try:
+            x = obj.cf["X"]
+            y = obj.cf["Y"]
+        except KeyError:
+            x = obj.rlon
+            y = obj.rlat
+
         mapping = obj.cf["grid_mapping"]
         pole = (
             mapping.grid_north_pole_longitude,
             mapping.grid_north_pole_latitude,
         )
         central_longitude = 0.0
-        if obj.cf["X"].min() > 0.0:
+        if x.min() > 0.0:
             central_longitude = 180.0
 
         transform = ccrs.RotatedPole(*pole, central_rotated_longitude=central_longitude)
@@ -214,10 +221,10 @@ class CordexAccessor:
         )
         ax.set_extent(
             [
-                obj.rlon.min() - central_longitude,
-                obj.rlon.max() - central_longitude,
-                obj.rlat.min(),
-                obj.rlat.max(),
+                x.min() - central_longitude,
+                x.max() - central_longitude,
+                y.min(),
+                y.max(),
             ],
             crs=transform,
         )

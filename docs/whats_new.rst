@@ -22,6 +22,7 @@ Internal Changes
 Bugfixes
 ~~~~~~~~
 
+- Fixed :py:meth:`Dataset.cx.map` for arbitrary x-y axis names (:pull:`324`).
 - Fixed deprecated ``xarray`` keywords (:pull:`273`).
 
 Breaking Changes
