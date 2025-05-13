@@ -26,6 +26,7 @@ from .config import (
     time_dtype,
     time_units_default,
     units_format,
+    grid_entry_mapping,
 )
 
 # from .derived import derivator
@@ -150,30 +151,6 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names.get(time_cell_method, "time")
 
 
-grid_entry_mapping = {
-    "rotated_latitude_longitude": {
-        "X": "grid_latitude",
-        "Y": "grid_longitude",
-        "default_attrs": {
-            "grid_north_pole_latitude": [None, ""],
-            "grid_north_pole_longitude": [None, ""],
-            "north_pole_grid_longitude": [0.0, ""],
-        },
-    },
-    "lambert_conformal_conic": {
-        "X": "x",
-        "Y": "y",
-        "default_attrs": {
-            "standard_parallel": [None, ""],
-            "longitude_of_central_meridian": [None, ""],
-            "latitude_of_projection_origin": [None, ""],
-            "false_easting": [0.0, ""],
-            "false_northing": [0.0, ""],
-        },
-    },
-}
-
-
 def _define_grid(ds, table_id, rewrite_grid="auto"):
     if rewrite_grid == "auto":
         try:
@@ -254,15 +231,6 @@ def _define_grid(ds, table_id, rewrite_grid="auto"):
             raise KeyError(
                 f"Missing attribute {k} in grid mapping variable: {grid_mapping_name}"
             )
-
-    # param_dict = {
-    #          'latitude_of_projection_origin': [90.0, 'degrees_north'],
-    #          'straight_vertical_longitude_from_pole': [135.0, 'degrees_east'],
-    #          'standard_parallel': [70.0, 'degrees_north'],
-    #          'false_northing': [0.0, 'meters'],
-    #          'false_easting': [0.0, 'meters']
-    #      }
-    print(attrs_dict)
 
     cmor.set_grid_mapping(
         cmorGrid,
