@@ -243,7 +243,9 @@ def _define_grid(ds, table_id, rewrite_grid="auto"):
             value = grid_mapping.attrs[k]
             if isinstance(value, Iterable):
                 for i, val in enumerate(value):
-                    attrs_dict[k + str(i + 1)] = [val, v[1]]
+                    # see
+                    # attrs_dict[k + str(i + 1)] = [val, v[1]]
+                    attrs_dict[k] = [val, v[1]]
             else:
                 attrs_dict[k] = [value, v[1]]
         elif v[0] is not None:
@@ -445,6 +447,8 @@ def _set_time_encoding(ds, units, orig):
     if u is None:
         u = time_units_default
         warn(f"time units are set to default: {u}")
+    if not isinstance(u, str):
+        raise TypeError(f"time units invalid: {u}")
     ds.time.encoding["units"] = u
     ds.time.encoding["dtype"] = time_dtype
     return ds
@@ -589,7 +593,7 @@ def prepare_variable(
     use_cftime=False,
     squeeze=True,
     crop=None,
-    guess_coord_axis=True,
+    guess_coord_axis=None,
 ):
     """prepares a variable for cmorization."""
 
@@ -598,7 +602,10 @@ def prepare_variable(
 
     ds = ds.copy(deep=False)
     # use cf_xarray to guess coordinate meta data
-    # ds = ds.cf.guess_coord_axis(verbose=True)
+    if guess_coord_axis is None:
+        guess_coord_axis = "X" not in ds.cf.coords or "Y" not in ds.cf.coords
+    if guess_coord_axis is True:
+        ds = ds.cf.guess_coord_axis(verbose=True)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)
