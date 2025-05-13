@@ -21,12 +21,13 @@ def _get_domain_id(ds):
 def _get_info(ds, tables=None, precision=nround):
     try:
         grid_mapping_name = ds.cf["grid_mapping"].grid_mapping_name
-        if grid_mapping_name != "rotated_latitude_longitude":
-            raise KeyError(
-                "The grid mapping variable is not of type 'rotated_latitude_longitude'."
-            )
-    except KeyError as e:
-        raise KeyError(e)
+    except KeyError:
+        grid_mapping_name = None
+
+    if grid_mapping_name and grid_mapping_name != "rotated_latitude_longitude":
+        raise ValueError(
+            f"Grid mapping name '{grid_mapping_name}' is not supported. Only 'rotated_latitude_longitude' is supported."
+        )
     # check if tables is None
     if tables is None:
         tables = domains.table.replace(np.nan, None)
