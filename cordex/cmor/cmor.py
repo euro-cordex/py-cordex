@@ -603,7 +603,7 @@ def prepare_variable(
     ds = ds.copy(deep=False)
     # use cf_xarray to guess coordinate meta data
     if guess_coord_axis is None:
-        guess_coord_axis = "X" not in ds.cf.coords or "Y" not in ds.cf.coords
+        guess_coord_axis = "X" not in ds.cf.dims or "Y" not in ds.cf.dims
     if guess_coord_axis is True:
         ds = ds.cf.guess_coord_axis(verbose=True)
 
