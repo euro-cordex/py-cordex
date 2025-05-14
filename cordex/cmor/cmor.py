@@ -221,8 +221,8 @@ def _define_grid(ds, table_id, rewrite_grid="auto"):
             if isinstance(value, Iterable):
                 for i, val in enumerate(value):
                     # see
-                    # attrs_dict[k + str(i + 1)] = [val, v[1]]
-                    attrs_dict[k] = [val, v[1]]
+                    attrs_dict[k + str(i + 1)] = [val, v[1]]
+                    # attrs_dict[k] = [val, v[1]]
             else:
                 attrs_dict[k] = [value, v[1]]
         elif v[0] is not None:
@@ -235,9 +235,10 @@ def _define_grid(ds, table_id, rewrite_grid="auto"):
     cmor.set_grid_mapping(
         cmorGrid,
         grid_mapping_name,
-        parameter_names=attrs_dict,
-        # list(attrs_dict.keys()),
-        # list(attrs_dict.values()),
+        # parameter_names=attrs_dict,
+        parameter_names=list(attrs_dict.keys()),
+        parameter_values=[v[0] for v in attrs_dict.values()],
+        parameter_units=[v[1] for v in attrs_dict.values()],
         # len(attrs_dict) * [""],
     )
 
