@@ -281,3 +281,55 @@ def test_table_manipulation():
     filename = run_cmorizer(ds, "orog", "EUR-11", "fx", outpath=home)
     print(filename)
     assert home in filename
+
+
+def test_cmorizer_with_xwrf():
+    import xwrf
+
+    ds_old = xwrf.tutorial.open_dataset("wrfout")
+    ds_new = ds_old.xwrf.postprocess()
+    # we use the lowest layer as tas dummy
+    ds = (
+        ds_new[
+            ["x", "y", "air_potential_temperature", "XLAT", "XLONG", "wrf_projection"]
+        ]
+        .isel(z=0)
+        .rename(Time="time", air_potential_temperature="tas")
+    )
+    # extend time axis and make dummy monthly dataset
+    time = pd.date_range("2025-01-01", periods=12, freq="MS")
+    ds = (
+        xr.decode_cf(ds, decode_coords="all")
+        .squeeze(drop=True)
+        .expand_dims(time=time, axis=0)
+    )
+    table_id = "mon"
+    filename = cmor.cmorize_variable(
+        ds,
+        "tas",
+        cmor_table=cordex_cmor_table(f"{table_prefix}_{table_id}"),
+        dataset_table=cordex_cmor_table(f"{table_prefix}_remo_example"),
+        grids_table=cordex_cmor_table(f"{table_prefix}_grids"),
+        domain_id="West-Coast",
+        crop=False,
+    )
+    ds_out = xr.open_dataset(filename)
+    assert "tas" in ds_out
+    assert ds_out.dims["time"] == 12
+
+    grid_mapping = ds_out.cf["grid_mapping"]
+    assert grid_mapping.grid_mapping_name == "lambert_conformal_conic"
+    expected_grid_mapping_attrs = {
+        "grid_mapping_name": "lambert_conformal_conic",
+        "standard_parallel": np.array([30.0, 60.0]),
+        "longitude_of_central_meridian": np.float64(-70.0),
+        "latitude_of_projection_origin": np.float64(38.0),
+        "false_easting": np.float64(0.0),
+        "false_northing": np.float64(0.0),
+    }
+    for key, value in expected_grid_mapping_attrs.items():
+        assert key in grid_mapping.attrs
+        if isinstance(value, np.ndarray):
+            assert np.array_equal(value, grid_mapping.attrs[key])
+        else:
+            assert value == grid_mapping.attrs[key]
