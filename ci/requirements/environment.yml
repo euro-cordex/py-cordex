@@ -21,6 +21,7 @@ dependencies:
   - pint-xarray
   - pint!=0.24 # see https://github.com/euro-cordex/py-cordex/issues/249
   - flox
+  - xwrf
 # for testing
   - pytest
   - pytest-cov
