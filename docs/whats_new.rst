@@ -6,12 +6,14 @@ What's new
 v0.10.0 (Unreleased)
 --------------------
 
+This release introduces new cmorization features in :py:meth:`cmor.cmorize_variable` that allow for more generic grid mappings.
 New function  :py:meth:`rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
 rounding errors. This version drops python3.8 support.
 
 New Features
 ~~~~~~~~~~~~
 
+- Updates :py:meth:`cmor.cmorize_variable` to handle more generic grid mappings, also added WRF example with lamber conformal grid (:pull:`328`).
 - New function :py:meth:`rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
 
 Internal Changes
