@@ -114,7 +114,13 @@ def _get_bnds(values):
 
 def _crop_to_cordex_domain(ds, domain_id, tolerance=1.0e-2):
     """Crop data to official CORDEX domain"""
-    grid = domain(domain_id)
+    try:
+        grid = domain(domain_id)
+    except KeyError:
+        raise KeyError(
+            f'unknown domain_id: "{domain_id}", if you are using an unofficial domain, set crop=False'
+        )
+
     info = grid.cx.info()
     rlon_tol = tolerance * info["dlon"]
     rlat_tol = tolerance * info["dlat"]
