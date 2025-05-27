@@ -1,6 +1,8 @@
 import os
 from os import path as op
 from warnings import warn
+from collections.abc import Iterable
+from collections import OrderedDict
 
 import cf_xarray as cfxr
 import pandas as pd
@@ -24,6 +26,7 @@ from .config import (
     time_dtype,
     time_units_default,
     units_format,
+    grid_entry_mapping,
 )
 
 # from .derived import derivator
@@ -111,7 +114,13 @@ def _get_bnds(values):
 
 def _crop_to_cordex_domain(ds, domain_id, tolerance=1.0e-2):
     """Crop data to official CORDEX domain"""
-    grid = domain(domain_id)
+    try:
+        grid = domain(domain_id)
+    except KeyError:
+        raise KeyError(
+            f'unknown domain_id: "{domain_id}", if you are using an unofficial domain, set crop=False'
+        )
+
     info = grid.cx.info()
     rlon_tol = tolerance * info["dlon"]
     rlat_tol = tolerance * info["dlat"]
@@ -148,9 +157,20 @@ def _get_time_axis_name(time_cell_method):
     return time_axis_names.get(time_cell_method, "time")
 
 
-def _define_grid(ds, table_id):
-    grid_attrs = ds.cx.info()
-    grid = create_dataset(**grid_attrs, bounds=True)
+def _define_grid(ds, table_id, rewrite_grid="auto"):
+    if rewrite_grid == "auto":
+        try:
+            grid_attrs = ds.cx.info()
+            grid = create_dataset(**grid_attrs, bounds=True)
+        except (KeyError, ValueError):
+            grid = ds
+    else:
+        grid = ds
+
+    grid_mapping = grid.cf["grid_mapping"]
+    grid_mapping_name = grid_mapping.grid_mapping_name
+    entry_mapping = grid_entry_mapping.get(grid_mapping_name)
+    default_attrs = entry_mapping["default_attrs"]
     # if "domain_id" in ds.attrs:
     #     try:
     #         grid = domain(ds.attrs["domain_id"], bounds=True)
@@ -166,36 +186,66 @@ def _define_grid(ds, table_id):
     #     ds = cx.transform_coords(ds, trg_dims=("lon", "lat"))
 
     cmor.set_table(table_id)
-    cmorLat = cmor.axis(
-        table_entry="grid_latitude",
+
+    cmorY = cmor.axis(
+        table_entry=entry_mapping["Y"],
         coord_vals=grid.cf["Y"].to_numpy(),
         units=grid.cf["Y"].units,
     )
-    cmorLon = cmor.axis(
-        table_entry="grid_longitude",
+    cmorX = cmor.axis(
+        table_entry=entry_mapping["X"],
         coord_vals=grid.cf["X"].to_numpy(),
         units=grid.cf["X"].units,
     )
 
-    cmorGrid = cmor.grid(
-        [cmorLat, cmorLon],
-        latitude=grid.cf["latitude"].to_numpy(),
-        longitude=grid.cf["longitude"].to_numpy(),
-        latitude_vertices=grid.cf.get_bounds("latitude").to_numpy(),
-        longitude_vertices=grid.cf.get_bounds("longitude").to_numpy(),
+    latitude = grid.cf["latitude"].to_numpy()
+    longitude = grid.cf["longitude"].to_numpy()
+    latitude_vertices = (
+        grid.cf.get_bounds("latitude").to_numpy()
+        if "latitude" in grid.cf.bounds
+        else None
     )
-    pole = ds.cf["grid_mapping"]
-    pole_dict = {
-        "grid_north_pole_latitude": pole.grid_north_pole_latitude,
-        "grid_north_pole_longitude": pole.grid_north_pole_longitude,
-        "north_pole_grid_longitude": 0.0,
-    }
+    longitude_vertices = (
+        grid.cf.get_bounds("longitude").to_numpy()
+        if "longitude" in grid.cf.bounds
+        else None
+    )
+
+    cmorGrid = cmor.grid(
+        [cmorY, cmorX],
+        latitude=latitude,
+        longitude=longitude,
+        latitude_vertices=latitude_vertices,
+        longitude_vertices=longitude_vertices,
+    )
+
+    # attrs_dict = {k: grid_mapping.attrs.get(v) or v for k, v in default_attrs.items()}
+    attrs_dict = OrderedDict()
+    for k, v in default_attrs.items():
+        if k in grid_mapping.attrs:
+            value = grid_mapping.attrs[k]
+            if isinstance(value, Iterable):
+                for i, val in enumerate(value):
+                    # see
+                    attrs_dict[k + str(i + 1)] = [val, v[1]]
+                    # attrs_dict[k] = [val, v[1]]
+            else:
+                attrs_dict[k] = [value, v[1]]
+        elif v[0] is not None:
+            attrs_dict[k] = v
+        else:
+            raise KeyError(
+                f"Missing attribute {k} in grid mapping variable: {grid_mapping_name}"
+            )
+
     cmor.set_grid_mapping(
         cmorGrid,
-        "rotated_latitude_longitude",
-        list(pole_dict.keys()),
-        list(pole_dict.values()),
-        ["", "", ""],
+        grid_mapping_name,
+        # parameter_names=attrs_dict,
+        parameter_names=list(attrs_dict.keys()),
+        parameter_values=[v[0] for v in attrs_dict.values()],
+        parameter_units=[v[1] for v in attrs_dict.values()],
+        # len(attrs_dict) * [""],
     )
 
     return cmorGrid
@@ -372,6 +422,8 @@ def _set_time_encoding(ds, units, orig):
     if u is None:
         u = time_units_default
         warn(f"time units are set to default: {u}")
+    if not isinstance(u, str):
+        raise TypeError(f"time units invalid: {u}")
     ds.time.encoding["units"] = u
     ds.time.encoding["dtype"] = time_dtype
     return ds
@@ -516,6 +568,7 @@ def prepare_variable(
     use_cftime=False,
     squeeze=True,
     crop=None,
+    guess_coord_axis=None,
 ):
     """prepares a variable for cmorization."""
 
@@ -524,7 +577,10 @@ def prepare_variable(
 
     ds = ds.copy(deep=False)
     # use cf_xarray to guess coordinate meta data
-    ds = ds.cf.guess_coord_axis(verbose=True)
+    if guess_coord_axis is None:
+        guess_coord_axis = "X" not in ds.cf.dims or "Y" not in ds.cf.dims
+    if guess_coord_axis is True:
+        ds = ds.cf.guess_coord_axis(verbose=True)
 
     if isinstance(cmor_table, str):
         cmor_table = _read_table(cmor_table)

@@ -49,6 +49,29 @@ units_convert_rules = {
     "kg/kg": (lambda x: x, "1"),
 }
 
+grid_entry_mapping = {
+    "rotated_latitude_longitude": {
+        "X": "grid_latitude",
+        "Y": "grid_longitude",
+        "default_attrs": {
+            "grid_north_pole_latitude": [None, ""],
+            "grid_north_pole_longitude": [None, ""],
+            "north_pole_grid_longitude": [0.0, ""],
+        },
+    },
+    "lambert_conformal_conic": {
+        "X": "x",
+        "Y": "y",
+        "default_attrs": {
+            "standard_parallel": [None, ""],
+            "longitude_of_central_meridian": [None, ""],
+            "latitude_of_projection_origin": [None, ""],
+            "false_easting": [0.0, ""],
+            "false_northing": [0.0, ""],
+        },
+    },
+}
+
 
 def set_options(**kwargs):
     for k, v in kwargs.items():
