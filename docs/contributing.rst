@@ -76,14 +76,13 @@ Creating a Python Environment
 
 For the development environment, we recommend to use the conda package manager.
 
-- Install either `Anaconda <https://www.anaconda.com/download/>`_ or `miniconda
-  <https://conda.io/miniconda.html>`_
+- Install `miniforge <https://github.com/conda-forge/miniforge>`_
 - Make sure your conda is up to date (``conda update conda``)
 - ``cd`` to the *py-cordex* source directory
 
 We don't recommend to use pip installation for development since some
-depdencenies (like ``cartopy`` or ``xesmf``) require pre-compiled libraries
-in the backend. So the safest way to go is:
+depdencenies (like ``cmor``) require pre-compiled libraries
+in the backend that are only available on conda. So the safest way to go is:
 
 1. Install the build dependencies
 2. Build and install py-cordex from source
@@ -91,7 +90,7 @@ in the backend. So the safest way to go is:
 .. code-block:: sh
 
    # Create and activate the build environment
-   conda create -c conda-forge -n py-cordex-tests python=3.9
+   conda create -c conda-forge -n py-cordex-tests python=3.12
 
    conda env update -f ci/requirements/environment.yml
 
