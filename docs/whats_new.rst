@@ -3,8 +3,8 @@
 What's new
 ==========
 
-v0.10.0 (Unreleased)
---------------------
+v0.10.0 (30 May 2025)
+---------------------
 
 This release introduces new cmorization features in :py:meth:`cmor.cmorize_variable` that allow for more generic grid mappings.
 New function  :py:meth:`rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
