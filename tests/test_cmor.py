@@ -227,14 +227,22 @@ def test_cmorizer_fx():
     filename = run_cmorizer(ds, "orog", "EUR-11", "fx")
     output = xr.open_dataset(filename)
     assert "orog" in output
+    assert output.dims == {"rlat": 412, "rlon": 424, "vertices": 4}
 
 
 def test_cmorizer_mon():
     ds = cx.tutorial.open_dataset("remo_EUR-11_TEMP2_mon")
     filename = run_cmorizer(ds, "tas", "EUR-11", "mon")
     output = xr.open_dataset(filename)
-    assert output.dims["time"] == 12
+    # assert output.dims["time"] == 12
     assert "tas" in output
+    assert output.dims == {
+        "time": 12,
+        "bnds": 2,
+        "rlat": 412,
+        "rlon": 424,
+        "vertices": 4,
+    }
 
 
 def test_cmorizer_mon_sdepth():
