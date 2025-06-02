@@ -163,10 +163,10 @@ def _define_grid(ds, table_id, rewrite_grid="auto"):
             grid_attrs = ds.cx.info()
             grid = create_dataset(**grid_attrs, bounds=True)
         except (KeyError, ValueError):
+            warn("can not rewrite grid")
             grid = ds
     else:
         grid = ds
-
     grid_mapping = grid.cf["grid_mapping"]
     grid_mapping_name = grid_mapping.grid_mapping_name
     entry_mapping = grid_entry_mapping.get(grid_mapping_name)
