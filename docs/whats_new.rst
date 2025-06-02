@@ -11,6 +11,7 @@ Bugfix release.
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Python version maintenance (:pull:`338`).
 - Update in testing cmor outputs (:pull:`337`).
 - Added default earth radius attribute to cmor grid mapping (:pull:`336`).
 
