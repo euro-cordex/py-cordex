@@ -236,7 +236,13 @@ def test_cmorizer_mon():
     output = xr.open_dataset(filename)
     # assert output.dims["time"] == 12
     assert "tas" in output
-    assert {"time": 12, "bnds": 2, "rlat": 412, "rlon": 424, "vertices": 4}
+    assert output.dims == {
+        "time": 12,
+        "bnds": 2,
+        "rlat": 412,
+        "rlon": 424,
+        "vertices": 4,
+    }
 
 
 def test_cmorizer_mon_sdepth():
