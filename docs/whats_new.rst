@@ -3,6 +3,16 @@
 What's new
 ==========
 
+v0.10.1 (02 June 2025)
+----------------------
+
+Bugfix release.
+
+Bugfixes
+~~~~~~~~
+
+- Fix coordinate switch in cmor grid mappings (:pull:`335`).
+
 v0.10.0 (30 May 2025)
 ---------------------
 
