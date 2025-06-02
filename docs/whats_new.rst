@@ -8,6 +8,11 @@ v0.10.1 (02 June 2025)
 
 Bugfix release.
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Added default earth radius attribute to cmor grid mapping (:pull:`336`).
+
 Bugfixes
 ~~~~~~~~
 

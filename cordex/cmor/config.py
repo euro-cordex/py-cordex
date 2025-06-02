@@ -6,6 +6,7 @@ options = {
     "table_prefix": "CORDEX-CMIP6",
     "exit_control": "CMOR_NORMAL",
     "resample_kwargs": {"closed": "left"},
+    "earth_radius": 6371229.0,  # in meters
 }
 
 
@@ -57,6 +58,7 @@ grid_entry_mapping = {
             "grid_north_pole_latitude": [None, ""],
             "grid_north_pole_longitude": [None, ""],
             "north_pole_grid_longitude": [0.0, ""],
+            "earth_radius": [options["earth_radius"], ""],
         },
     },
     "lambert_conformal_conic": {
@@ -68,6 +70,7 @@ grid_entry_mapping = {
             "latitude_of_projection_origin": [None, ""],
             "false_easting": [0.0, ""],
             "false_northing": [0.0, ""],
+            "earth_radius": [options["earth_radius"], ""],
         },
     },
 }
