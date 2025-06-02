@@ -2,7 +2,7 @@
 name = "py-cordex"
 description = "Creation of cordex grids and meta data"
 readme = "README.rst"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 keywords = ["cordex", "xarray", "metadata", "CF conventions"]
 classifiers = [
