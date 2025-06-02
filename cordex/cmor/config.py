@@ -51,8 +51,8 @@ units_convert_rules = {
 
 grid_entry_mapping = {
     "rotated_latitude_longitude": {
-        "X": "grid_latitude",
-        "Y": "grid_longitude",
+        "X": "grid_longitude",
+        "Y": "grid_latitude",
         "default_attrs": {
             "grid_north_pole_latitude": [None, ""],
             "grid_north_pole_longitude": [None, ""],
