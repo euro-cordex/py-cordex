@@ -1,4 +1,4 @@
-import pkg_resources
+from importlib.metadata import version as _get_version
 
 from . import regions, tables, tutorial
 from .accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa
@@ -22,7 +22,7 @@ from .transform import (
 from .utils import cell_area
 
 try:
-    __version__ = pkg_resources.get_distribution("py-cordex").version
+    __version__ = _get_version("py-cordex")
 except Exception:
     # Local copy or not installed with setuptools.
     # Disable minimum version checks on downstream libraries.
