@@ -3,6 +3,14 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update pandas time offset strings (:pull:`350`).
+
 v0.10.1 (02 June 2025)
 ----------------------
 
