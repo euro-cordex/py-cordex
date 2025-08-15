@@ -11,7 +11,7 @@ dependencies:
   - regionmask>=0.9.0
   - setuptools
   - xarray!=2023.9.0 # see https://github.com/pydata/xarray/issues/8271
-  - cf_xarray>=0.8.0
+  - cf_xarray>=0.8.0, 0.10.7
   - cftime
   - netCDF4
   - dask
