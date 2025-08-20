@@ -31,11 +31,11 @@ units_format = "cf"  # "~P"
 
 # map mip frequencies to pandas frequencies
 freq_map = {
-    "1hr": "H",
-    "1hrPt": "H",
-    "3hr": "3H",
-    "3hrPt": "3H",
-    "6hr": "6H",
+    "1hr": "h",
+    "1hrPt": "h",
+    "3hr": "3h",
+    "3hrPt": "3h",
+    "6hr": "6h",
     "day": "D",
     "mon": "MS",
 }
