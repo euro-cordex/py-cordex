@@ -6,9 +6,13 @@ What's new
 UNRELEASED
 ----------
 
+This release changes default compression options in ``cordex.cmor`` to ``{"shuffle": True, "deflate": True, "deflate_level": 1}`` to be
+compliant with the `CORDEX-CMIP6 archive specs <https://zenodo.org/records/15047096>`_. If you need to set the former options, use ``cordex.cmor.set_options(compression={"shuffle": False, "deflate": True, "deflate_level": 1})``.
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Added cmor deflate options (:pull:`360`).
 - Update pandas time offset strings (:pull:`350`).
 
 v0.10.1 (02 June 2025)
