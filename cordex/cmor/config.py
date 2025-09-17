@@ -7,6 +7,8 @@ options = {
     "exit_control": "CMOR_NORMAL",
     "resample_kwargs": {"closed": "left"},
     "earth_radius": 6371229.0,  # in meters
+    "compression": {"shuffle": True, "deflate": True, "deflate_level": 1},
+    # "compression": {"shuffle": False, "deflate": True, "deflate_level": 1},
 }
 
 
