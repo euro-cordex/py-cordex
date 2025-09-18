@@ -12,6 +12,7 @@ compliant with the `CORDEX-CMIP6 archive specs <https://zenodo.org/records/15047
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Fix tests if ``https://daten.gdz.bkg.bund.de`` is unavailable (:pull:`361`).
 - Update ``pyproject.toml`` (:pull:`356`).
 - Added cmor deflate options (:pull:`360`).
 - Update pandas time offset strings (:pull:`350`).
