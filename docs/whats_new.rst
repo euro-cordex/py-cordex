@@ -3,8 +3,8 @@
 What's new
 ==========
 
-UNRELEASED
-----------
+v0.10.2 (18 September 2025)
+---------------------------
 
 This release changes default compression options in ``cordex.cmor`` to ``{"shuffle": True, "deflate": True, "deflate_level": 1}`` to be
 compliant with the `CORDEX-CMIP6 archive specs <https://zenodo.org/records/15047096>`_. If you need to set the former options, use ``cordex.cmor.set_options(compression={"shuffle": False, "deflate": True, "deflate_level": 1})``.
