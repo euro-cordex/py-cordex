@@ -3,6 +3,15 @@
 What's new
 ==========
 
+
+UNRELEASED
+----------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Fix ``pyproject.toml`` for pytest9 (:pull:`373`).
+
 v0.10.2 (18 September 2025)
 ---------------------------
 
