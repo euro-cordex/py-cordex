@@ -10,6 +10,7 @@ UNRELEASED
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Use item in cx info (:pull:`385`).
 - Fix ``pyproject.toml`` for pytest9 (:pull:`373`).
 - Updated license information (:pull:`382`).
 
