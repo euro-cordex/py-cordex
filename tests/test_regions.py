@@ -4,7 +4,6 @@ import cordex as cx
 
 from . import requires_geopandas
 
-
 SERVICE_URL = "https://daten.gdz.bkg.bund.de"
 
 
