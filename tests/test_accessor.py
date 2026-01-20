@@ -24,6 +24,22 @@ def test_guess_info(domain_id):
     assert ds.cx.domain_id == domain_id
 
 
+def test_info():
+    expected = {
+        "nlon": 424,
+        "nlat": 412,
+        "ll_lon": -28.375,
+        "ur_lon": 18.155,
+        "ll_lat": -23.375,
+        "ur_lat": 21.835,
+        "dlon": 0.11,
+        "dlat": 0.11,
+        "pollon": -162.0,
+        "pollat": 39.25,
+    }
+    assert cx.domain("EUR-11").cx.info() == expected
+
+
 @pytest.mark.parametrize(
     "filename",
     [
