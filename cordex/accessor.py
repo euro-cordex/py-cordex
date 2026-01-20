@@ -65,7 +65,7 @@ def _get_info(ds, tables=None, precision=nround):
     }
     # round
     info = {
-        k: (np.round(v, nround) if isinstance(v, float) else v)
+        k: (np.round(v, nround).item() if isinstance(v, float) else v)
         for k, v in coords.items()
     }
     return info
