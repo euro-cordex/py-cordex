@@ -6,7 +6,6 @@ from .domain import (
     cordex_domain,
     create_dataset,
     domain,
-    domain_info,
     vertices,
     rewrite_coords,
 )
@@ -19,7 +18,8 @@ from .transform import (
     transform_coords,
     derotate_vector,
 )
-from .utils import cell_area
+from .utils import cell_area, domain_info
+from .crs import get_crs, get_ccrs
 
 try:
     __version__ = _get_version("py-cordex")
@@ -49,4 +49,6 @@ __all__ = [
     "ecmwf",
     "cell_area",
     "rewrite_coords",
+    "get_crs",
+    "get_ccrs",
 ]
