@@ -3,9 +3,10 @@
 What's new
 ==========
 
+v0.10.3 (05 March 2026)
+-----------------------
 
-UNRELEASED
-----------
+Maintenance release.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
