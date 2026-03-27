@@ -34,4 +34,7 @@ def get_crs(domain_id):
     # i go via from_cf to get the correct crs
     attrs = get_grid_mapping_attrs(domain_id)
     return CRS.from_cf(attrs)
+    # Note: We use CRS.from_cf(attrs) to construct the CRS from CF-compliant attributes,
+    # which ensures compatibility with the CF conventions and avoids manual proj4 string construction.
+    # The commented proj4 string below shows an alternative approach, but is not used to ensure correctness and maintainability.
     # proj4 = f"+proj=ob_tran +o_proj=longlat +o_lon_p=0 +o_lat_p={dm.pollat} +lon_0={180+dm.pollon} +datum=WGS84 +no_defs +type=crs"

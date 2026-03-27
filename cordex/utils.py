@@ -161,8 +161,22 @@ def cell_area(ds, R=6371000, attrs=True):
     return da
 
 
-def create_polygon(obj, crs=None):
-    """create polygon in rotated pole coords"""
+def create_polygon(obj):
+    """
+    Create a polygon in rotated pole coordinates.
+
+    Parameters
+    ----------
+    obj : object
+        An object with cf["X"] and cf["Y"] attributes specifying the grid coordinates.
+    crs : optional
+        The coordinate reference system (not used in this function).
+
+    Returns
+    -------
+    shapely.geometry.Polygon
+        A polygon defined by the minimum and maximum X and Y coordinates.
+    """
     from shapely.geometry import Polygon
 
     coords = [
@@ -194,7 +208,7 @@ def transform_polygon(polygon, crs, segmentize=None):
     """
     from shapely.ops import transform
 
-    transformer = Transformer.from_proj(crs, Proj(init="epsg:4326"))
+    transformer = Transformer.from_proj(crs, Proj('EPSG:4326'))
     if segmentize:
         polygon = polygon.segmentize(segmentize)
     return transform(transformer.transform, polygon)
