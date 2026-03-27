@@ -3,6 +3,14 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update deprecated xarray API calls (:pull:`401`).
+
 v0.10.3 (05 March 2026)
 -----------------------
 

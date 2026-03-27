@@ -41,7 +41,12 @@ def to_cftime(date, calendar="standard"):
         return date
     elif isinstance(date, str):
         # xarray hack for cftime.strptime
-        return xr.cftime_range(start=date, end=date, calendar=calendar)[0]
+        return xr.date_range(
+            start=date,
+            end=date,
+            calendar=calendar,
+            use_cftime=True,
+        )[0]
         # date = pd.to_datetime(date)
     return cfdt.datetime(
         date.year,
