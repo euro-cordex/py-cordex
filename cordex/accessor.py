@@ -19,6 +19,16 @@ def _get_domain_id(ds):
 
 
 def _get_info(ds, tables=None, precision=nround):
+    try:
+        grid_mapping_name = ds.cf["grid_mapping"].grid_mapping_name
+    except KeyError:
+        grid_mapping_name = None
+
+    if grid_mapping_name and grid_mapping_name != "rotated_latitude_longitude":
+        raise ValueError(
+            f"Grid mapping name '{grid_mapping_name}' is not supported. Only 'rotated_latitude_longitude' is supported."
+        )
+    # check if tables is None
     if tables is None:
         tables = domains.table.replace(np.nan, None)
     try:
@@ -55,7 +65,7 @@ def _get_info(ds, tables=None, precision=nround):
     }
     # round
     info = {
-        k: (np.round(v, nround) if isinstance(v, float) else v)
+        k: (np.round(v, nround).item() if isinstance(v, float) else v)
         for k, v in coords.items()
     }
     return info
@@ -186,13 +196,20 @@ class CordexAccessor:
 
         obj = self._obj
 
+        try:
+            x = obj.cf["X"]
+            y = obj.cf["Y"]
+        except KeyError:
+            x = obj.rlon
+            y = obj.rlat
+
         mapping = obj.cf["grid_mapping"]
         pole = (
             mapping.grid_north_pole_longitude,
             mapping.grid_north_pole_latitude,
         )
         central_longitude = 0.0
-        if obj.cf["X"].min() > 0.0:
+        if x.min() > 0.0:
             central_longitude = 180.0
 
         transform = ccrs.RotatedPole(*pole, central_rotated_longitude=central_longitude)
@@ -214,10 +231,10 @@ class CordexAccessor:
         )
         ax.set_extent(
             [
-                obj.rlon.min() - central_longitude,
-                obj.rlon.max() - central_longitude,
-                obj.rlat.min(),
-                obj.rlat.max(),
+                x.min() - central_longitude,
+                x.max() - central_longitude,
+                y.min(),
+                y.max(),
             ],
             crs=transform,
         )

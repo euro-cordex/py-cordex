@@ -3,15 +3,61 @@
 What's new
 ==========
 
-v0.10.0 (Unreleased)
---------------------
+v0.10.3 (05 March 2026)
+-----------------------
 
+Maintenance release.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update tests (:pull:`387`).
+- Use item in cx info (:pull:`385`).
+- Fix ``pyproject.toml`` for pytest9 (:pull:`373`).
+- Updated license information (:pull:`382`).
+
+v0.10.2 (18 September 2025)
+---------------------------
+
+This release changes default compression options in ``cordex.cmor`` to ``{"shuffle": True, "deflate": True, "deflate_level": 1}`` to be
+compliant with the `CORDEX-CMIP6 archive specs <https://zenodo.org/records/15047096>`_. If you need to set the former options, use ``cordex.cmor.set_options(compression={"shuffle": False, "deflate": True, "deflate_level": 1})``.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Fix tests if ``https://daten.gdz.bkg.bund.de`` is unavailable (:pull:`361`).
+- Update ``pyproject.toml`` (:pull:`356`).
+- Added cmor deflate options (:pull:`360`).
+- Update pandas time offset strings (:pull:`350`).
+
+v0.10.1 (02 June 2025)
+----------------------
+
+Bugfix release.
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Python version maintenance (:pull:`338`).
+- Update in testing cmor outputs (:pull:`337`).
+- Added default earth radius attribute to cmor grid mapping (:pull:`336`).
+
+Bugfixes
+~~~~~~~~
+
+- Fix coordinate switch in cmor grid mappings (:pull:`335`).
+
+v0.10.0 (30 May 2025)
+---------------------
+
+This release introduces new cmorization features in :py:meth:`cmor.cmorize_variable` that allow for more generic grid mappings.
 New function  :py:meth:`rewrite_coords` that rewrites coordinates (X and Y axes and transformed coordinates) in a dataset to correct
 rounding errors. This version drops python3.8 support.
 
 New Features
 ~~~~~~~~~~~~
 
+- Updates :py:meth:`cmor.cmorize_variable` to handle more generic grid mappings, also added WRF example with lamber conformal grid (:pull:`328`).
 - New function :py:meth:`rewrite_coords` (:pull:`306`, :pull:`307`). The function is also available as accessor function.
 
 Internal Changes
@@ -22,6 +68,7 @@ Internal Changes
 Bugfixes
 ~~~~~~~~
 
+- Fixed :py:meth:`Dataset.cx.map` for arbitrary x-y axis names (:pull:`324`).
 - Fixed deprecated ``xarray`` keywords (:pull:`273`).
 
 Breaking Changes
