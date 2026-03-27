@@ -208,7 +208,7 @@ def transform_polygon(polygon, crs, segmentize=None):
     """
     from shapely.ops import transform
 
-    transformer = Transformer.from_proj(crs, Proj('EPSG:4326'))
+    transformer = Transformer.from_proj(crs, Proj("EPSG:4326"))
     if segmentize:
         polygon = polygon.segmentize(segmentize)
     return transform(transformer.transform, polygon)
