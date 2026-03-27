@@ -318,8 +318,8 @@ def transform_bounds(
         bnds_dim = cf.BOUNDS_DIM
 
     bnds = ds.cf.add_bounds(("X", "Y"))
-    x_bnds = bnds.cf.get_bounds("X").drop(bnds.cf.bounds["X"])
-    y_bnds = bnds.cf.get_bounds("Y").drop(bnds.cf.bounds["Y"])
+    x_bnds = bnds.cf.get_bounds("X").drop_vars(bnds.cf.bounds["X"])
+    y_bnds = bnds.cf.get_bounds("Y").drop_vars(bnds.cf.bounds["Y"])
 
     # order is counterclockwise starting from lower left vertex
     v1 = transform(x_bnds.isel(bounds=0), y_bnds.isel(bounds=0), src_crs, trg_crs)

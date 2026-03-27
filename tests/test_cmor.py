@@ -25,7 +25,7 @@ cmor.set_options(table_prefix=table_prefix)
 
 def create_sdepth_ds():
     ds = cx.domain("EUR-11", dummy="topo")
-    ds = ds.drop("topo").assign(
+    ds = ds.drop_vars("topo").assign(
         tsl=ds.topo.expand_dims(
             time=pd.date_range("2000-01-01T12:00:00", periods=3, freq="D"),
             sdepth=[0.05, 0.10, 0.2],
@@ -95,7 +95,13 @@ def test_cfmonth():
 
 def test_mid_of_month():
     time_axis = xr.DataArray(
-        xr.cftime_range("2005-01", periods=12, freq="MS"), dims="time"
+        xr.date_range(
+            "2005-01",
+            periods=12,
+            freq="MS",
+            use_cftime=True,
+        ),
+        dims="time",
     )
 
     expect = np.array(
@@ -124,7 +130,13 @@ def test_mid_of_month():
 
 def test_month_bounds():
     time_axis = xr.DataArray(
-        xr.cftime_range("2005-01", periods=12, freq="MS"), dims="time"
+        xr.date_range(
+            "2005-01",
+            periods=12,
+            freq="MS",
+            use_cftime=True,
+        ),
+        dims="time",
     )
 
     expect = np.array(
@@ -248,7 +260,7 @@ def test_cmorizer_mon():
 def test_cmorizer_mon_sdepth():
     ds = create_sdepth_ds()
     filename = run_cmorizer(ds, "tsl", "EUR-11", "day")
-    return filename
+    assert filename
 
 
 @pytest.mark.parametrize("table_id, tdim", [("day", 3), ("1hr", 49)])

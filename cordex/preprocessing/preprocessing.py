@@ -280,7 +280,7 @@ def replace_rlon_rlat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["rlon", "rlat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord)  #
+            ds = ds.drop_vars(coord)  #
         ds = ds.assign_coords({coord: dm[coord]})
     return ds
 
@@ -313,7 +313,7 @@ def replace_vertices(ds, domain=None):
     dm = cordex_domain(domain, add_vertices=True)
     for var in ["lon_vertices", "lat_vertices"]:
         if var in ds.coords:
-            ds = ds.drop(var)  #
+            ds = ds.drop_vars(var)  #
         ds[var] = dm[var]
     return ds
 
@@ -346,7 +346,7 @@ def replace_lon_lat(ds, domain=None):
     dm = cordex_domain(domain)
     for coord in ["lon", "lat"]:
         if coord in ds.coords:
-            ds = ds.drop(coord)  #
+            ds = ds.drop_vars(coord)  #
         ds = ds.assign_coords({coord: dm[coord]})
     return ds
 
