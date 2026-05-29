@@ -72,3 +72,16 @@ def test_rewrite_coords(domain_id):
     np.testing.assert_array_equal(rewritten_data.rlon, grid.rlon)
     np.testing.assert_array_equal(rewritten_data.rlat, grid.rlat)
     xr.testing.assert_identical(rewritten_data, grid)
+
+
+@pytest.mark.parametrize(
+    "domain_id", ["ARC-44", "ARC-11", "CEU-0275", "CAS-44i", "MED-44i"]
+)
+def test_guess_info_edge_cases(domain_id):
+    ds = xr.decode_cf(cx.cordex_domain(domain_id, dummy=True), decode_coords="all")
+    info = cx.domain_info(domain_id)
+
+    assert ds.cx.guess() == info
+
+    del ds.attrs["CORDEX_domain"]
+    assert ds.cx.domain_id == domain_id

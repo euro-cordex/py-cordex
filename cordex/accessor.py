@@ -83,12 +83,18 @@ def _guess_domain(ds, tables=None):
         )
     filt = tables
     for k, v in info.items():
+        if k in ["ur_lon", "ur_lat"]:
+            continue
         if filt.empty:
             return None
-        if v:
-            filt = filt[np.isclose(filt[k], v)]
+        try:
+            missing = np.isnan(v)
+        except TypeError:
+            missing = v is None
+        if missing:
+            filt = filt[filt[k].isna()]
         else:
-            filt = filt[np.isnan(filt[k])]  # | filt[k] is None]
+            filt = filt[np.isclose(filt[k], v)]
     # reset index and convert to dict
     return filt.reset_index().iloc[0].replace(np.nan, None).to_dict()
 
