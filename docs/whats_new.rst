@@ -3,12 +3,15 @@
 What's new
 ==========
 
-UNRELEASED
-----------
+v0.10.4 (29 May 2026)
+---------------------
+
+Maintenance release.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Improve domain guessing with missing and zero valued coordinates (:pull:`411`).
 - Update deprecated xarray API calls (:pull:`401`).
 
 v0.10.3 (05 March 2026)
