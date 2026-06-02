@@ -3,6 +3,11 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+- Refactor domain table fetching to use importlib.resources instead of pooch (:pull:`415`).
+
 v0.10.4 (29 May 2026)
 ---------------------
 
