@@ -6,7 +6,18 @@ What's new
 UNRELEASED
 ----------
 
+Use ``cx.tables.domains`` instead of ``cx.domains.table``
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
 - Refactor domain table fetching to use importlib.resources instead of pooch (:pull:`415`).
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Use ``cx.tables.domains`` instead of ``cx.domains.table`` (:pull:`415`).
+
 
 v0.10.4 (29 May 2026)
 ---------------------

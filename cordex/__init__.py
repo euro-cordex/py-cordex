@@ -10,7 +10,7 @@ from .domain import (
     vertices,
     rewrite_coords,
 )
-from .tables import domains, ecmwf
+from .tables import ecmwf
 from .transform import (
     map_crs,
     rotated_coord_transform,
@@ -45,7 +45,6 @@ __all__ = [
     "transform_coords",
     "transform_bounds",
     "derotate_vector",
-    "domains",
     "ecmwf",
     "cell_area",
     "rewrite_coords",
