@@ -30,7 +30,7 @@ def _get_info(ds, tables=None, precision=nround):
         )
     # check if tables is None
     if tables is None:
-        tables = domains.table.replace(np.nan, None)
+        tables = domains.replace(np.nan, None)
     try:
         x = ds.cf["X"]
         y = ds.cf["Y"]
@@ -73,7 +73,7 @@ def _get_info(ds, tables=None, precision=nround):
 
 def _guess_domain(ds, tables=None):
     if tables is None:
-        tables = domains.table  # .replace(np.nan, None)
+        tables = domains  # .replace(np.nan, None)
     try:
         info = _get_info(ds, tables)
     except Exception as e:

@@ -44,7 +44,7 @@ def _locate_domain_id(domain_id, table):
     return table.replace(np.nan, None).loc[domain_id]
 
 
-def domain_names(table_name=None):
+def domain_names():
     """Returns a list of short names of all availabe Cordex domains
 
     Parameters
@@ -58,10 +58,7 @@ def domain_names(table_name=None):
         List of available cordex domains.
 
     """
-    if table_name:
-        return list(domains.tables[table_name].index)
-    else:
-        return list(domains.table.index)
+    return list(domains.index)
 
 
 def domain(
@@ -125,7 +122,7 @@ def domain(
     if attrs is None:
         attrs = {}
     if tables is None:
-        tables = domains.table
+        tables = domains
     if isinstance(tables, list):
         tables = pd.concat(tables)
 
@@ -374,7 +371,7 @@ def domain_info(domain_id, tables=None):
 
     """
     if tables is None:
-        tables = domains.table
+        tables = domains
     elif isinstance(tables, list):
         tables = pd.concat(tables)
 
