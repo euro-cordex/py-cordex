@@ -10,38 +10,7 @@ from . import cf
 from .config import nround
 from .tables import domains
 from .transform import grid_mapping, transform, transform_coords, transform_bounds
-from .utils import cell_area, get_tempfile
-
-
-def _locate_domain_id(domain_id, table):
-    """Locate domain_id in domain table trying different indexes.
-
-    First, it is assumed that domain_id can be found in the tables index.
-    If it is not found in the index, a number of different colums are
-    tried as index (``short_name``, ``domain_id``, ``CORDEX_domain``).
-
-    """
-
-    indexes = [table.index.name]
-    # additional indexes to try
-    indexes.extend(["short_name", "domain_id", "CORDEX_domain"])
-    # removed duplicates
-    indexes = list(dict.fromkeys(indexes))
-
-    table = table.replace(np.nan, None)
-
-    for i in indexes:
-        if i in table.reset_index().columns:
-            if domain_id in table.reset_index()[i].values:
-                return (
-                    table.reset_index()
-                    .set_index(i)
-                    .loc[[domain_id]]
-                    .reset_index()
-                    .iloc[0]
-                )
-
-    return table.replace(np.nan, None).loc[domain_id]
+from .utils import cell_area, get_tempfile, domain_info
 
 
 def domain_names(table_name=None):
@@ -129,7 +98,7 @@ def domain(
     if isinstance(tables, list):
         tables = pd.concat(tables)
 
-    config = _locate_domain_id(domain_id, tables)
+    config = domain_info(domain_id, tables)
 
     return create_dataset(
         **config,
@@ -352,33 +321,6 @@ def create_dataset(
         ds = _assign_cell_area(ds, dummy)
 
     return ds
-
-
-def domain_info(domain_id, tables=None):
-    """Returns a dictionary containg the domain grid definitions.
-
-    Returns a dictionary with grid information according to the
-    Cordex archive specifications.
-
-    See https://is-enes-data.github.io/cordex_archive_specifications.pdf
-
-    Parameters
-    ----------
-    domain_id:
-        Cordex domain identifier.
-
-    Returns
-    -------
-    domain info : dict
-        Dictionary containing the grid information.
-
-    """
-    if tables is None:
-        tables = domains.table
-    elif isinstance(tables, list):
-        tables = pd.concat(tables)
-
-    return _locate_domain_id(domain_id, tables).to_dict()
 
 
 def _get_regular_dataset(
