@@ -21,6 +21,12 @@ from .transform import (
 )
 from .utils import cell_area
 
+
+# keep this for backward compatibility
+class domains:
+    table = tables.domains
+
+
 try:
     __version__ = _get_version("py-cordex")
 except Exception:
@@ -48,4 +54,5 @@ __all__ = [
     "ecmwf",
     "cell_area",
     "rewrite_coords",
+    "domains",
 ]
