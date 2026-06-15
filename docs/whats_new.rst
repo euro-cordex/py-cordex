@@ -3,8 +3,8 @@
 What's new
 ==========
 
-UNRELEASED
-----------
+v0.10.5 (15 June 2026)
+----------------------
 
 Use ``cx.tables.domains`` instead of ``cx.domains.table``
 
