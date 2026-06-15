@@ -10,7 +10,7 @@ from .domain import (
     vertices,
     rewrite_coords,
 )
-from .tables import domains, ecmwf
+from .tables import ecmwf
 from .transform import (
     map_crs,
     rotated_coord_transform,
@@ -20,6 +20,12 @@ from .transform import (
     derotate_vector,
 )
 from .utils import cell_area
+
+
+# keep this for backward compatibility
+class domains:
+    table = tables.domains
+
 
 try:
     __version__ = _get_version("py-cordex")
@@ -45,8 +51,8 @@ __all__ = [
     "transform_coords",
     "transform_bounds",
     "derotate_vector",
-    "domains",
     "ecmwf",
     "cell_area",
     "rewrite_coords",
+    "domains",
 ]

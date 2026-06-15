@@ -1,10 +1,12 @@
 import pandas as pd
 
+from importlib.resources import files
+
 from ._resources import (  # fetch_cmip6_cmor_table,
     cmor_tables_inpath,
     ecmwf_tables,
     fetch_cordex_cmor_table,
-    read_domain_table,
+    # read_domain_table,
 )
 
 # __cmor_table_version__ = cmor_table_version
@@ -18,6 +20,7 @@ __all__ = [
 ]
 
 table_prefix = "CORDEX-CMIP6"
+table_filename = files("cordex").joinpath("tables/domains.csv")
 
 
 class read_cls:
@@ -38,7 +41,7 @@ class read_cls:
     #    return self.tables[table]
 
 
-domains = read_cls(read_domain_table)
+domains = pd.read_csv(table_filename, index_col="short_name")
 
 ecmwf = read_cls(ecmwf_tables)
 

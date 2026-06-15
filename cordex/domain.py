@@ -44,13 +44,8 @@ def _locate_domain_id(domain_id, table):
     return table.replace(np.nan, None).loc[domain_id]
 
 
-def domain_names(table_name=None):
-    """Returns a list of short names of all availabe Cordex domains
-
-    Parameters
-    ----------
-    table_name:
-        Only return domain names from this table.
+def domain_names():
+    """Returns a list of short names of all available Cordex domains.
 
     Returns
     -------
@@ -58,10 +53,8 @@ def domain_names(table_name=None):
         List of available cordex domains.
 
     """
-    if table_name:
-        return list(domains.tables[table_name].index)
-    else:
-        return list(domains.table.index)
+
+    return list(domains.index)
 
 
 def domain(
@@ -84,10 +77,10 @@ def domain(
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    tables : dataframe or list of dataframes, default: cordex_tables
+    tables : dataframe or list of dataframes, optional
         Tables from which to look up the grid information. Index in the table
-        should be the short name of the domain, e.g., `EUR-11`. If no table is
-        provided, all standard tables will be searched.
+        should be the short name of the domain, e.g., `EUR-11`. If not provided,
+        the bundled ``domains.csv`` table is used.
     attrs : str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
@@ -125,7 +118,7 @@ def domain(
     if attrs is None:
         attrs = {}
     if tables is None:
-        tables = domains.table
+        tables = domains
     if isinstance(tables, list):
         tables = pd.concat(tables)
 
@@ -165,10 +158,10 @@ def cordex_domain(
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    tables : dataframe or list of dataframes, default: cordex_tables
+    tables : dataframe or list of dataframes, optional
         Tables from which to look up the grid information. Index in the table
-        should be the short name of the domain, e.g., `EUR-11`. If no table is
-        provided, all standard tables will be searched.
+        should be the short name of the domain, e.g., `EUR-11`. If not provided,
+        the bundled ``domains.csv`` table is used.
     attrs : str or dict
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
@@ -364,8 +357,12 @@ def domain_info(domain_id, tables=None):
 
     Parameters
     ----------
-    domain_id:
+    domain_id : str
         Cordex domain identifier.
+    tables : dataframe or list of dataframes, optional
+        Tables from which to look up the grid information. Index in the table
+        should be the short name of the domain, e.g., `EUR-11`. If not provided,
+        the bundled ``domains.csv`` table is used.
 
     Returns
     -------
@@ -374,7 +371,7 @@ def domain_info(domain_id, tables=None):
 
     """
     if tables is None:
-        tables = domains.table
+        tables = domains
     elif isinstance(tables, list):
         tables = pd.concat(tables)
 
