@@ -3,10 +3,18 @@
 What's new
 ==========
 
+UNRELEASED
+----------
+
+New Domains
+~~~~~~~~~~~
+
+- Added new domain ``MEU-3`` (Mid Europe) from `UDAG project <https://github.com/WCRP-CORDEX/archive-specifications/issues/36>`_ (:pull:`420`).
+
 v0.10.5 (15 June 2026)
 ----------------------
 
-Use ``cx.tables.domains`` instead of ``cx.domains.table``
+The domain defnitions are now distributed alongside the package via a `csv table <https://github.com/euro-cordex/py-cordex/blob/main/cordex/tables/domains.csv>`_. Use ``cx.tables.domains`` instead of ``cx.domains.table``
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
