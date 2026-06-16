@@ -28,6 +28,7 @@ region,domain_id,domain,CORDEX_domain,short_name,long_name,nlon,nlat,ll_lon,ur_l
 13,MNA-12,Middle East and North Africa,MNA-11,MNA-11,Middle East and North Africa,928,472,-26.565,75.405,-6.765,45.045,0.11,0.11,180.0,90.0
 4,GAR-3,Greater Alpine Region,GAR-0275,GAR-0275,Greater Alpine Region,476,444,-13.51125,-0.44875,-10.93125,1.25125,0.0275,0.0275,-162.0,39.25
 4,CEU-3,Central Europe,CEU-0275,CEU-0275,Central Europe,345,385,-9.30375,,-5.07375,,0.0275,0.0275,-162.0,39.25
+4,MEU-3,Mid Europe,MEU-0275,MEU-0275,Mid Europe,501,501,-12.3,,-6.9,,0.0275,0.0275,-162.0,39.25
 1,SAM-25,South America,SAM-22,SAM-22,South America,292,334,143.81,207.83,-38.39,34.87,0.22,0.22,-56.06,70.6
 2,CAM-25,Central America,CAM-22,CAM-22,Central America,420,226,-52.91,39.27,-28.71,20.79,0.22,0.22,113.98,75.74
 3,NAM-25,North America,NAM-22,NAM-22,North America,310,260,-33.99,33.99,-28.51,28.47,0.22,0.22,83.0,42.5
