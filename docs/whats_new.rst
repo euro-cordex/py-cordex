@@ -6,6 +6,11 @@ What's new
 UNRELEASED
 ----------
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Update Read the Docs configuration for Ubuntu and Python (:pull:`423`).
+
 New Domains
 ~~~~~~~~~~~
 
