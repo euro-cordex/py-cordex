@@ -39,6 +39,7 @@ region,domain_id,domain,CORDEX_domain,short_name,long_name,nlon,nlat,ll_lon,ur_l
 8,CAS-25,Central Asia,CAS-22,CAS-22,Central Asia,306,200,-34.43,32.67,-20.79,22.99,0.22,0.22,-103.39,43.48
 9,AUS-25,Australasia,AUS-22,AUS-22,Australasia,400,258,142.05,229.83,-22.99,33.55,0.22,0.22,141.38,60.31
 14,SEA-25,South East Asia,SEA-22,SEA-22,South East Asia,264,194,89.26,147.12,-15.18,27.28,0.22,0.22,180.0,90.0
+14,SEA-12,South East Asia,SEA-11,SEA-11,South East Asia,528,388,89.205,,-15.235,,0.11,0.11,180.0,90.0
 1,SAM-50i,South America,SAM-44i,SAM-44i,South America,181,155,-106.25,-16.25,-58.25,18.75,0.5,0.5,,
 2,CAM-50i,Central America,CAM-44i,CAM-44i,Central America,207,111,-124.75,-21.75,-19.75,35.25,0.5,0.5,,
 3,NAM-50i,North America,NAM-44i,NAM-44i,North America,300,129,-171.75,-22.25,12.25,76.25,0.5,0.5,,
