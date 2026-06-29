@@ -1,7 +1,7 @@
 # .readthedocs.yml
 version: 2
 build:
-  os: ubuntu-20.04
+  os: ubuntu-24.04
   jobs:
     pre_install:
         # see https://github.com/readthedocs/readthedocs.org/issues/8201
@@ -9,12 +9,10 @@ build:
       # install py-cordex, needs to be editable
       - pip install -e .
   tools:
-    python: mambaforge-4.10
+    python: miniforge-latest
 sphinx:
   configuration: docs/conf.py
   fail_on_warning: false
 conda:
   environment: ci/requirements/docs.yml
-#formats:
-#  - epub
-#  - pdf
+formats: []
