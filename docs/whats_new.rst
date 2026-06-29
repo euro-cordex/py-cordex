@@ -14,6 +14,7 @@ Internal Changes
 New Domains
 ~~~~~~~~~~~
 
+- Added ``SEA-12`` in domains.csv (:pull:`422`).
 - Added new domain ``MEU-3`` (Mid Europe) from `UDAG project <https://github.com/WCRP-CORDEX/archive-specifications/issues/36>`_ (:pull:`420`).
 
 v0.10.5 (15 June 2026)
