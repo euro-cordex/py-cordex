@@ -52,7 +52,7 @@ target-version = "py311"
 builtins = ["ellipsis"]
 exclude = [
     ".eggs",
-    "doc",
+    "docs",
 ]
 
 [tool.ruff.lint]
