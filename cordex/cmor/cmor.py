@@ -137,7 +137,7 @@ def _load_table(table):
 
 def _setup(dataset_table, mip_table, grids_table=None, inpath="."):
     if grids_table is None:
-        grids_table = f'{options["table_prefix"]}_grids.json'
+        grids_table = f"{options['table_prefix']}_grids.json"
     cmor.setup(
         inpath,
         set_verbosity=cmor.CMOR_NORMAL,

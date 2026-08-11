@@ -28,9 +28,8 @@ def _cell_area(ds, R=6371000):
         np.deg2rad(
             ds.cf[c]
             # pad values to account for differentiation
-            .pad({ds.cf[c].dims[0]: (1, 0)}, mode="reflect", reflect_type="odd").diff(
-                ds.cf[c].dims[0]
-            )
+            .pad({ds.cf[c].dims[0]: (1, 0)}, mode="reflect", reflect_type="odd")
+            .diff(ds.cf[c].dims[0])
         )
         for c in ("X", "Y")
     )
