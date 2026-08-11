@@ -1,6 +1,6 @@
-import pandas as pd
-
 from importlib.resources import files
+
+import pandas as pd
 
 from ._resources import (  # fetch_cmip6_cmor_table,
     cmor_tables_inpath,
@@ -16,7 +16,6 @@ __all__ = [
     # "fetch_cmpi6_cmor_table",
     "fetch_cordex_cmor_table",
     "read_cordex_domain_table",
-    "cmor_tables_inpath",
 ]
 
 table_prefix = "CORDEX-CMIP6"

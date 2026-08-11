@@ -36,7 +36,7 @@ def _check_netcdf_engine_installed(name):
             import scipy  # noqa
         except ImportError:
             try:
-                import netCDF4  # noqa
+                import netCDF4
             except ImportError:
                 raise ImportError(
                     f"opening tutorial dataset {name} requires either scipy or "

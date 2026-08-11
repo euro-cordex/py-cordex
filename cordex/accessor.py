@@ -2,10 +2,10 @@ import numpy as np
 import xarray as xr
 
 from .config import nround
+from .domain import rewrite_coords
 
 # from .utils import _get_info, _guess_domain
 from .tables import domains
-from .domain import rewrite_coords
 
 IDS = ["domain_id", "CORDEX_domain"]
 

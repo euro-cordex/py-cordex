@@ -11,8 +11,8 @@ import xarray as xr
 import cordex as cx
 from cordex import cmor
 from cordex.cmor import utils
-from cordex.tables import cordex_cmor_table
 from cordex.cmor.cmor import _crop_to_cordex_domain
+from cordex.tables import cordex_cmor_table
 
 from . import requires_pint_xarray
 

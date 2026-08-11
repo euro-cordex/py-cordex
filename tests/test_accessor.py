@@ -1,6 +1,6 @@
+import numpy as np
 import pytest
 import xarray as xr
-import numpy as np
 
 import cordex as cx
 from cordex.accessor import CordexDataArrayAccessor, CordexDatasetAccessor  # noqa

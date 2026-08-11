@@ -1,8 +1,8 @@
 import os
+from collections import OrderedDict
+from collections.abc import Iterable
 from os import path as op
 from warnings import warn
-from collections.abc import Iterable
-from collections import OrderedDict
 
 import cf_xarray as cfxr
 import pandas as pd
@@ -20,13 +20,13 @@ from .. import create_dataset
 from ..domain import domain
 from .config import (
     freq_map,
+    grid_entry_mapping,
     loffsets,
     options,
     time_axis_names,
     time_dtype,
     time_units_default,
     units_format,
-    grid_entry_mapping,
 )
 
 # from .derived import derivator
@@ -366,7 +366,7 @@ def _cf_units_convert(da, table, mapping_table={}):
     Maybe metpy can do this also: https://unidata.github.io/MetPy/latest/tutorials/unit_tutorial.html
 
     """
-    from cf_xarray.units import units as cfxr_units  # noqa
+    from cf_xarray.units import units as cfxr_units
 
     if da.name in mapping_table:
         map_units = mapping_table[da.name].get("units")
