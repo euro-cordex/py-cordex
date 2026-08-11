@@ -9,6 +9,7 @@ UNRELEASED
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Add proj dependency to environment.yml (:pull:`430`).
 - Update Read the Docs configuration for Ubuntu and Python (:pull:`423`).
 
 New Domains
