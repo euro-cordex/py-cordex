@@ -3,8 +3,8 @@
 What's new
 ==========
 
-UNRELEASED
-----------
+v0.10.6 (14 August 2026)
+------------------------
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
