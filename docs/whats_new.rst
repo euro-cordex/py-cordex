@@ -9,6 +9,7 @@ Unreleased
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Deprecation of ``name`` and ``attrs`` keyword (:pull:`435`).
 - Fix domain_id accessor (:pull:`434`).
 
 v0.10.6 (14 August 2026)

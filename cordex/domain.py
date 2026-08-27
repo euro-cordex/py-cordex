@@ -81,7 +81,11 @@ def domain(
         Tables from which to look up the grid information. Index in the table
         should be the short name of the domain, e.g., `EUR-11`. If not provided,
         the bundled ``domains.csv`` table is used.
-    attrs : str or dict
+    attrs : str or dict, optional
+        .. deprecated::
+            The `attrs` parameter is deprecated and will be removed in a future version.
+            Use global attributes directly on the returned dataset instead.
+
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
     mapping_name : str
@@ -115,8 +119,16 @@ def domain(
 
     """
 
-    if attrs is None:
+    if attrs is not None:
+        warn(
+            "attrs keyword argument is deprecated and will be removed in a future version. "
+            "Use global attributes directly on the returned dataset instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
         attrs = {}
+
     if tables is None:
         tables = domains
     if isinstance(tables, list):
@@ -256,13 +268,21 @@ def create_dataset(
         pol longitude (degrees)
     pollat : float
         pol latitude (degrees)
-    domain_id : str
+    name : str, optional
+        .. deprecated::
+            The `name` parameter is deprecated and will be removed in a future version.
+            Use the `domain_id` parameter instead.
+        Domain name (legacy parameter, replaced by domain_id).
+    domain_id : str, optional
         Domain identifier, goes into the ``CORDEX_domain`` or ``domain_id`` global attribute.
     dummy : str or logical
         Name of dummy field, if dummy=topo, the cdo topo operator will be
         used to create some dummy topography data. dummy data is useful for
         looking at the domain with ncview.
-    attrs : str or dict
+    attrs : str or dict, optional
+        .. deprecated::
+            The `attrs` parameter is deprecated and will be removed in a future version.
+            Use global attributes directly on the returned dataset instead.
         Global attributes that should be added to the dataset. If `attrs='CORDEX'`
         a set of standard CF global attributes.
     mapping_name : str
@@ -288,6 +308,28 @@ def create_dataset(
         )
         bounds = True
 
+    # Handle deprecated attrs parameter
+    if attrs is not None:
+        warn(
+            "attrs keyword argument is deprecated and will be removed in a future version. "
+            "Use global attributes directly on the returned dataset instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    else:
+        attrs = {}
+
+    # Handle deprecated name parameter - domain_id now replaces it
+    if name is not None:
+        warn(
+            "name keyword argument is deprecated and will be removed in a future version. "
+            "Use domain_id parameter instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if domain_id is None:
+            domain_id = name
+
     cv = cf.vocabulary[mip_era]
 
     rotated = True
@@ -296,9 +338,6 @@ def create_dataset(
     elif attrs is None:
         attrs = {}
 
-    if name:
-        attrs[cv["domain_id"]] = name
-    # remove inconsistencies in keyword names
     if domain_id:
         attrs[cv["domain_id"]] = domain_id
     if cv["domain_id"] in kwargs:
