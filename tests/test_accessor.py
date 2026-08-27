@@ -24,6 +24,14 @@ def test_guess_info(domain_id):
     assert ds.cx.domain_id == domain_id
 
 
+def test_domain_id_accessor():
+    from cf_xarray.datasets import rotds
+
+    assert rotds.cx.domain_id is None
+    rotds.attrs["domain_id"] = "CORDEX_domain_id"
+    assert rotds.cx.domain_id == "CORDEX_domain_id"
+
+
 def test_info():
     expected = {
         "nlon": 424,

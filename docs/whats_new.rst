@@ -3,6 +3,14 @@
 What's new
 ==========
 
+Unreleased
+----------
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Fix domain_id accessor (:pull:`434`).
+
 v0.10.6 (14 August 2026)
 ------------------------
 

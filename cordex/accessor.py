@@ -128,7 +128,9 @@ class CordexAccessor:
         if self._domain_id is None:
             self._domain_id = _get_domain_id(self._obj)
         if self._domain_id is None:
-            self._domain_id = self.guess()["short_name"]
+            guess = self.guess()
+            if guess is not None:
+                self._domain_id = guess["short_name"]
         return self._domain_id
 
     @property
