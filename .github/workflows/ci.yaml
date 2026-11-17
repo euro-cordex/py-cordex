@@ -48,8 +48,8 @@ jobs:
           python -m pip install --no-deps -e .
       - name: Version info
         run: |
-          conda info -a
-          conda list
+          micromamba info -a
+          micromamba list
       - name: Import cordex
         run: |
           python -c "import cordex"
