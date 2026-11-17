@@ -9,6 +9,7 @@ Unreleased
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Replace conda with micromamba in workflow (:pull:`441`).
 - Deprecation of ``name`` and ``attrs`` keyword (:pull:`435`).
 - Fix domain_id accessor (:pull:`434`).
 
